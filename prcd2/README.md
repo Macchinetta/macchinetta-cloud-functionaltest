@@ -33,10 +33,10 @@
     <?xml version="1.0" encoding="UTF-8"?>
     <CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
     <CORSRule>
-        <AllowedOrigin>https://tera-ci.net</AllowedOrigin>
-        <AllowedOrigin>http://tera-ci.net</AllowedOrigin>
-        <AllowedOrigin>http://tera-ci.net:8082</AllowedOrigin>
-        <AllowedOrigin>https://tera-ci.net:8082</AllowedOrigin>
+        <AllowedOrigin>https://XXXX.net</AllowedOrigin>
+        <AllowedOrigin>http://XXXX.net</AllowedOrigin>
+        <AllowedOrigin>http://XXXX.net:8082</AllowedOrigin>
+        <AllowedOrigin>https://XXXX.net:8082</AllowedOrigin>
         <AllowedMethod>GET</AllowedMethod>
         <AllowedMethod>HEAD</AllowedMethod>
         <MaxAgeSeconds>3000</MaxAgeSeconds>

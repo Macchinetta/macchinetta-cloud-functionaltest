@@ -3,7 +3,7 @@ spring:
     config:
       server:
         git:
-          uri: https://terasoluna-cloud-management-423625999.ap-northeast-1.elb.amazonaws.com/git/macchinetta-cloud/macchinetta-cloud-functionaltest.git
+          uri: https://xxxx.ap-northeast-1.elb.amazonaws.com/git/macchinetta-cloud/macchinetta-cloud-functionaltest.git
           username: cloudtest
           password: cloudtest
           clone-on-start: true
