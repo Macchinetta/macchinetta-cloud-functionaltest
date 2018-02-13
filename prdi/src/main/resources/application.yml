@@ -1,0 +1,17 @@
+# 環境依存しないフレームワークの設定値
+
+spring:
+  application:
+    name: prdi
+
+cloud:
+  aws:
+    stack:
+      auto: false
+
+functionaltest:
+    download:
+      bucketName: private-distribution
+      expiration: 30
+      roleName: s3-direct-download
+      roleSessionName: s3-direct-download01

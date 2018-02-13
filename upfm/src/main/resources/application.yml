@@ -1,0 +1,15 @@
+# 環境依存しないフレームワークの設定値
+
+spring:
+  application:
+    name: upfm
+
+cloud:
+  aws:
+    stack:
+      auto: false
+
+functionaltest:
+  upload:
+    bucketName: functionaltest.uploadfile
+    tmpDirectory: temp/

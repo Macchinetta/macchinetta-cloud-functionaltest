@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.co.ntt.cloud.functionaltest.domain.repository.member.MemberRepository">
+    
+    <!-- メンバー情報取得 -->
+    <select id="findOne" parameterType="String" resultType="Member">
+        SELECT
+            customer_no,
+            name,
+            furi_name
+        FROM
+            member
+        WHERE
+            customer_no = #{customerNo}
+    </select>
+    
+    <!-- メンバー情報更新 -->
+    <update id="update" parameterType="Member">
+        UPDATE
+            member
+        SET
+            name = #{name},
+            furi_name = #{furiName}
+        WHERE
+            customer_no = #{customerNo}
+    </update>
+</mapper>

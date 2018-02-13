@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!--Converted at: Wed Sep 18 14:11:03 
+    JST 2013 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.co.ntt.cloud.functionaltest.domain.repository.caab.MemberRepository">
+
+    <resultMap id="member-map" type="Member">
+        <id property="customerNo" column="customer_no" />
+        <result property="kanjiFamilyName" column="kanji_family_name" />
+        <result property="kanjiGivenName" column="kanji_given_name" />
+        <result property="kanaFamilyName" column="kana_family_name" />
+        <result property="kanaGivenName" column="kana_given_name" />
+        <result property="birthday" column="birthday" />
+        <result property="tel" column="tel" />
+        <result property="zipCode" column="zip_code" />
+        <result property="address" column="address" />
+    </resultMap>
+
+    <!-- 会員情報を取得 -->
+    <select id="findOne" parameterType="String" resultMap="member-map">
+        SELECT
+        customer_no,
+        kanji_family_name,
+        kanji_given_name,
+        kana_family_name,
+        kana_given_name,
+        birthday,
+        tel,
+        zip_code,
+        address
+        FROM
+        caab_member
+        WHERE
+        customer_no = #{customerNo}
+    </select>
+
+    <!-- 会員情報を更新 -->
+    <update id="update" parameterType="Member">
+        UPDATE caab_member SET
+        kanji_family_name = #{kanjiFamilyName},
+        kanji_given_name =
+        #{kanjiGivenName},
+        kana_family_name = #{kanaFamilyName},
+        kana_given_name = #{kanaGivenName},
+        birthday = #{birthday},
+        tel = #{tel},
+        zip_code = #{zipCode},
+        address =
+        #{address}
+        WHERE
+        customer_no = #{customerNo}
+    </update>
+
+</mapper>

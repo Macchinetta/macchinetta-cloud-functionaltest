@@ -1,0 +1,26 @@
+# 環境依存しないフレームワークの設定値
+
+spring:
+  application:
+    name: prcd2
+
+cloud:
+  aws:
+    stack:
+      auto: false
+      
+# CloudFront Signature
+functionaltest:
+  cf:
+    signature:
+      protocol: https
+      secure: true
+      domain: tera-ci.net
+      cookiePath: /prcd
+      distributionDomain: www.tera-ci.net
+      privateKeyFilePath: ${user.home}/private-key.der
+      resourcePath: prcd/paid/*
+      keyPairId: APKAI5K77TUXVDZ7KYZQ
+      timeToActive: -10
+      timeToExpire: 10
+      allowedIpRange: 1.1.1.1/32

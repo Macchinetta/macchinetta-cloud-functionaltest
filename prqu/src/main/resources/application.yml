@@ -1,0 +1,13 @@
+# 環境依存しないフレームワークの設定値
+
+spring:
+  application:
+    name: prqu
+
+cloud:
+  aws:
+    stack:
+      auto: false
+    # SQS
+    sqs:
+      region: ap-northeast-1

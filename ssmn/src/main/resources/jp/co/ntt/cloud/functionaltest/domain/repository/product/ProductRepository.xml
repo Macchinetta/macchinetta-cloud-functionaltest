@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.co.ntt.cloud.functionaltest.domain.repository.product.ProductRepository">
+
+    <!-- 製品をIDから1件取得 -->
+    <select id="findOne" parameterType="String" resultType="Product">
+        SELECT
+            id,
+            name,
+            price
+        FROM
+            product
+        WHERE
+            id = #{productId}
+    </select>
+    
+    <!-- 製品をすべて取得 -->
+    <select id="selectAll" resultType="Product">
+        SELECT
+            id,
+            name,
+            price
+        FROM
+            product
+        ORDER BY id ASC
+    </select>
+</mapper>

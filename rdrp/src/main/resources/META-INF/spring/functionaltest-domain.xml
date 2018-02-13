@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:jdbc="http://www.springframework.org/schema/cloud/aws/jdbc"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/cloud/aws/jdbc http://www.springframework.org/schema/cloud/aws/jdbc/spring-cloud-aws-jdbc.xsd
+    ">
+
+    <tx:annotation-driven/>
+
+    <import resource="classpath:META-INF/spring/functionaltest-infra.xml" />
+    <import resource="classpath*:META-INF/spring/**/*-codelist.xml" />
+    
+    <context:component-scan base-package="jp.co.ntt.cloud.functionaltest.domain" />
+
+    <!-- AOP. -->
+    <bean id="resultMessagesLoggingInterceptor"
+        class="org.terasoluna.gfw.common.exception.ResultMessagesLoggingInterceptor">
+          <property name="exceptionLogger" ref="exceptionLogger" />
+    </bean>
+    <aop:config>
+        <aop:advisor advice-ref="resultMessagesLoggingInterceptor"
+                     pointcut="@within(org.springframework.stereotype.Service)" />
+    </aop:config>
+
+    <beans profile="default">
+        <jdbc:data-source db-instance-identifier="dev-functionaltest-public"
+            password="postgres" read-replica-support="true">
+            <jdbc:pool-attributes initialSize="1" maxActive="200" minIdle="10"
+                    testOnBorrow="true" validationQuery="SELECT 1" />
+        </jdbc:data-source>
+    </beans>
+
+    <beans profile="ci">
+        <jdbc:data-source db-instance-identifier="ci-functionaltest"
+            password="postgres" read-replica-support="true">
+            <jdbc:pool-attributes initialSize="1" maxActive="200" minIdle="10"
+                    testOnBorrow="true" validationQuery="SELECT 1" />
+        </jdbc:data-source>
+    </beans>
+
+</beans>

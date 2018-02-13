@@ -1,0 +1,46 @@
+# for development environment on local PC
+cloud:
+  aws:
+    # AWS common
+    region:
+      static: ap-northeast-1
+      auto: false
+# 認証情報の取得抑制
+    credentials:
+      instanceProfile: false
+
+# RDB(ローカルPC上のPostgreSQLを使用)
+database:
+  url: jdbc:postgresql://localhost:5432/functionaltest
+  username: postgres
+  password: postgres
+  driverClassName: org.postgresql.Driver
+
+# connection pool for RDB
+cp:
+  maxActive: 96
+  maxIdle: 16
+  minIdle: 16
+  initialSize: 16
+  maxWait: 60000
+  validationQuery: SELECT 1
+  testOnConnect: true
+  testWhileIdle: true
+  timeBetweenEvictionRunsMillis: 120000
+  removeAbandoned: true
+  removeAbandonedTimeout: 60
+
+# Logging
+logging:
+  path: /var/log/applogs
+
+# Redis
+spring:
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    pool:
+      max-active: 8
+      max-idle: 8
+      max-wait: -1
+      min-idle: 0

@@ -1,0 +1,33 @@
+# for CI environment on EC2
+    # AWS common
+cloud:
+  aws:
+    region:
+    auto: true
+
+# RDB(RDSを使用)
+database:
+  url: jdbc:postgresql://ci-functionaltest.XXXX.ap-northeast-1.rds.amazonaws.com:5432/functionaltest
+  username: postgres
+  password: postgres
+  driverClassName: org.postgresql.Driver
+
+# connection pool for RDB
+cp:
+  maxActive: 96
+  maxIdle: 16
+  minIdle: 16
+  initialSize: 16
+  maxWait: 60000
+  validationQuery: SELECT 1
+  testOnConnect: true
+  testWhileIdle: true
+  timeBetweenEvictionRunsMillis: 120000
+  removeAbandoned: true
+  removeAbandonedTimeout: 60
+
+# Logging
+logging:
+  path: /var/log/applogs/cwap
+  config: classpath:cwap-logback-spring.xml
+

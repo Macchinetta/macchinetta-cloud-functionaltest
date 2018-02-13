@@ -1,0 +1,12 @@
+# 環境依存しないフレームワークの設定値
+
+spring:
+  application:
+    name: caab2
+  session:
+    store-type: redis
+
+cloud:
+  aws:
+    stack:
+      auto: false

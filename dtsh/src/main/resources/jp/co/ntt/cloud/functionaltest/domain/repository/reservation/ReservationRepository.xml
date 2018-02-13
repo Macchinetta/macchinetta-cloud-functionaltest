@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.co.ntt.cloud.functionaltest.domain.repository.reservation.ReservationRepository">
+
+    <resultMap id="reservationResultMap" type="Reservation">
+        <id property="reserveNo" column="RESERVE_NO"/>
+        <result property="reserveDate" column="RESERVE_DATE" />
+        <result property="totalFare" column="TOTAL_FARE"/>
+        <result property="repMember.customerNo" column="REP_CUSTOMER_NO"/>
+        <result property="repMember.name" column="REP_NAME"/>
+        <result property="repMember.furiName" column="REP_FURI_NAME"/>
+    </resultMap>
+
+    <!-- 予約情報登録 -->
+    <insert id="insert" parameterType="Reservation">
+        INSERT INTO
+            RESERVATION
+            (
+                RESERVE_NO,
+                RESERVE_DATE,
+                TOTAL_FARE,
+                REP_CUSTOMER_NO,
+                REP_NAME,
+                REP_FURI_NAME
+            )
+            VALUES
+            (
+                #{reserveNo},
+                #{reserveDate},
+                #{totalFare},
+                #{repMember.customerNo},
+                #{repMember.name},
+                #{repMember.furiName}
+            )
+    </insert>
+    
+    <!-- 予約情報取得 -->
+    <select id="findOne" parameterType="String" resultMap="reservationResultMap">
+        SELECT
+            RESERVE_NO,
+            RESERVE_DATE,
+            TOTAL_FARE,
+            REP_CUSTOMER_NO,
+            REP_NAME,
+            REP_FURI_NAME
+        FROM
+            RESERVATION
+        WHERE
+            RESERVE_NO = #{reserveNo}
+    </select>
+    
+    <!-- 予約情報更新 -->
+    <update id="update" parameterType="Reservation">
+        UPDATE
+            RESERVATION
+        SET
+            RESERVE_DATE=#{reserveDate},
+            TOTAL_FARE=#{totalFare},
+            REP_CUSTOMER_NO=#{repMember.customerNo},
+            REP_NAME=#{repMember.name},
+            REP_FURI_NAME=#{repMember.furiName}
+        WHERE
+            RESERVE_NO=#{reserveNo}
+    </update>
+    
+    <!-- 予約情報削除  -->
+    <delete id="delete" parameterType="String">
+        DELETE FROM
+            RESERVATION
+        WHERE
+            RESERVE_NO = #{reserveNo}
+    </delete>
+</mapper>

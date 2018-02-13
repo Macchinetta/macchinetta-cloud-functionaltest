@@ -1,0 +1,33 @@
+# for development environment on local PC
+cloud:
+  aws:
+    # AWS common
+    region:
+      static: ap-northeast-1
+      auto: false
+# 認証情報の取得抑制
+    credentials:
+      instanceProfile: false
+
+# RDB(ローカルPC上のPostgreSQLを使用)
+rds:
+  dbInstanceIdentifier: dev-functionaltest-public
+
+# connection pool for RDB
+cp:
+  maxActive: 96
+  maxIdle: 16
+  minIdle: 16
+  initialSize: 16
+  maxWait: 60000
+  validationQuery: SELECT 1
+  testOnConnect: true
+  testWhileIdle: true
+  timeBetweenEvictionRunsMillis: 120000
+  removeAbandoned: true
+  removeAbandonedTimeout: 60
+
+# Logging
+logging:
+  path: /var/log/applogs
+

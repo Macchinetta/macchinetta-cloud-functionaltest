@@ -1,0 +1,14 @@
+# 環境依存しないフレームワークの設定値
+
+spring:
+  application:
+    name: atsc
+
+cloud:
+  aws:
+    stack:
+      auto: false
+
+custom:
+  metric:
+    auto-scaling-group-name: atscGroup

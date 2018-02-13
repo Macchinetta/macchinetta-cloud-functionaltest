@@ -1,0 +1,14 @@
+# 環境依存しないフレームワークの設定値
+
+spring:
+  application:
+    name: aspr
+
+cloud:
+  aws:
+    stack:
+      auto: false
+
+aspr:
+  sqs:
+    visibility-timeout: 30000

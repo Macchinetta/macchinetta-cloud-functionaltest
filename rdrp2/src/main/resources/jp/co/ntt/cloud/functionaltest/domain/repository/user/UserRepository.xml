@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.co.ntt.cloud.functionaltest.domain.repository.user.UserRepository">
+
+    <resultMap id="accountResultMap" type="User">
+        <id property="userId" column="user_id" />
+        <result property="firstName" column="first_name" />
+        <result property="lastName" column="last_name" />
+    </resultMap>
+
+        <select id="findAll" resultMap="accountResultMap">
+        SELECT
+            user_id,
+            first_name,
+            last_name
+        FROM
+            rdrp2_user
+        ORDER BY 
+            user_id
+        </select>
+        
+        <insert id="registerUser" parameterType="User">
+        INSERT INTO rdrp2_user (
+        last_name,
+        first_name
+        ) VALUES (
+        #{lastName},
+        #{firstName}
+        )
+        </insert>
+
+</mapper>

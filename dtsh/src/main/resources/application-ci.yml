@@ -1,0 +1,36 @@
+# for CI environment on EC2
+    # AWS common
+cloud:
+  aws:
+    region:
+    auto: true
+    # dynamoDB region
+    dynamodb:
+      region: ap-northeast-1
+
+# RDB(RDSを使用)  
+database:
+  common:
+    data-source:
+      driverClassName: org.postgresql.Driver
+      maxActive: 96
+      maxIdle: 16
+      minIdle: 0
+      maxWait: 90000
+      password: postgres
+      username: postgres
+  default:
+    schema:
+      name: default
+  data-sources:
+    - schema: default
+      url: jdbc:postgresql://ci-functionaltest.XXXX.ap-northeast-1.rds.amazonaws.com:5432/functionaltest
+    - schema: shard1
+      url: jdbc:postgresql://ci-functionaltest.XXXX.ap-northeast-1.rds.amazonaws.com:5432/functionaltest_shard1
+    - schema: shard2
+      url: jdbc:postgresql://ci-functionaltest.XXXX.ap-northeast-1.rds.amazonaws.com:5432/functionaltest_shard2
+      maxActive: 30
+
+# Logging
+logging:
+  path: /var/log/applogs

@@ -1,0 +1,12 @@
+target
+.settings
+.classpath
+.project
+.springBeans
+log
+evidence
+.bowerrc
+bower.json
+.idea
+*.iml
+eclipse

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:dynamodb="http://docs.socialsignin.org/schema/data/dynamodb"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://docs.socialsignin.org/schema/data/dynamodb http://docs.socialsignin.org/schema/data/dynamodb/spring-dynamodb.xsd">
+
+    <tx:annotation-driven />
+
+    <import resource="classpath:META-INF/spring/functionaltest-infra.xml" />
+
+    <context:component-scan base-package="jp.co.ntt.cloud.functionaltest.domain" />
+
+    <!-- AOP. -->
+    <bean id="resultMessagesLoggingInterceptor"
+        class="org.terasoluna.gfw.common.exception.ResultMessagesLoggingInterceptor">
+        <property name="exceptionLogger" ref="exceptionLogger" />
+    </bean>
+    <aop:config>
+        <aop:advisor advice-ref="resultMessagesLoggingInterceptor"
+            pointcut="@within(org.springframework.stereotype.Service)" />
+        <aop:advisor order="-1" advice-ref="accountShardInterceptor"
+            pointcut="@annotation(jp.co.ntt.cloud.functionaltest.domain.common.shard.annotation.ShardWithAccount)" />
+    </aop:config>
+
+    <!-- database common prop -->
+    <bean id="commonDatabaseProperties"
+        class="jp.co.ntt.cloud.functionaltest.domain.common.shard.datasource.model.CommonDatabaseProperties" />
+
+    <!-- database prop -->
+    <bean id="databaseProperties"
+        class="jp.co.ntt.cloud.functionaltest.domain.common.shard.datasource.model.DatabaseProperties" />
+
+    <!-- datasource factory -->
+    <bean id="dataSourceFactory"
+        class="jp.co.ntt.cloud.functionaltest.domain.common.shard.datasource.pool.TomcatDataSourceFactory" />
+
+    <!-- datasource builder -->
+    <bean id="routingDataSourceBuilder"
+        class="jp.co.ntt.cloud.functionaltest.domain.common.shard.datasource.RoutingDataSourceBuilder">
+        <constructor-arg index="0" ref="databaseProperties" />
+        <constructor-arg index="1"
+            ref="commonDatabaseProperties" />
+        <constructor-arg index="2" ref="dataSourceFactory" />
+    </bean>
+
+    <!-- datasource key holder -->
+    <bean id="dataSourceLookupKeyHolder"
+        class="jp.co.ntt.cloud.functionaltest.domain.common.shard.datasource.RoutingDataSourceLookUpKeyHolder" />
+
+    <!-- Routing datasource -->
+    <bean id="routingDataSource"
+        class="jp.co.ntt.cloud.functionaltest.domain.common.shard.datasource.RoutingDataSource">
+        <constructor-arg index="0"
+            ref="routingDataSourceBuilder" />
+        <constructor-arg index="1"
+            ref="dataSourceLookupKeyHolder" />
+    </bean>
+
+    <!-- Get the shard key -->
+    <bean id="shardAccountHelper"
+        class="jp.co.ntt.cloud.functionaltest.domain.common.shard.helper.ShardAccountHelper" />
+
+    <!-- Shard interceptor -->
+    <bean id="accountShardInterceptor"
+        class="jp.co.ntt.cloud.functionaltest.domain.common.shard.interceptor.AccountShardInterceptor">
+        <constructor-arg index="0"
+            ref="accountShardKeyRepository" />
+        <constructor-arg index="1" ref="shardAccountHelper" />
+        <constructor-arg index="2"
+            ref="dataSourceLookupKeyHolder" />
+    </bean>
+
+    <!-- シャードキーリゾルバ -->
+    <bean id="shardKeyResolver"
+        class="jp.co.ntt.cloud.functionaltest.domain.common.shard.datasource.DataSourceKeyResolver">
+        <constructor-arg index="0" ref="databaseProperties" />
+    </bean>
+
+    <!-- DynamoDB ファクトリクラス -->
+    <bean id="amazonDynamoDB"
+        class="jp.co.ntt.cloud.functionaltest.domain.common.DynamoDBClientFactory" factory-method="create">
+        <constructor-arg index ="0" value="${cloud.aws.dynamodb.region}" />
+    </bean>
+
+    <dynamodb:repositories
+        base-package="jp.co.ntt.cloud.functionaltest.domain.common.shard.repository"
+        amazon-dynamodb-ref="amazonDynamoDB" />
+</beans>

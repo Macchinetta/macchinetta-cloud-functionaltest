@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <springProfile name="logwarn">
+         <include resource="logback-logwarn-logger.xml"/>
+    </springProfile>
+    <springProfile name="default, loginfo">
+         <include resource="logback-loginfo-logger.xml"/>
+    </springProfile>
+</configuration>

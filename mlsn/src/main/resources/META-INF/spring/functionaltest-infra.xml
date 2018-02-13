@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aws-mail="http://www.springframework.org/schema/cloud/aws/mail"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd
+        http://www.springframework.org/schema/cloud/aws/mail
+        http://www.springframework.org/schema/cloud/aws/mail/spring-cloud-aws-mail.xsd
+    ">
+
+    <import resource="classpath:/META-INF/spring/functionaltest-env.xml" />
+
+    <!-- define the SqlSessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="configLocation" value="classpath:/META-INF/mybatis/mybatis-config.xml" />
+    </bean>
+
+    <!-- scan for Mappers -->
+    <mybatis:scan base-package="jp.co.ntt.cloud.functionaltest.domain.repository" />
+
+    <!-- mail support -->
+    <aws-mail:mail-sender id="sesMailSender" region="us-east-1"/>
+
+    <!-- Amazon SQS JMS -->
+    <bean id="cachingConnectionFactory"
+          class="org.springframework.jms.connection.CachingConnectionFactory" primary="true">
+        <property name="targetConnectionFactory" ref="connectionFactory" />
+        <property name="sessionCacheSize" value="10" />
+    </bean>
+
+    <bean id="connectionFactory" class="com.amazon.sqs.javamessaging.SQSConnectionFactory"
+          factory-bean="connectionFactoryBuilder" factory-method="build" />
+
+    <bean id="connectionFactoryBuilder"
+          class="com.amazon.sqs.javamessaging.SQSConnectionFactory$Builder">
+        <property name="regionName" value="us-east-1" />
+    </bean>
+
+</beans>

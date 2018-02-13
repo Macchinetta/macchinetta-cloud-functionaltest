@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+    xmlns:cache="http://www.springframework.org/schema/cache"
+    xmlns:c="http://www.springframework.org/schema/c"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+    ">
+
+    <bean id="dateFactory" class="org.terasoluna.gfw.common.date.jodatime.DefaultJodaTimeDateFactory" />
+
+    <bean id="realDataSource" class="org.apache.commons.dbcp2.BasicDataSource"
+        destroy-method="close">
+        <property name="driverClassName" value="${database.driverClassName}" />
+        <property name="url" value="${database.url}" />
+        <property name="username" value="${database.username}" />
+        <property name="password" value="${database.password}" />
+        <property name="defaultAutoCommit" value="false" />
+        <property name="maxTotal" value="${cp.maxActive}" />
+        <property name="maxIdle" value="${cp.maxIdle}" />
+        <property name="minIdle" value="${cp.minIdle}" />
+        <property name="maxWaitMillis" value="${cp.maxWait}" />
+    </bean>
+
+    <bean id="dataSource" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+        <constructor-arg index="0" ref="realDataSource" />
+    </bean>
+
+    <jdbc:initialize-database data-source="realDataSource" ignore-failures="ALL" >
+        <jdbc:script encoding="utf-8" location="classpath:/sqls/create_all_tables.sql" />
+        <jdbc:script encoding="utf-8" location="classpath:/sqls/insert_data.sql" />
+    </jdbc:initialize-database>
+
+    <bean id="transactionManager"
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+        <property name="rollbackOnCommitFailure" value="true" />
+    </bean>
+
+    <cache:annotation-driven order="-1" />
+
+    <bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager">
+        <constructor-arg ref="redisTemplateForCache" />
+    </bean>
+
+    <bean id="redisTemplateForCache" class="org.springframework.data.redis.core.RedisTemplate" p:connection-factory-ref="jedisConnectionFactoryForCache" />
+
+    <beans profile="ci">
+        <bean id="jedisConnectionFactoryForCache"
+            class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+            <constructor-arg index="0">
+                <bean
+                    class="org.springframework.data.redis.connection.RedisClusterConfiguration">
+                    <constructor-arg>
+                        <list>
+                            <value>${redis.cache.cluster.node1}</value>
+                        </list>
+                    </constructor-arg>
+                </bean>
+            </constructor-arg>
+            <constructor-arg index="1">
+                <bean class="redis.clients.jedis.JedisPoolConfig">
+                    <property name="maxTotal" value="${redis.cache.maxTotal}" />
+                    <property name="maxIdle" value="${redis.cache.maxIdle}" />
+                    <property name="maxWaitMillis" value="${redis.cache.maxWaitMillis}" />
+                    <property name="minIdle" value="${redis.cache.minIdle}" />
+                </bean>
+            </constructor-arg>
+        </bean>
+        <bean id="jedisConnectionFactoryForSession" primary="true"
+            class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+            <constructor-arg index="0">
+                <bean
+                    class="org.springframework.data.redis.connection.RedisClusterConfiguration">
+                    <constructor-arg>
+                        <list>
+                            <value>${redis.session.cluster.node1}</value>
+                        </list>
+                    </constructor-arg>
+                </bean>
+            </constructor-arg>
+            <constructor-arg index="1">
+                <bean class="redis.clients.jedis.JedisPoolConfig">
+                    <property name="maxTotal" value="${redis.session.maxTotal}" />
+                    <property name="maxIdle" value="${redis.session.maxIdle}" />
+                    <property name="maxWaitMillis" value="${redis.session.maxWaitMillis}" />
+                    <property name="minIdle" value="${redis.session.minIdle}" />
+                </bean>
+            </constructor-arg>
+        </bean>
+    </beans>
+
+    <beans profile="multiredis">
+        <bean id="jedisConnectionFactoryForCache"
+            class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" p:host-name="${redis.cache.server}" p:port="${redis.cache.port}">
+            <constructor-arg>
+                <bean class="redis.clients.jedis.JedisPoolConfig">
+                    <property name="maxTotal" value="${redis.cache.maxTotal}" />
+                    <property name="maxIdle" value="${redis.cache.maxIdle}" />
+                    <property name="maxWaitMillis" value="${redis.cache.maxWaitMillis}" />
+                    <property name="minIdle" value="${redis.cache.minIdle}" />
+                </bean>
+            </constructor-arg>
+        </bean>
+        <bean id="jedisConnectionFactoryForSession" primary="true"
+            class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" p:host-name="${redis.session.server}" p:port="${redis.session.port}">
+            <constructor-arg>
+                <bean class="redis.clients.jedis.JedisPoolConfig">
+                    <property name="maxTotal" value="${redis.session.maxTotal}" />
+                    <property name="maxIdle" value="${redis.session.maxIdle}" />
+                    <property name="maxWaitMillis" value="${redis.session.maxWaitMillis}" />
+                    <property name="minIdle" value="${redis.session.minIdle}" />
+                </bean>
+            </constructor-arg>
+        </bean>
+    </beans>
+    <beans profile="default">
+        <bean id="jedisConnectionFactoryForCache"
+            class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" p:host-name="${redis.cache.server}" p:port="${redis.cache.port}">
+            <constructor-arg>
+                <bean class="redis.clients.jedis.JedisPoolConfig">
+                    <property name="maxTotal" value="${redis.cache.maxTotal}" />
+                    <property name="maxIdle" value="${redis.cache.maxIdle}" />
+                    <property name="maxWaitMillis" value="${redis.cache.maxWaitMillis}" />
+                    <property name="minIdle" value="${redis.cache.minIdle}" />
+                </bean>
+            </constructor-arg>
+        </bean>
+        <bean id="jedisConnectionFactoryForSession" primary="true"
+            class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" p:host-name="${redis.session.server}" p:port="${redis.session.port}">
+            <constructor-arg>
+                <bean class="redis.clients.jedis.JedisPoolConfig">
+                    <property name="maxTotal" value="${redis.session.maxTotal}" />
+                    <property name="maxIdle" value="${redis.session.maxIdle}" />
+                    <property name="maxWaitMillis" value="${redis.session.maxWaitMillis}" />
+                    <property name="minIdle" value="${redis.session.minIdle}" />
+                </bean>
+            </constructor-arg>
+        </bean>
+    </beans>
+</beans>

@@ -1,0 +1,10 @@
+spring:
+  cloud:
+    config:
+      server:
+        git:
+          uri: http://10.0.1.196:8888/git/macchinetta-cloud/macchinetta-cloud-functionaltest.git
+          username: cloudtest
+          password: cloudtest
+          clone-on-start: true
+          searchPaths: smpl/src/main/resources

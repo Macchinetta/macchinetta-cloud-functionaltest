@@ -1,0 +1,50 @@
+# for development environment on local PC
+cloud:
+  aws:
+    # AWS common
+    region:
+      static: ap-northeast-1
+      auto: false
+# 認証情報の取得抑制
+    credentials:
+      instanceProfile: false
+
+# RDB(ローカルPC上のPostgreSQLを使用)
+rds:
+  dbInstanceIdentifier: dev-functionaltest-public
+
+# RDB(ローカルPC上のPostgreSQLを使用)
+database:
+  # RDSのリージョン設定
+  rdsRegion: ${cloud.aws.region.static}
+  common:
+    data-source:
+      # 各DBの共通設定
+      driverClassName: org.postgresql.Driver
+      maxActive: 96
+      maxIdle: 16
+      minIdle: 16
+      initialSize: 16
+      maxWait: 90000
+      password: postgres
+      username: postgres
+      validationQuery: SELECT 1
+      testOnConnect: true
+      testWhileIdle: true
+      # Amazon failover の最大値
+      # 参考 [http://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html]
+      timeBetweenEvictionRunsMillis: 120000
+      removeAbandoned: true
+      removeAbandonedTimeout: 60
+  default:
+    schema: 
+      name: default
+  data-sources:
+    - schema: default
+      dbInstanceIdentifier: dev-functionaltest-public
+      driverUrlOption: socketTimeout=120&connectTimeout=120
+
+# Logging
+logging:
+  path: /var/log/applogs
+

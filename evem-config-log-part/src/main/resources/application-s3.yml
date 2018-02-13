@@ -1,0 +1,7 @@
+spring:
+  cloud:
+    config:
+      server:
+        s3:
+          uri: s3://functionaltest.external.properties.config.repo
+          searchPaths: evem

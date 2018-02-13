@@ -1,0 +1,24 @@
+spring:
+  cloud:
+    config:
+      server:
+        s3:
+          uri: s3://functionaltest.external.properties.config.repo
+          searchPaths: evem
+
+# Config Server 設定値
+server:
+  port: 8888
+security:
+  user:
+    name: user
+    password: user
+
+cloud.aws:
+  stack.auto: false
+# 認証情報の取得抑制
+  credentials:
+    instanceProfile: false
+
+# シャットダウン用エンドポイント(CIテスト用)
+endpoints.shutdown.enabled: true

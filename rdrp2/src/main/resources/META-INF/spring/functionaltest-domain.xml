@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:jdbc="http://www.springframework.org/schema/cloud/aws/jdbc"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/cloud/aws/jdbc http://www.springframework.org/schema/cloud/aws/jdbc/spring-cloud-aws-jdbc.xsd
+    ">
+
+    <tx:annotation-driven/>
+
+    <import resource="classpath:META-INF/spring/functionaltest-infra.xml" />
+    <import resource="classpath*:META-INF/spring/**/*-codelist.xml" />
+    
+    <context:component-scan base-package="jp.co.ntt.cloud.functionaltest.domain" />
+
+    <!-- AOP. -->
+    <bean id="resultMessagesLoggingInterceptor"
+        class="org.terasoluna.gfw.common.exception.ResultMessagesLoggingInterceptor">
+          <property name="exceptionLogger" ref="exceptionLogger" />
+    </bean>
+    <aop:config>
+        <aop:advisor advice-ref="resultMessagesLoggingInterceptor"
+                     pointcut="@within(org.springframework.stereotype.Service)" />
+    </aop:config>
+
+    <bean id="dataSourceFactory"
+        class="jp.co.ntt.cloud.functionaltest.domain.common.datasource.pool.AmazonRdsReadReplicaTomcatDataSourceFactory" />
+<!-- 
+    <bean id = "dataSource" factory-bean = "dataSourceFactory" factory-method = "create" >
+        <property name="dataSourceProperties" ref="databaseProperties"/>
+        <property name="commonDataSourceProperties" value="commonDatabaseProperties" />
+    </bean>
+ -->
+    <bean id="databaseProperties"
+        class="jp.co.ntt.cloud.functionaltest.domain.common.datasource.model.DatabaseProperties" />
+
+    <bean id="commonDatabaseProperties"
+        class="jp.co.ntt.cloud.functionaltest.domain.common.datasource.model.CommonDatabaseProperties" />
+
+
+    <bean id="routingDataSourceBuilder"
+        class="jp.co.ntt.cloud.functionaltest.domain.common.datasource.RoutingDataSourceBuilder">
+        <constructor-arg index="0" ref="databaseProperties" />
+        <constructor-arg index="1"
+            ref="commonDatabaseProperties" />
+        <constructor-arg index="2" ref="dataSourceFactory" />
+    </bean>
+
+    <bean id="routingDataSource"
+        class="jp.co.ntt.cloud.functionaltest.domain.common.datasource.RoutingDataSource">
+        <constructor-arg index="0"
+            ref="routingDataSourceBuilder" />
+        <constructor-arg index="1"
+            ref="dataSourceLookupKeyHolder" />
+    </bean>
+
+    <alias name="routingDataSource" alias="dataSource" />
+
+    <bean id="shardKeyResolver"
+        class="jp.co.ntt.cloud.functionaltest.domain.common.datasource.DataSourceKeyResolver">
+        <constructor-arg index="0" ref="databaseProperties" />
+    </bean>
+
+    <bean id="dataSourceLookupKeyHolder"
+        class="jp.co.ntt.cloud.functionaltest.domain.common.datasource.RoutingDataSourceLookupKeyHolder" />
+
+</beans>

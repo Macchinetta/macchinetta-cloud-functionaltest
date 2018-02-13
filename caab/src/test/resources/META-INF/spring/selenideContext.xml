@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+    ">
+    <context:property-placeholder
+        location="classpath*:META-INF/spring/*.properties" />
+
+    <bean id="objectMapper" class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
+        <property name="dateFormat">
+            <bean class="com.fasterxml.jackson.databind.util.StdDateFormat" />
+        </property>
+    </bean>
+
+    <bean id="redisTemplateForCache" class="org.springframework.data.redis.core.RedisTemplate" p:connection-factory-ref="jedisConnectionFactoryForCache" />
+
+    <beans profile="ci">
+        <bean id="jedisConnectionFactoryForCache"
+            class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+            <constructor-arg>
+                <bean
+                    class="org.springframework.data.redis.connection.RedisClusterConfiguration">
+                    <constructor-arg>
+                        <list>
+                            <value>${test.redis.cache.cluster.node1}</value>
+                        </list>
+                    </constructor-arg>
+                </bean>
+            </constructor-arg>
+        </bean>
+    </beans>
+
+    <beans profile="default">
+        <bean id="jedisConnectionFactoryForCache"
+            class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" p:host-name="${test.redis.cache.server}" p:port="${test.redis.cache.port}">
+        </bean>
+    </beans>
+</beans>

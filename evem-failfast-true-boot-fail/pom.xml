@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>evem-failfast-true-boot-fail</artifactId>
+    <packaging>war</packaging>
+    <parent>
+        <groupId>jp.co.ntt.cloud.functionaltest</groupId>
+        <artifactId>macchinetta-cloud-functionaltest</artifactId>
+        <version>1.0.0.RELEASE</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <name>Functional test for Macchinetta cloud guideline (${project.artifactId})</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>start-container</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <configuration>
+                            <timeout>130000</timeout>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop-container</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <configuration>
+                        <type>standalone</type>
+                        <properties>
+                            <cargo.servlet.port>${cargo.servlet.port}</cargo.servlet.port>
+                            <cargo.rmi.port>${cargo.rmi.port}</cargo.rmi.port>
+                            <cargo.tomcat.ajp.port>${cargo.tomcat.ajp.port}</cargo.tomcat.ajp.port>
+                            <cargo.jvmargs>
+                                ${cargo.jvmargs}
+                            </cargo.jvmargs>
+                            <cargo.logging>low</cargo.logging>
+                        </properties>
+                    </configuration>
+                    <container>
+                        <containerId>tomcat8x</containerId>
+                        <zipUrlInstaller>
+                            <url>http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.16/bin/apache-tomcat-8.5.16.zip</url> <!-- テストで使うTomcat -->
+                        </zipUrlInstaller>
+                    </container>
+                    <deployables>
+                        <deployable>
+                            <location>${project.build.directory}/${project.artifactId}.war</location>
+                            <type>war</type>
+                            <pingURL><![CDATA[http://localhost:${cargo.servlet.port}/${project.artifactId}/]]></pingURL>
+                            <pingTimeout>3600</pingTimeout>
+                        </deployable>
+                    </deployables>
+                    <wait>false</wait>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <properties>
+        <!-- == Maven Plugin Versions == -->
+        <!-- == Dependency Versions == -->
+        <!-- == Project Properties == -->
+
+        <project.root.basedir>${project.parent.basedir}</project.root.basedir>
+    </properties>
+    <profiles>
+        <profile>
+            <id>local</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <cargo.servlet.port>8082</cargo.servlet.port>
+                <cargo.rmi.port>58091</cargo.rmi.port>
+                <cargo.tomcat.ajp.port>58092</cargo.tomcat.ajp.port>
+                <cargo.jvmargs>
+                  -Dspring.profiles.active=default
+                  -Dcloud.aws.region.static=ap-northeast-1
+                  -Dcloud.aws.region.auto=false
+                </cargo.jvmargs>
+                <mvn.command.path><![CDATA[C:\apache-maven-3.5.0\bin\mvn.cmd]]></mvn.command.path>
+            </properties>
+        </profile>
+        <profile>
+            <id>ci</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <cargo.servlet.port>8082</cargo.servlet.port>
+                <cargo.rmi.port>58091</cargo.rmi.port>
+                <cargo.tomcat.ajp.port>58092</cargo.tomcat.ajp.port>
+                <cargo.jvmargs>-Dspring.profiles.active=ci</cargo.jvmargs>
+                <mvn.command.path><![CDATA[/opt/maven/apache-maven-3.3.9/bin/mvn]]></mvn.command.path>
+            </properties>
+        </profile>
+    </profiles>
+</project>

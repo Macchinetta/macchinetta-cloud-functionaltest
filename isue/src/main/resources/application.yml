@@ -1,0 +1,10 @@
+# 環境依存しないフレームワークの設定値
+
+spring:
+  application:
+    name: isue
+
+cloud:
+  aws:
+    stack:
+      auto: false

@@ -1,0 +1,32 @@
+# for CI environment on EC2
+    # AWS common
+cloud:
+  aws:
+    region:
+      auto: true
+# 認証情報の取得抑制
+    credentials:
+      instanceProfile: false
+      profileName: 
+
+# RDB(ローカルPC上のPostgreSQLを使用)
+rds:
+  dbInstanceIdentifier: ci-functionaltest
+
+# connection pool for RDB
+cp:
+  maxActive: 96
+  maxIdle: 16
+  minIdle: 16
+  initialSize: 16
+  maxWait: 60000
+  validationQuery: SELECT 1
+  testOnConnect: true
+  testWhileIdle: true
+  timeBetweenEvictionRunsMillis: 120000
+  removeAbandoned: true
+  removeAbandonedTimeout: 60
+
+# Logging
+logging:
+  path: /var/log/applogs

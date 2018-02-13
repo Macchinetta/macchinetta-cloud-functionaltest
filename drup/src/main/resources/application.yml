@@ -1,0 +1,18 @@
+# 環境依存しないフレームワークの設定値
+
+spring:
+  application:
+    name: drup
+
+cloud:
+  aws:
+    stack:
+      auto: false
+      
+functionaltest:
+    upload:
+      bucketName: functionaltest.direct.upload
+      roleName: s3-direct
+      roleSessionName: s3-direct01
+      durationseconds: 5
+      limitBytes: 819200

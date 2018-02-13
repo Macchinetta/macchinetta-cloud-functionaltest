@@ -1,0 +1,13 @@
+# 環境依存しないフレームワークの設定値
+
+spring:
+  application:
+    name: dtsh
+  # データソースの初期化は RoutingDataSourceBuilder#afterPropertiesSet() で実施するためfalseに設定
+  datasource:
+    initialize: false
+
+cloud:
+  aws:
+    stack:
+      auto: false

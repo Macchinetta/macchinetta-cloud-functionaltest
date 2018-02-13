@@ -1,0 +1,31 @@
+# 環境依存しないフレームワークの設定値
+
+spring:
+  application:
+    name: hlch-dynamo-down
+
+management:
+  context-path: /management
+  # Disable security for actuator endpoints
+  security:
+    enabled: false
+
+
+endpoints:
+  # Set all actuator endpoints disabled by default
+  enabled: false
+  health:
+    # Disable sensitive filter for the health endpoint
+    sensitive: false
+    # Enable only health endpoint
+    enabled: true  
+
+cloud:
+  aws:
+    stack:
+      auto: false
+
+amazon:
+  dynamodb:
+    # DynamoDBのヘルスチェック結果がDOWNとなるように存在しないエンドポイントを設定
+    endpoint: https://dynamodb.this-is-dummy-region.amazonaws.com
