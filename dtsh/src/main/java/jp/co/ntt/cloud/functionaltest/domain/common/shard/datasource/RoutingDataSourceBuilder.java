@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.common.shard.datasource;
 
@@ -33,10 +34,9 @@ import jp.co.ntt.cloud.functionaltest.domain.common.shard.datasource.model.Datab
 
 /**
  * ルーティングデータソースを作成するビルダ。
- *
  * @author NTT 電電太郎
  */
-public class RoutingDataSourceBuilder implements InitializingBean{
+public class RoutingDataSourceBuilder implements InitializingBean {
 
     /**
      * デフォルトスキーマ名。<br>
@@ -83,7 +83,8 @@ public class RoutingDataSourceBuilder implements InitializingBean{
     private DefaultListableBeanFactory factory;
 
     public RoutingDataSourceBuilder(DatabaseProperties databaseProperties,
-            CommonDatabaseProperties commonDatabaseProperties, DataSourceFactory dataSourceFactory) {
+            CommonDatabaseProperties commonDatabaseProperties,
+            DataSourceFactory dataSourceFactory) {
         this.databaseProperties = databaseProperties;
         this.commonDatabaseProperties = commonDatabaseProperties;
         this.dataSourceFactory = dataSourceFactory;
@@ -94,7 +95,8 @@ public class RoutingDataSourceBuilder implements InitializingBean{
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        List<Map<String, String>> dataSources = databaseProperties.getDataSources();
+        List<Map<String, String>> dataSources = databaseProperties
+                .getDataSources();
 
         Map<Object, Object> targetDataSources = new HashMap<>();
 
@@ -102,33 +104,41 @@ public class RoutingDataSourceBuilder implements InitializingBean{
 
         for (Map<String, String> dataSourceProperties : dataSources) {
             // プロパティファイルの database.data-soruces.schema の値を取得
-            String sourceKey = dataSourceProperties.get(ShardKeyResolver.SCHEMA_KEY_NAME);
+            String sourceKey = dataSourceProperties.get(
+                    ShardKeyResolver.SCHEMA_KEY_NAME);
             try {
-                javax.sql.DataSource source = dataSourceFactory.create(dataSourceProperties,
-                        commonDatabaseProperties.getDataSource());
+                javax.sql.DataSource source = dataSourceFactory.create(
+                        dataSourceProperties, commonDatabaseProperties
+                                .getDataSource());
                 factory.registerSingleton(sourceKey, source);
             } catch (IllegalStateException e) {
-                throw new SystemException(LogMessages.E_AR_A0_L9007.getCode(),
-                        LogMessages.E_AR_A0_L9007.getMessage(sourceKey), e);
+                throw new SystemException(LogMessages.E_AR_A0_L9007
+                        .getCode(), LogMessages.E_AR_A0_L9007.getMessage(
+                                sourceKey), e);
             } catch (Exception e) {
-                throw new SystemException(LogMessages.E_AR_A0_L9008.getCode(), LogMessages.E_AR_A0_L9008.getCode(), e);
+                throw new SystemException(LogMessages.E_AR_A0_L9008
+                        .getCode(), LogMessages.E_AR_A0_L9008.getCode(), e);
             }
 
             if (databaseDefaultSchemaName.equals(sourceKey)) {
                 // 非シャード のデータソースを保持する。
-                this.defaultTargetDataSource = applicationContext.getBean(sourceKey);
+                this.defaultTargetDataSource = applicationContext.getBean(
+                        sourceKey);
                 defaultTargetDataSourceFlg = true;
             } else {
                 // シャードのデータソースを保持する。
-                targetDataSources.put(sourceKey, applicationContext.getBean(sourceKey));
+                targetDataSources.put(sourceKey, applicationContext.getBean(
+                        sourceKey));
             }
         }
 
         if (!defaultTargetDataSourceFlg) {
-            throw new SystemException(LogMessages.E_AR_A0_L9006.getCode(), LogMessages.E_AR_A0_L9006.getMessage());
+            throw new SystemException(LogMessages.E_AR_A0_L9006
+                    .getCode(), LogMessages.E_AR_A0_L9006.getMessage());
         }
         if (targetDataSources.isEmpty()) {
-            throw new SystemException(LogMessages.E_AR_A0_L9005.getCode(), LogMessages.E_AR_A0_L9005.getMessage());
+            throw new SystemException(LogMessages.E_AR_A0_L9005
+                    .getCode(), LogMessages.E_AR_A0_L9005.getMessage());
         }
         this.targetDataSources = targetDataSources;
 
@@ -136,7 +146,6 @@ public class RoutingDataSourceBuilder implements InitializingBean{
 
     /**
      * シャードのデータソースを取得する。
-     *
      * @return シャードのデータソース
      */
     public Map<Object, Object> getTargetDataSources() {
@@ -145,7 +154,6 @@ public class RoutingDataSourceBuilder implements InitializingBean{
 
     /**
      * 非シャードのデータソースを取得する。
-     *
      * @return 非シャードのデータソース
      */
     public Object getDefaultTargetSource() {

@@ -12,14 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.model;
 
 public class StoredTransactionToken {
     private String tokenName;
+
     private String tokenKey;
+
     private String tokenValue;
+
     private String sessionId;
+
     private long sequence;
 
     public String getTokenName() {
@@ -54,12 +59,12 @@ public class StoredTransactionToken {
         this.sessionId = sessionId;
     }
 
-	public long getSequence() {
-		return sequence;
-	}
+    public long getSequence() {
+        return sequence;
+    }
 
-	public void setSequence(long sequence) {
-		this.sequence = sequence;
-	}
+    public void setSequence(long sequence) {
+        this.sequence = sequence;
+    }
 
 }

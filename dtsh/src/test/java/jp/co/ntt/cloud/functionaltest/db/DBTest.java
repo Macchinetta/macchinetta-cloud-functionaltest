@@ -12,13 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.db;
 
-import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.Selenide.screenshot;
-import static io.restassured.RestAssured.given;
-import static org.junit.Assert.assertNotEquals;
+import static com.codeborne.selenide.Selenide.*;
+import static io.restassured.RestAssured.*;
+import static org.junit.Assert.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -39,7 +39,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.WebDriverRunner;
 
+import io.github.bonigarcia.wdm.FirefoxDriverManager;
 import io.restassured.RestAssured;
 import jp.co.ntt.cloud.functionaltest.domain.model.Member;
 import jp.co.ntt.cloud.functionaltest.domain.model.Reservation;
@@ -48,10 +50,10 @@ import junit.framework.TestCase;
 
 /**
  * @author NTT 電電太郎
- *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:META-INF/spring/selenideContext.xml" })
+@ContextConfiguration(locations = {
+        "classpath:META-INF/spring/selenideContext.xml" })
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DBTest extends TestCase {
 
@@ -66,6 +68,12 @@ public class DBTest extends TestCase {
      */
     @Value("${path.report}")
     private String reportPath;
+
+    /*
+     * geckoドライバーバージョン
+     */
+    @Value("${selenide.geckodriverVersion}")
+    private String geckodriverVersion;
 
     @Inject
     private DBUtil dbUtil;
@@ -86,6 +94,16 @@ public class DBTest extends TestCase {
     @Override
     @Before
     public void setUp() {
+
+        // geckoドライバーの設定
+        if (System.getProperty("webdriver.gecko.driver") == null) {
+            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+                    .setup();
+        }
+
+        // ブラウザの設定
+        Configuration.browser = WebDriverRunner.MARIONETTE;
+
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
         // RestAssuredのベースURI設定
@@ -98,7 +116,6 @@ public class DBTest extends TestCase {
 
     /**
      * デフォルトDBに会員情報が登録されていること
-     *
      * @throws SQLException
      * @throws ClassNotFoundException
      */
@@ -110,9 +127,9 @@ public class DBTest extends TestCase {
         // デフォルト DBに接続して会員情報が登録されていることを確認する。
         try ( // @formatter:off
                 Connection conn = dbUtil.getDefaultConnection();
-                Statement stmt = conn.createStatement();
-                ResultSet rset = stmt.executeQuery(SQLConst.MEMBER.SELECT_ALL);){
-             // @formatter:on
+                Statement stmt = conn.createStatement(); ResultSet rset = stmt
+                        .executeQuery(SQLConst.MEMBER.SELECT_ALL);) {
+            // @formatter:on
 
             int index = 0;
             while (rset.next()) {
@@ -136,7 +153,6 @@ public class DBTest extends TestCase {
 
     /**
      * デフォルトDBから1件取得できること
-     *
      * @throws SQLException
      */
     @Test
@@ -144,7 +160,8 @@ public class DBTest extends TestCase {
         // 取得する会員情報
         Member expected = expectedMembers.get(0);
 
-        HelloPage helloPage = open(applicationContextUrl + "member/get?customerNo=" + expected.getCustomerNo(),
+        HelloPage helloPage = open(applicationContextUrl
+                + "member/get?customerNo=" + expected.getCustomerNo(),
                 HelloPage.class);
 
         AssertHelper.assertViewMember(expected, helloPage);
@@ -154,7 +171,6 @@ public class DBTest extends TestCase {
 
     /**
      * デフォルトDBから1件の会員情報を更新(会員氏名(ふりがな)を"-"にする)できること
-     *
      * @throws SQLException
      * @throws ClassNotFoundException
      */
@@ -170,9 +186,11 @@ public class DBTest extends TestCase {
         // デフォルト DBに接続して会員情報が更新されていることを確認する。
         try ( // @formatter:off
                 Connection conn = dbUtil.getDefaultConnection();
-                PreparedStatement pstmt = conn.prepareStatement(SQLConst.MEMBER.SELECT_FIND_ONE,
-                        ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);){
-             // @formatter:on
+                PreparedStatement pstmt = conn.prepareStatement(
+                        SQLConst.MEMBER.SELECT_FIND_ONE,
+                        ResultSet.TYPE_SCROLL_SENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE);) {
+            // @formatter:on
 
             pstmt.setString(1, expected.getCustomerNo());
             try (ResultSet rset = pstmt.executeQuery()) {
@@ -188,7 +206,6 @@ public class DBTest extends TestCase {
 
     /**
      * デフォルトDBから1件削除できること
-     *
      * @throws SQLException
      * @throws ClassNotFoundException
      */
@@ -203,9 +220,11 @@ public class DBTest extends TestCase {
         // デフォルト DBに接続して会員情報が更新されていることを確認する。
         try ( // @formatter:off
                 Connection conn = dbUtil.getDefaultConnection();
-                PreparedStatement pstmt = conn.prepareStatement(SQLConst.MEMBER.SELECT_FIND_ONE,
-                        ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);){
-              // @formatter:on
+                PreparedStatement pstmt = conn.prepareStatement(
+                        SQLConst.MEMBER.SELECT_FIND_ONE,
+                        ResultSet.TYPE_SCROLL_SENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE);) {
+            // @formatter:on
 
             pstmt.setString(1, expected.getCustomerNo());
             try (ResultSet rset = pstmt.executeQuery()) {
@@ -220,7 +239,6 @@ public class DBTest extends TestCase {
 
     /**
      * シャード1に予約番号が偶数の予約情報、シャード2に予約番号奇数の予約情報が登録されていること(Serviceの引数が1つの時)
-     *
      * @throws SQLException
      * @throws ClassNotFoundException
      */
@@ -239,7 +257,6 @@ public class DBTest extends TestCase {
 
     /**
      * シャード1,2から1件の予約情報を更新(旅行代金を0にする)できること(Serviceの引数が1つの時)
-     *
      * @throws SQLException
      * @throws ClassNotFoundException
      */
@@ -251,7 +268,6 @@ public class DBTest extends TestCase {
 
     /**
      * シャード1,2から1件の予約情報を削除できること(Serviceの引数が1つの時)
-     *
      * @throws SQLException
      * @throws ClassNotFoundException
      */
@@ -263,7 +279,6 @@ public class DBTest extends TestCase {
 
     /**
      * シャード1に予約番号が偶数の予約情報、シャード2に予約番号奇数の予約情報が登録されていること(Serviceの引数が2つの時)
-     *
      * @throws SQLException
      * @throws ClassNotFoundException
      */
@@ -282,7 +297,6 @@ public class DBTest extends TestCase {
 
     /**
      * シャード1,2から1件の予約情報を更新(旅行代金を0にする)できること(Serviceの引数が2つの時)
-     *
      * @throws SQLException
      * @throws ClassNotFoundException
      */
@@ -293,7 +307,6 @@ public class DBTest extends TestCase {
 
     /**
      * シャード1,2から1件の予約情報を削除できること(Serviceの引数が2つの時)
-     *
      * @throws SQLException
      * @throws ClassNotFoundException
      */
@@ -304,7 +317,6 @@ public class DBTest extends TestCase {
 
     /**
      * {@link @ShardWithAccount}を付与したメソッドに引数がない時、デフォルトDBにアクセスすること
-     *
      * @throws SQLException
      * @throws ClassNotFoundException
      */
@@ -317,9 +329,10 @@ public class DBTest extends TestCase {
                 Connection conn = dbUtil.getDefaultConnection();
                 PreparedStatement pstmt = conn.prepareStatement(
                         SQLConst.MEMBER.SELECT_ALL,
-                        ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-                ResultSet rset = pstmt.executeQuery();) {
-             // @formatter:on
+                        ResultSet.TYPE_SCROLL_SENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE); ResultSet rset = pstmt
+                                .executeQuery();) {
+            // @formatter:on
 
             // 取得件数が0件であることの確認
             rset.last();

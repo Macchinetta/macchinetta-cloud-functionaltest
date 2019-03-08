@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.listener;
 
@@ -30,7 +31,8 @@ import javax.inject.Inject;
 @Component
 public class ReservationMessageListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(ReservationMessageListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            ReservationMessageListener.class);
 
     @Inject
     ReservationInspectionService reservationInspectionService;
@@ -39,9 +41,11 @@ public class ReservationMessageListener {
     public void receive(Reservation reservation,
             @Header(JmsHeaders.MESSAGE_ID) String messageId) {
         try {
-            reservationInspectionService.inspectAndNotify(reservation, messageId);
+            reservationInspectionService.inspectAndNotify(reservation,
+                    messageId);
         } catch (DuplicateReceivingException e) {
-            logger.warn("*** Detected duplicate receive messageId [{}]", e.getMessage());
+            logger.warn("*** Detected duplicate receive messageId [{}]", e
+                    .getMessage());
         }
     }
 }

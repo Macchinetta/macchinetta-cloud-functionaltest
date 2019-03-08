@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
@@ -28,7 +29,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.StringUtils;
 
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.WebDriverRunner;
 
+import io.github.bonigarcia.wdm.FirefoxDriverManager;
 import jp.co.ntt.cloud.functionaltest.selenide.page.PriorityQueuePage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
 import junit.framework.TestCase;
@@ -56,6 +59,12 @@ public class PriorityQueueTest extends TestCase {
     private String reportPath;
 
     /*
+     * geckoドライバーバージョン
+     */
+    @Value("${selenide.geckodriverVersion}")
+    private String geckodriverVersion;
+
+    /*
      * ユーザID
      */
     private String userId;
@@ -67,6 +76,19 @@ public class PriorityQueueTest extends TestCase {
 
     @Before
     public void setUp() {
+
+        // geckoドライバーの設定
+        if (System.getProperty("webdriver.gecko.driver") == null) {
+            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+                    .setup();
+        }
+
+        // ブラウザの設定
+        Configuration.browser = WebDriverRunner.MARIONETTE;
+
+        // タイムアウトの設定
+        Configuration.timeout = 1200000;
+
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
     }
@@ -74,7 +96,8 @@ public class PriorityQueueTest extends TestCase {
     @After
     public void tearDown() {
         // ログイン状態の場合ログアウトする。
-        PriorityQueuePage helloPage = open(applicationContextUrl, PriorityQueuePage.class);
+        PriorityQueuePage helloPage = open(applicationContextUrl,
+                PriorityQueuePage.class);
         if (helloPage.isLoggedIn()) {
             helloPage.logout();
         }
@@ -92,8 +115,7 @@ public class PriorityQueueTest extends TestCase {
 
         // テスト実行
         PriorityQueuePage priorityQueuePage = open(applicationContextUrl,
-                TopPage.class)
-                .login(userId, password);
+                TopPage.class).login(userId, password);
 
         // アサーション
         $$("p").get(1).shouldHave(text("Hanako Denden"));
@@ -116,9 +138,8 @@ public class PriorityQueueTest extends TestCase {
         password = "aaaaa11111";
 
         // テスト実行
-        PriorityQueuePage priorityQueuePage =
-        open(applicationContextUrl, TopPage.class)
-        .login(userId, password);
+        PriorityQueuePage priorityQueuePage = open(applicationContextUrl,
+                TopPage.class).login(userId, password);
 
         // アサーション
         $$("p").get(1).shouldHave(text("Taro Denden"));
@@ -128,7 +149,6 @@ public class PriorityQueueTest extends TestCase {
         } else {
             assertTrue("通常会員のため、メッセージは10秒遅延処理される。", Long.valueOf(val) >= 10);
         }
-
 
         // 証跡取得
         screenshot("lowPriorityQueueTest");

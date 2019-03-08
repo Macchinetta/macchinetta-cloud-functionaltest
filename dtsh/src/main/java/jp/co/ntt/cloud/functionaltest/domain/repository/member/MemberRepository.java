@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.repository.member;
 
@@ -19,7 +20,6 @@ import jp.co.ntt.cloud.functionaltest.domain.model.Member;
 
 /**
  * 会員情報テーブルにアクセスするリポジトリインターフェース。
- *
  * @author NTT 電電太郎
  */
 public interface MemberRepository {
@@ -36,33 +36,26 @@ public interface MemberRepository {
 
     /**
      * 会員情報を1件取得する。
-     *
-     * @param customerNo
-     *            会員番号
+     * @param customerNo 会員番号
      * @return 会員情報
      */
     Member findOne(String customerNo);
 
     /**
      * 会員情報を削除する。
-     *
-     * @param customerNo
-     *            会員番号
+     * @param customerNo 会員番号
      * @return 会員情報
      */
     int delete(String customerNo);
 
     /**
      * 会員情報を更新する
-     *
-     * @param customerNo
-     *            会員番号
+     * @param customerNo 会員番号
      */
     int update(Member member);
 
     /**
      * 会員情報を全件削除する。
-     *
      */
     void deleteAll();
 

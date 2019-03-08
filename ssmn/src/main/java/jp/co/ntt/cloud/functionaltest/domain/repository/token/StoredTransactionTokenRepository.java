@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.repository.token;
 
@@ -31,8 +32,8 @@ public interface StoredTransactionTokenRepository {
 
     void insert(StoredTransactionToken token);
 
-    void deleteOlderThanNLatest(@Param("tokenName") String tokenName, @Param("sessionId") String sessionId,
-                                @Param("num") int num);
+    void deleteOlderThanNLatest(@Param("tokenName") String tokenName,
+            @Param("sessionId") String sessionId, @Param("num") int num);
 
     void deleteBySessionId(@Param("sessionId") String sessionId);
 }

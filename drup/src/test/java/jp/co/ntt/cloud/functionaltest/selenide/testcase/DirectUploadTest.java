@@ -12,13 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.Selenide.screenshot;
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selenide.*;
 
 import java.io.File;
 import java.io.InputStream;
@@ -36,14 +35,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.WebDriverRunner;
 
+import io.github.bonigarcia.wdm.FirefoxDriverManager;
 import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.UploadPage;
 import junit.framework.TestCase;
@@ -64,6 +64,12 @@ public class DirectUploadTest extends TestCase {
      */
     @Value("${path.report}")
     private String reportPath;
+
+    /*
+     * geckoドライバーバージョン
+     */
+    @Value("${selenide.geckodriverVersion}")
+    private String geckodriverVersion;
 
     /*
      * ユーザID
@@ -88,9 +94,20 @@ public class DirectUploadTest extends TestCase {
 
     @Before
     public void setUp() {
+
+        // geckoドライバーの設定
+        if (System.getProperty("webdriver.gecko.driver") == null) {
+            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+                    .setup();
+        }
+
+        // ブラウザの設定
+        Configuration.browser = WebDriverRunner.MARIONETTE;
+
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
         Configuration.timeout = 10000;
+        Configuration.pollingInterval = 500;
     }
 
     @After
@@ -115,11 +132,10 @@ public class DirectUploadTest extends TestCase {
         String filePath = "src/test/resources/files/Liberty.jpg";
         File uploadFile = new File(filePath);
 
-        //@formatter:off
-        open(applicationContextUrl, TopPage.class)
-                .login(userId, password)
+        // @formatter:off
+        open(applicationContextUrl, TopPage.class).login(userId, password)
                 .upload(uploadFile);
-        //@formatter:on
+        // @formatter:on
 
         // アップロード成功確認
         $("#message").shouldHave(text("アップロードに成功しました。"));
@@ -181,11 +197,10 @@ public class DirectUploadTest extends TestCase {
         String filePath = "src/test/resources/files/Napoleon.jpg";
         File uploadFile = new File(filePath);
 
-        //@formatter:off
-        open(applicationContextUrl, TopPage.class)
-                .login(userId, password)
+        // @formatter:off
+        open(applicationContextUrl, TopPage.class).login(userId, password)
                 .upload(uploadFile);
-        //@formatter:on
+        // @formatter:on
 
         // アップロード失敗確認
         $("#message").shouldHave(text("アップロードできるファイルは819200バイトまでです。"));
@@ -235,11 +250,10 @@ public class DirectUploadTest extends TestCase {
         String filePath = "src/test/resources/files/Liberty.jpg";
         File uploadFile = new File(filePath);
 
-        //@formatter:off
-        open(applicationContextUrl, TopPage.class)
-                .login(userId, password)
+        // @formatter:off
+        open(applicationContextUrl, TopPage.class).login(userId, password)
                 .uploadWithDelay(uploadFile);
-        //@formatter:on
+        // @formatter:on
 
         // アップロード失敗確認
         $("#message").shouldHave(text("アップロードに失敗しました。"));
@@ -274,8 +288,7 @@ public class DirectUploadTest extends TestCase {
 
     @PostConstruct
     private void createS3Client() {
-        s3Client = new AmazonS3Client(new DefaultAWSCredentialsProviderChain()
-                .getCredentials());
+        s3Client = AmazonS3ClientBuilder.defaultClient();
     }
 
 }

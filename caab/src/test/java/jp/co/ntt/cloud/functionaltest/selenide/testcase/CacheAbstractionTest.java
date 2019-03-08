@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
@@ -77,21 +78,18 @@ public class CacheAbstractionTest extends TestCase {
     @Test
     public void testCAAB0101001() throws JsonProcessingException {
 
-        assertNull(redisTemplate.opsForValue().get("member/0000000001"));
+        assertNull(redisTemplate.opsForValue().get(
+                "members::member/0000000001"));
 
         // @formatter:off
-        given()
-            .contentType("application/json; charset=UTF-8")
-        .when()
-            .get(applicationContextUrl + "api/v1/Member/update/0000000001")
-        .then()
-            .statusCode(200)
-            .body("kanjiFamilyName", equalTo("電電"))
-            .body("kanjiGivenName", equalTo("花子"));
+        given().contentType("application/json; charset=UTF-8").when().get(
+                applicationContextUrl + "api/v1/Member/update/0000000001")
+                .then().statusCode(200).body("kanjiFamilyName", equalTo("電電"))
+                .body("kanjiGivenName", equalTo("花子"));
         // @formatter:on
 
         Member member = (Member) redisTemplate.opsForValue().get(
-                "member/0000000001");
+                "members::member/0000000001");
 
         assertThat(member.getKanjiFamilyName(), equalTo("電電"));
         assertThat(member.getKanjiGivenName(), equalTo("花子"));
@@ -112,18 +110,16 @@ public class CacheAbstractionTest extends TestCase {
         requestMember.setAddress("東京都港区港南Ｘ－Ｘ－Ｘ");
 
         // @formatter:off
-        given()
-            .contentType("application/json; charset=UTF-8")
-            .body(objectMapper.writeValueAsString(requestMember))
-        .when()
-            .put(applicationContextUrl + "api/v1/Member/update/0000000001")
-        .then()
-            .statusCode(200)
-            .body("kanjiFamilyName", equalTo("日電"))
-            .body("kanjiGivenName", equalTo("花子"));
+        given().contentType("application/json; charset=UTF-8").body(objectMapper
+                .writeValueAsString(requestMember)).when().put(
+                        applicationContextUrl
+                                + "api/v1/Member/update/0000000001").then()
+                .statusCode(200).body("kanjiFamilyName", equalTo("日電")).body(
+                        "kanjiGivenName", equalTo("花子"));
         // @formatter:on
 
-        assertNull(redisTemplate.opsForValue().get("member/0000000001"));
+        assertNull(redisTemplate.opsForValue().get(
+                "members::member/0000000001"));
 
     }
 

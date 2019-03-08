@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.cart;
 
@@ -46,7 +47,6 @@ public class CartForm {
 
     /**
      * 製品IDを取得する。
-     *
      * @return 製品ID
      */
     public String getId() {
@@ -55,9 +55,7 @@ public class CartForm {
 
     /**
      * 製品IDを設定する。
-     *
-     * @param productId
-     *            製品ID
+     * @param productId 製品ID
      */
     public void setId(String id) {
         this.id = id;
@@ -65,7 +63,6 @@ public class CartForm {
 
     /**
      * 数量を取得する。
-     *
      * @return 数量
      */
     public int getQuantity() {
@@ -74,9 +71,7 @@ public class CartForm {
 
     /**
      * 数量を設定する。
-     *
-     * @param quantity
-     *            数量
+     * @param quantity 数量
      */
     public void setQuantity(int quantity) {
         this.quantity = quantity;

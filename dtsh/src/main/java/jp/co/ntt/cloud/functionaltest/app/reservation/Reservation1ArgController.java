@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.reservation;
 
@@ -33,7 +34,6 @@ import jp.co.ntt.cloud.functionaltest.domain.service.reservation.Reservation1Arg
 
 /**
  * 予約情報コントローラ。
- *
  * @author NTT 電電太郎
  */
 @Controller
@@ -48,14 +48,12 @@ public class Reservation1ArgController {
 
     /**
      * 会員登録を実施し、Hello画面を表示する。
-     *
-     * @param locale
-     *            地域情報を保持するクラス
-     * @param model
-     *            出力情報を保持するクラス
+     * @param locale 地域情報を保持するクラス
+     * @param model 出力情報を保持するクラス
      * @return View論理名
      */
-    @RequestMapping(value = "register", method = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "register", method = { RequestMethod.GET,
+            RequestMethod.POST })
     public String register() {
         new Member();
         Reservation reservation = new Reservation();
@@ -89,16 +87,17 @@ public class Reservation1ArgController {
 
     /**
      * 予約情報1件読み込み
-     *
      * @return
      */
-    @RequestMapping(value = "get", method = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "get", method = { RequestMethod.GET,
+            RequestMethod.POST })
     public String read(Model model, RedirectAttributes redirectAttrs,
             @Valid ReservationForm reservationForm, BindingResult result) {
         if (result.hasErrors()) {
             return "redirect:/hello";
         }
-        Reservation reservation = reservationService.findOne(ReservationFactory.create(reservationForm));
+        Reservation reservation = reservationService.findOne(ReservationFactory
+                .create(reservationForm));
 
         redirectAttrs.addFlashAttribute("reservation", reservation);
 
@@ -108,14 +107,16 @@ public class Reservation1ArgController {
     /**
      * 予約情報更新。旅行代金を0にする。
      */
-    @RequestMapping(value = "update", method = { RequestMethod.GET, RequestMethod.POST })
-    public String update(RedirectAttributes redirectAttrs, @Valid ReservationForm reservationForm,
-            BindingResult result) {
+    @RequestMapping(value = "update", method = { RequestMethod.GET,
+            RequestMethod.POST })
+    public String update(RedirectAttributes redirectAttrs,
+            @Valid ReservationForm reservationForm, BindingResult result) {
         if (result.hasErrors()) {
             return "redirect:/hello";
         }
 
-        Reservation reservation = reservationService.findOne(ReservationFactory.create(reservationForm));
+        Reservation reservation = reservationService.findOne(ReservationFactory
+                .create(reservationForm));
         reservation.setTotalFare(0);
         reservationService.update(reservation);
 
@@ -125,9 +126,10 @@ public class Reservation1ArgController {
     /**
      * 予約情報削除
      */
-    @RequestMapping(value = "delete", method = { RequestMethod.GET, RequestMethod.POST })
-    public String delete(RedirectAttributes redirectAttrs, @Valid ReservationForm reservationForm,
-            BindingResult result) {
+    @RequestMapping(value = "delete", method = { RequestMethod.GET,
+            RequestMethod.POST })
+    public String delete(RedirectAttributes redirectAttrs,
+            @Valid ReservationForm reservationForm, BindingResult result) {
         if (result.hasErrors()) {
             return "redirect:/hello";
         }

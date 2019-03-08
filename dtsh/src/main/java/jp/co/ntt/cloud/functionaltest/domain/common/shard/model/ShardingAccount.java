@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 /**
  *
@@ -38,7 +39,7 @@ public class ShardingAccount implements Serializable {
 
     /** ユーザID */
     @DynamoDBHashKey(attributeName = "user_id")
-    private String userId;
+    private String id;
 
     /** データソースのキー */
     @DynamoDBAttribute(attributeName = "data_source_key")
@@ -46,26 +47,23 @@ public class ShardingAccount implements Serializable {
 
     /**
      * ユーザIDを取得する。
-     *
      * @return userId
      */
 
-    public String getUserId() {
-        return userId;
+    public String getId() {
+        return id;
     }
 
     /**
      * ユーザIDを設定する。
-     *
      * @param userId セットする userId
      */
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setId(String userId) {
+        this.id = userId;
     }
 
     /**
      * データソースのキーを取得する。
-     *
      * @return dataSourceKey
      */
     public String getDataSourceKey() {
@@ -74,7 +72,6 @@ public class ShardingAccount implements Serializable {
 
     /**
      * データソースのキーを設定する。
-     *
      * @param dataSourceKey セットする dataSourceKey
      */
     public void setDataSourceKey(String dataSourceKey) {
@@ -87,9 +84,9 @@ public class ShardingAccount implements Serializable {
      */
     @Override
     public int hashCode() {
-        int result = userId != null ? userId.hashCode() : 0;
-        result = 31 * result
-                + (dataSourceKey != null ? dataSourceKey.hashCode() : 0);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (dataSourceKey != null ? dataSourceKey.hashCode()
+                : 0);
         return result;
     }
 
@@ -108,8 +105,8 @@ public class ShardingAccount implements Serializable {
         }
 
         ShardingAccount sa = (ShardingAccount) obj;
-        if (userId != null) {
-            if (!userId.equals(sa.userId)) {
+        if (id != null) {
+            if (!id.equals(sa.id)) {
                 return false;
             } else {
                 if (dataSourceKey == null) {
@@ -119,7 +116,7 @@ public class ShardingAccount implements Serializable {
                 }
             }
         } else {
-            if (sa.userId != null) {
+            if (sa.id != null) {
                 return false;
             } else {
                 if (dataSourceKey == null) {

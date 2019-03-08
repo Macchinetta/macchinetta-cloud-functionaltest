@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.infra.common;
 
@@ -21,21 +22,20 @@ import java.io.ObjectInputStream;
 
 /**
  * バイト配列とオブジェクト(Serializable)を変換するクラス
- *
  * @author NTT 電電太郎
- *
  */
 public class ByteObjectConvarter {
 
     /**
      * バイト配列からオブジェクトに変換する
-     * 
      * @param bytes
      * @return
      * @throws ClassNotFoundException
      * @throws IOException
      */
-    public static Object toObject(byte[] bytes) throws ClassNotFoundException, IOException {
-        return new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
+    public static Object toObject(
+            byte[] bytes) throws ClassNotFoundException, IOException {
+        return new ObjectInputStream(new ByteArrayInputStream(bytes))
+                .readObject();
     }
 }

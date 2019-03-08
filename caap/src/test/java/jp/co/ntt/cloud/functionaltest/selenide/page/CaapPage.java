@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.page;
 
@@ -22,6 +23,7 @@ import static java.lang.Boolean.valueOf;
 public class CaapPage {
 
     private boolean existFQCNClasspath;
+
     private boolean existInApplicationContext;
 
     public CaapPage inspect() {
@@ -29,7 +31,8 @@ public class CaapPage {
         $(byId("inspect")).click();
 
         this.existFQCNClasspath = valueOf($(byId("existFQCNClasspath")).text());
-        this.existInApplicationContext = valueOf($(byId("existInApplicationContext")).text());
+        this.existInApplicationContext = valueOf($(byId(
+                "existInApplicationContext")).text());
         return this;
     }
 

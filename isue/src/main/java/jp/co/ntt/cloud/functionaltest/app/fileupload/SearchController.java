@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.fileupload;
 
@@ -36,15 +37,14 @@ import jp.co.ntt.cloud.functionaltest.domain.service.fileupload.SearchSharedServ
 
 /**
  * 検索画面表示コントローラ。
- * 
  * @author NTT 電電太郎
  */
 @Controller
 public class SearchController {
 
     /** ロガー。 */
-    private static final Logger logger = LoggerFactory
-            .getLogger(SearchController.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            SearchController.class);
 
     /** ファイル検索用サービス */
     @Inject
@@ -52,7 +52,6 @@ public class SearchController {
 
     /**
      * 検索画面を初期表示する。
-     * 
      * @param model 出力情報を保持するクラス
      * @return View論理名
      */
@@ -60,57 +59,59 @@ public class SearchController {
             RequestMethod.POST })
     public String home(Model model) {
 
-        model.addAttribute("bucketNameList", 
-        		FileUploadControllerUtil.createBucketPulldown(true));
+        model.addAttribute("bucketNameList", FileUploadControllerUtil
+                .createBucketPulldown(true));
         model.addAttribute(new SearchForm());
         return "fileupload/search";
     }
 
     /**
      * ファイル検索を実行する。
-     * 
      * @param model 出力情報を保持するクラス
      * @param form 画面フォーム
      * @param result バリデーション結果
      * @param redirectAttributes リダイレクトパラメータ
      */
     @RequestMapping(value = "/search", method = { RequestMethod.POST })
-    public String search(Model model, @Validated SearchForm form, 
-    		BindingResult result, RedirectAttributes redirectAttributes) {
+    public String search(Model model, @Validated SearchForm form,
+            BindingResult result, RedirectAttributes redirectAttributes) {
         logger.info("do File Search.");
 
         if (result.hasErrors()) {
-        	return "fileupload/search";
+            return "fileupload/search";
         }
 
         List<FileMetaData> srchRsltList = null;
-        
+
         // objectKeyが指定された場合はハッシュキー検索を実行する
-        if (form.getObjectKey().length()>0) {
-        	FileMetaData srchRslt = searchSharedService.doPkSearch(form.getObjectKey());
-        	srchRsltList = new ArrayList<>();
-        	srchRsltList.add(srchRslt);
-        	
-        // uploadUserが指定された場合はセカンダリインデックス検索を実行する
-        } else if (form.getUploadUser().length()>0) {
-        	srchRsltList = searchSharedService.doUserIdIndexSearch(form.getUploadUser(), form.getUploadDate());
+        if (form.getObjectKey().length() > 0) {
+            FileMetaData srchRslt = searchSharedService.doPkSearch(form
+                    .getObjectKey());
+            srchRsltList = new ArrayList<>();
+            srchRsltList.add(srchRslt);
 
-        // バケット名が指定された場合はセカンダリインデックス検索を実行する
-        } else if (form.getBucketName().length()>0) {
-        	srchRsltList = searchSharedService.doBucketNameIndexSearch(form.getBucketName());
+            // uploadUserが指定された場合はセカンダリインデックス検索を実行する
+        } else if (form.getUploadUser().length() > 0) {
+            srchRsltList = searchSharedService.doUserIdIndexSearch(form
+                    .getUploadUser(), form.getUploadDate());
 
-        // 条件未指定の場合は全件検索を実行する
+            // バケット名が指定された場合はセカンダリインデックス検索を実行する
+        } else if (form.getBucketName().length() > 0) {
+            srchRsltList = searchSharedService.doBucketNameIndexSearch(form
+                    .getBucketName());
+
+            // 条件未指定の場合は全件検索を実行する
         } else {
-        	srchRsltList = searchSharedService.doSearch();
+            srchRsltList = searchSharedService.doSearch();
         }
         model.addAttribute("resultList", srchRsltList);
 
-        model.addAttribute("bucketNameList", 
-        		FileUploadControllerUtil.createBucketPulldown(true));
+        model.addAttribute("bucketNameList", FileUploadControllerUtil
+                .createBucketPulldown(true));
 
         redirectAttributes.addFlashAttribute(ResultMessages.success().add(
-        		"i.xx.at.0001"));
-        
+                "i.xx.at.0001"));
+
         return "fileupload/search";
     }
 }

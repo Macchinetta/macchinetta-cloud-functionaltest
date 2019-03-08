@@ -12,14 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
-import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.Selenide.screenshot;
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selenide.*;
 
 import org.junit.After;
 import org.junit.Before;
@@ -33,13 +31,16 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.WebDriverRunner;
 
+import io.github.bonigarcia.wdm.FirefoxDriverManager;
 import jp.co.ntt.cloud.functionaltest.selenide.page.HelloPage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:META-INF/spring/selenideContext.xml" })
+@ContextConfiguration(locations = {
+        "classpath:META-INF/spring/selenideContext.xml" })
 public class ClientFailFastTest extends TestCase {
 
     /**
@@ -53,6 +54,12 @@ public class ClientFailFastTest extends TestCase {
      */
     @Value("${path.report}")
     private String reportPath;
+
+    /*
+     * geckoドライバーバージョン
+     */
+    @Value("${selenide.geckodriverVersion}")
+    private String geckodriverVersion;
 
     /**
      * テスト名取得
@@ -73,6 +80,16 @@ public class ClientFailFastTest extends TestCase {
     @Override
     @Before
     public void setUp() {
+
+        // geckoドライバーの設定
+        if (System.getProperty("webdriver.gecko.driver") == null) {
+            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+                    .setup();
+        }
+
+        // ブラウザの設定
+        Configuration.browser = WebDriverRunner.MARIONETTE;
+
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
     }
@@ -99,19 +116,24 @@ public class ClientFailFastTest extends TestCase {
         password = "aaaaa11111";
 
         // テスト実行
-        HelloPage helloWorldPage = open(applicationContextUrl, TopPage.class).login(userId, password);
+        HelloPage helloWorldPage = open(applicationContextUrl, TopPage.class)
+                .login(userId, password);
 
         $("h1").shouldHave(text("Hello world!"));
         $$("p").get(1).shouldHave(text("Taro Denden"));
 
         // @ConfigurationPropertiesで取得した値
-        SelenideElement s3ConfigConfigurationPropertiesTable = helloWorldPage.getS3ConfigConfigurationPropertiesTable();
+        SelenideElement s3ConfigConfigurationPropertiesTable = helloWorldPage
+                .getS3ConfigConfigurationPropertiesTable();
         // @Valueで取得した値
-        SelenideElement s3ConfigValueTable = helloWorldPage.getS3ConfigValueTable();
+        SelenideElement s3ConfigValueTable = helloWorldPage
+                .getS3ConfigValueTable();
 
-        s3ConfigConfigurationPropertiesTable.shouldHave(text("functionaltest.external.properties.config.repo"),
-                text("tmp/"), text("save/"));
-        s3ConfigValueTable.shouldHave(text("functionaltest.external.properties.config.repo"), text("tmp/"),
+        s3ConfigConfigurationPropertiesTable.shouldHave(text(
+                "functionaltest.external.properties.config.repo"), text("tmp/"),
+                text("save/"));
+        s3ConfigValueTable.shouldHave(text(
+                "functionaltest.external.properties.config.repo"), text("tmp/"),
                 text("save/from/local/properties"));
 
         // 証跡取得

@@ -35,9 +35,4 @@ spring:
   redis:
     cluster:
       nodes:
-        - functionaltest-0001-001.xxxx.0001.apne1.cache.amazonaws.com:6379
-    pool:
-      max-active: 8
-      max-idle: 8
-      max-wait: -1
-      min-idle: 0
+        - functionaltest-0001-001.XXXX.0001.apne1.cache.amazonaws.com:6379

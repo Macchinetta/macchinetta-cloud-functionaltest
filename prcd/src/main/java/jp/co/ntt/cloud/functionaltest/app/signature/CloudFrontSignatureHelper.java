@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.signature;
 
@@ -230,6 +231,5 @@ public class CloudFrontSignatureHelper {
     public void setAllowedIpRange(String allowedIpRange) {
         this.allowedIpRange = allowedIpRange;
     }
-
 
 }

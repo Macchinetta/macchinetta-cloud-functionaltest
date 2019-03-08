@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.service.product;
 
@@ -36,7 +37,6 @@ public class ProductService {
 
     /**
      * 全商品を取得する。
-     *
      * @param categoryId
      * @param pageable
      * @return
@@ -48,11 +48,10 @@ public class ProductService {
 
     /**
      * 指定した商品を取得し、CartItemにして返す。
-     *
      * @param productId
      * @return
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Product findOne(String productId) {
         Product product = productRepository.findOne(productId);
 

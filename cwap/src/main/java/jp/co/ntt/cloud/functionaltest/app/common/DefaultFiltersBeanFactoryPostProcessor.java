@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.common;
 
@@ -27,20 +28,18 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import javax.servlet.Filter;
 
 /**
- * Bean登録(フィルター)クラス。
- * 本APではフィルターをweb.xmlを使用して登録しており、フィルターの２重登録を防止する為の暫定対応。
- *
+ * Bean登録(フィルター)クラス。 本APではフィルターをweb.xmlを使用して登録しており、フィルターの２重登録を防止する為の暫定対応。
  * @author NTT 電電太郎
  */
-public class DefaultFiltersBeanFactoryPostProcessor
-        implements BeanFactoryPostProcessor {
+public class DefaultFiltersBeanFactoryPostProcessor implements
+                                                    BeanFactoryPostProcessor {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory bf)
-            throws BeansException {
+    public void postProcessBeanFactory(
+            ConfigurableListableBeanFactory bf) throws BeansException {
         DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) bf;
 
         String[] beanNames = beanFactory.getBeanNamesForType(Filter.class);
@@ -52,9 +51,8 @@ public class DefaultFiltersBeanFactoryPostProcessor
                     .addConstructorArgValue(new ServletRegistrationBean[] {})
                     .addPropertyValue("enabled", false).getBeanDefinition();
 
-            beanFactory
-                    .registerBeanDefinition(beanName + "FilterRegistrationBean",
-                            definition);
+            beanFactory.registerBeanDefinition(beanName
+                    + "FilterRegistrationBean", definition);
         }
     }
 }

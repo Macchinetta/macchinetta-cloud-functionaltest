@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenium;
 
@@ -33,20 +34,12 @@ public class DBLogProvider {
         return jdbcOperations;
     }
 
-    public void waitForAssertion() {
-        try {
-            Thread.sleep(50);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public void waitForAssertion() throws InterruptedException {
+        Thread.sleep(50);
     }
 
-    public void waitForAssertion(long waitTime) {
-        try {
-            Thread.sleep(waitTime);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public void waitForAssertion(long waitTime) throws InterruptedException {
+        Thread.sleep(waitTime);
     }
 
     public long countContainsByRegexExceptionMessage(String xTrack,

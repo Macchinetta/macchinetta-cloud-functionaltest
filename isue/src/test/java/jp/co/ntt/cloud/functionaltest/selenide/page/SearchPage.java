@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.page;
 
@@ -29,7 +30,7 @@ public class SearchPage {
      * ログアウトする。
      * @return TopPage トップページ
      */
-    public TopPage logout(){
+    public TopPage logout() {
         $("button").click();
         return new TopPage();
     }
@@ -45,16 +46,15 @@ public class SearchPage {
         return false;
     }
 
-    
     public SearchPage searchByPk(String objectKey) {
         $(byId("objectKey")).clear();
         $(byId("objectKey")).setValue(objectKey);
         $$("tr").get(3).$("button").click();
         return new SearchPage();
     }
-    
-    public SearchPage searchByIndex_uploadUser_uploadDate(
-    		String uploadUser, String uploadDate) {
+
+    public SearchPage searchByIndex_uploadUser_uploadDate(String uploadUser,
+            String uploadDate) {
         $(byId("uploadUser")).clear();
         $(byId("uploadUser")).setValue(uploadUser);
         $(byId("uploadDate")).clear();

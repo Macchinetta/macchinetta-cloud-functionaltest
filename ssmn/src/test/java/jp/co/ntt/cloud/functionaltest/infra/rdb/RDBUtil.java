@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.infra.rdb;
 
@@ -23,7 +24,6 @@ import org.springframework.beans.factory.annotation.Value;
 
 /**
  * @author NTT 電電太郎
- *
  */
 public class RDBUtil {
 
@@ -53,9 +53,7 @@ public class RDBUtil {
 
     /**
      * DBのドライバークラスを設定する。
-     *
-     * @param driverClassName
-     *            ドライバークラス名
+     * @param driverClassName ドライバークラス名
      */
     public void setDriverClassName(String driverClassName) {
         this.driverClassName = driverClassName;
@@ -63,9 +61,7 @@ public class RDBUtil {
 
     /**
      * デフォルトDBのURLを設定する。
-     *
-     * @param urlDefault
-     *            デフォルトDBのURL
+     * @param urlDefault デフォルトDBのURL
      */
     public void setUrlDefault(String urlDefault) {
         this.urlDefault = urlDefault;
@@ -73,9 +69,7 @@ public class RDBUtil {
 
     /**
      * DBのユーザー名を設定する。
-     *
-     * @param user
-     *            DBのユーザー名
+     * @param user DBのユーザー名
      */
     public void setUser(String user) {
         this.user = user;
@@ -83,9 +77,7 @@ public class RDBUtil {
 
     /**
      * DBのパスワードを設定する。
-     *
-     * @param password
-     *            DBのパスワード
+     * @param password DBのパスワード
      */
     public void setPassword(String password) {
         this.password = password;
@@ -93,7 +85,6 @@ public class RDBUtil {
 
     /**
      * デフォルトDBのコネクションを取得する。
-     *
      * @return
      * @throws SQLException
      * @throws ClassNotFoundException

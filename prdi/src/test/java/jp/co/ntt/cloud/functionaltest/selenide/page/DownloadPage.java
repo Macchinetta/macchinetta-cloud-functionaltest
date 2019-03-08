@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.page;
 
@@ -24,9 +25,13 @@ import static com.codeborne.selenide.Selenide.$;
 public class DownloadPage {
 
     private String selectedKey;
+
     private String status;
+
     private String presignedUrl;
+
     private String s3Base64;
+
     private String localBase64;
 
     public DownloadPage download(String key) throws Exception {

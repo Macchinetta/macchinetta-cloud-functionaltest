@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 /**
  * JMSによるSQSスタンダードキュー送受信業務処理サービス関連のパッケージ。

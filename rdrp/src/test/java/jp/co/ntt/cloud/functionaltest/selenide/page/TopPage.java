@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.page;
 
@@ -28,9 +29,11 @@ public class TopPage {
     /**
      * 顧客再読み込み
      * @return TopPage トップページ
+     * @throws InterruptedException
      */
-    public TopPage reload() {
+    public TopPage reload() throws InterruptedException {
         $(byText("reload")).click();
+        Thread.sleep(2000);
         return this;
     }
 
@@ -39,13 +42,16 @@ public class TopPage {
      * @param lastName 姓
      * @param firstName 名
      * @return TopPage トップページ
+     * @throws InterruptedException
      */
-    public TopPage register(String lastName, String firstName) {
+    public TopPage register(String lastName,
+            String firstName) throws InterruptedException {
         $(byId("inputLastName")).clear();
         $(byId("inputLastName")).setValue(lastName);
         $(byId("inputFirstName")).clear();
         $(byId("inputFirstName")).setValue(firstName);
         $("#button_register").click();
+        Thread.sleep(2000);
         return this;
     }
 }

@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.upload;
 
@@ -25,6 +26,8 @@ import java.util.UUID;
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
+import org.springframework.cloud.aws.core.io.s3.PathMatchingSimpleStorageResourcePatternResolver;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.WritableResource;
@@ -59,8 +62,16 @@ public class FileUploadHelper {
     /**
      * リソースパターンリゾルバ。
      */
-    @Inject
     ResourcePatternResolver resourcePatternResolver;
+
+    /**
+     * Spring Cloud AWSのリソースパターンリゾルバラッパー。
+     */
+    @Inject
+    public void setupResolver(ApplicationContext applicationContext,
+            AmazonS3 amazonS3) {
+        this.resourcePatternResolver = new PathMatchingSimpleStorageResourcePatternResolver(amazonS3, applicationContext);
+    }
 
     /**
      * 単一ファイルの一時ファイルアップロードを行う。

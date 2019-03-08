@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.page;
 
@@ -22,7 +23,9 @@ import static com.codeborne.selenide.Selenide.$;
 public class TopPage {
 
     private String counter;
+
     private String csrf;
+
     private String transactionToken;
 
     public TopPage(String counter, String csrf, String transactionToken) {
@@ -31,7 +34,8 @@ public class TopPage {
         this.transactionToken = transactionToken;
     }
 
-    public TopPage() {}
+    public TopPage() {
+    }
 
     public void logout() {
         $(By.id("logout")).submit();

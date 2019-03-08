@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.common.datasource.pool;
 
@@ -38,12 +39,9 @@ import com.amazonaws.services.rds.model.DescribeDBInstancesResult;
 
 import jp.co.ntt.cloud.functionaltest.domain.common.logging.LogMessages;
 
-
-
 /**
  * Amazon RDS Read-Replica Tomcatデータソースのファクトリ。
  * @author NTT 電電花子
- *
  */
 public class AmazonRdsReadReplicaTomcatDataSourceFactory extends
                                                          TomcatDataSourceFactory {
@@ -82,7 +80,8 @@ public class AmazonRdsReadReplicaTomcatDataSourceFactory extends
      * @throws Exception
      */
     @Override
-    protected DataSource createReadReplicaDataSource(Properties properties) throws Exception {
+    protected DataSource createReadReplicaDataSource(
+            Properties properties) throws Exception {
         String region = defaultRegion;
         if (!StringUtils.isEmpty(properties.getProperty(replicaRegionKey))) {
             region = properties.getProperty(replicaRegionKey);
@@ -90,27 +89,30 @@ public class AmazonRdsReadReplicaTomcatDataSourceFactory extends
         AmazonRDS amazonRds = AmazonRDSClientBuilder.standard().withRegion(
                 region).build();
 
-        String dbInstanceIdentifier = (String) properties.get(dbInstanceIdentifierKey);
+        String dbInstanceIdentifier = (String) properties.get(
+                dbInstanceIdentifierKey);
         DBInstance dbInstance = getDbInstance(amazonRds, dbInstanceIdentifier);
 
         if (dbInstance.getReadReplicaDBInstanceIdentifiers().isEmpty()) {
             return createDataSourceInstance(dbInstance, properties);
         }
 
-        Map<Object, Object> replicaMap = new HashMap<>(
-                dbInstance.getReadReplicaDBInstanceIdentifiers().size());
+        Map<Object, Object> replicaMap = new HashMap<>(dbInstance
+                .getReadReplicaDBInstanceIdentifiers().size());
 
-        for (String replicaName : dbInstance.getReadReplicaDBInstanceIdentifiers()) {
+        for (String replicaName : dbInstance
+                .getReadReplicaDBInstanceIdentifiers()) {
             replicaMap.put(replicaName, createDataSourceInstance(amazonRds,
                     replicaName, properties));
         }
 
-        //Create the data source
+        // Create the data source
         ReadOnlyRoutingDataSource dataSource = new ReadOnlyRoutingDataSource();
         dataSource.setTargetDataSources(replicaMap);
-        dataSource.setDefaultTargetDataSource(createDataSourceInstance(dbInstance, properties));
+        dataSource.setDefaultTargetDataSource(createDataSourceInstance(
+                dbInstance, properties));
 
-        //Initialize the class
+        // Initialize the class
         dataSource.afterPropertiesSet();
 
         return new LazyConnectionDataSourceProxy(dataSource);
@@ -131,8 +133,9 @@ public class AmazonRdsReadReplicaTomcatDataSourceFactory extends
                             .withDBInstanceIdentifier(identifier));
             instance = describeDBInstancesResult.getDBInstances().get(0);
         } catch (DBInstanceNotFoundException e) {
-            throw new SystemException(LogMessages.E_AR_A0_L9009.getCode(), LogMessages.E_AR_A0_L9009
-                    .getMessage(identifier), e);
+            throw new SystemException(LogMessages.E_AR_A0_L9009
+                    .getCode(), LogMessages.E_AR_A0_L9009.getMessage(
+                            identifier), e);
         }
         return instance;
     }
@@ -151,16 +154,17 @@ public class AmazonRdsReadReplicaTomcatDataSourceFactory extends
     }
 
     /**
-     *
      * @param instance {@link DBInstance}
      * @param properties {@link Properties}
      * @return {@link DataSource}
      * @throws Exception
      */
-    private DataSource createDataSourceInstance(DBInstance instance, Properties properties) throws Exception {
+    private DataSource createDataSourceInstance(DBInstance instance,
+            Properties properties) throws Exception {
         properties.setProperty("url", createUrl(instance, properties));
         if (!properties.containsKey(driverClassNameKey)) {
-            properties.setProperty(driverClassNameKey, getDriverClassName(instance));
+            properties.setProperty(driverClassNameKey, getDriverClassName(
+                    instance));
         }
         return factory.createDataSource(properties);
     }
@@ -173,12 +177,10 @@ public class AmazonRdsReadReplicaTomcatDataSourceFactory extends
      */
     private String createUrl(DBInstance instance, Properties properties) {
         StringBuilder sb = new StringBuilder();
-        String url =
-                databasePlatformSupport.getDatabaseUrlForDatabase(
-                DatabaseType.fromEngine(instance.getEngine()),
-                instance.getEndpoint().getAddress(),
-                instance.getEndpoint().getPort(),
-                instance.getDBName());
+        String url = databasePlatformSupport.getDatabaseUrlForDatabase(
+                DatabaseType.fromEngine(instance.getEngine()), instance
+                        .getEndpoint().getAddress(), instance.getEndpoint()
+                                .getPort(), instance.getDBName());
         sb.append(url);
         if (properties.containsKey(driverUrlOptionKey)) {
             sb.append("?").append(properties.getProperty(driverUrlOptionKey));

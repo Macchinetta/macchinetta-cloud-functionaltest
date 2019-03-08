@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.page;
 
@@ -22,7 +23,6 @@ public class PrdiMainPage {
 
     /**
      * ダウンロードページに移動する。
-     *
      * @return ダウンロードページ
      */
     public DownloadPage clickDownload() {

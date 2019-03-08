@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.member;
 
@@ -31,9 +32,7 @@ import jp.co.ntt.cloud.functionaltest.domain.service.member.MemberService;
 
 /**
  * 会員情報コントローラ
- *
  * @author NTT 電電太郎
- *
  */
 @Controller
 @RequestMapping(value = "member")
@@ -46,14 +45,12 @@ public class MemberController {
 
     /**
      * 会員登録を実施し、Hello画面を表示する。
-     *
-     * @param locale
-     *            地域情報を保持するクラス
-     * @param model
-     *            出力情報を保持するクラス
+     * @param locale 地域情報を保持するクラス
+     * @param model 出力情報を保持するクラス
      * @return View論理名
      */
-    @RequestMapping(value = "register", method = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "register", method = { RequestMethod.GET,
+            RequestMethod.POST })
     public String register() {
         Member member = new Member();
 
@@ -82,10 +79,10 @@ public class MemberController {
 
     /**
      * 会員情報1件読み込み
-     *
      * @return
      */
-    @RequestMapping(value = "get", method = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "get", method = { RequestMethod.GET,
+            RequestMethod.POST })
     public String read(Model model, RedirectAttributes redirectAttrs,
             @Valid MemberForm memberForm, BindingResult result) {
 
@@ -102,9 +99,10 @@ public class MemberController {
     /**
      * 会員情報更新
      */
-    @RequestMapping(value = "update", method = { RequestMethod.GET, RequestMethod.POST })
-    public String update(Model model, RedirectAttributes redirectAttrs, @Valid MemberForm memberForm,
-            BindingResult result) {
+    @RequestMapping(value = "update", method = { RequestMethod.GET,
+            RequestMethod.POST })
+    public String update(Model model, RedirectAttributes redirectAttrs,
+            @Valid MemberForm memberForm, BindingResult result) {
         if (result.hasErrors()) {
             return "redirect:/";
         }
@@ -117,7 +115,8 @@ public class MemberController {
     /**
      * 会員情報削除
      */
-    @RequestMapping(value = "delete", method = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "delete", method = { RequestMethod.GET,
+            RequestMethod.POST })
     public String delete(Model model, @Valid MemberForm memberForm,
             BindingResult result) {
         if (result.hasErrors()) {
@@ -130,7 +129,8 @@ public class MemberController {
     /**
      * 会員情報全件削除
      */
-    @RequestMapping(value = "delete", params = "all", method = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "delete", params = "all", method = {
+            RequestMethod.GET, RequestMethod.POST })
     public String deleteAll(Model model) {
         member0ArgService.deleteAll();
         return "redirect:/hello";

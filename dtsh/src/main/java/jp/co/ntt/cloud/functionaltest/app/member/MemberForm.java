@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.member;
 
@@ -26,9 +27,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * 会員情報問い合わせ用form
- *
  * @author NTT 電電太郎
- *
  */
 public class MemberForm implements Serializable {
 
@@ -44,7 +43,6 @@ public class MemberForm implements Serializable {
 
     /**
      * お客様番号を取得する。
-     *
      * @return お客様番号
      */
     public String getCustomerNo() {
@@ -53,9 +51,7 @@ public class MemberForm implements Serializable {
 
     /**
      * お客様番号を設定する。
-     *
-     * @param customerNo
-     *            お客様番号
+     * @param customerNo お客様番号
      */
     public void setCustomerNo(String customerNo) {
         this.customerNo = customerNo;
@@ -66,6 +62,7 @@ public class MemberForm implements Serializable {
      */
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+        return ToStringBuilder.reflectionToString(this,
+                ToStringStyle.MULTI_LINE_STYLE);
     }
 }

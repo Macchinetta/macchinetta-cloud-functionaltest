@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>jp.co.ntt.cloud.functionaltest</groupId>
     <artifactId>macchinetta-cloud-functionaltest</artifactId>
-    <version>1.0.1.RELEASE</version>
+    <version>1.1.0.RELEASE</version>
     <packaging>pom</packaging>
     <parent>
         <groupId>org.terasoluna.gfw</groupId>
         <artifactId>terasoluna-gfw-parent</artifactId>
-        <version>5.4.1.RELEASE</version>
+        <version>5.5.0.RC7</version>
     </parent>
 
     <name>Functional test for Macchinetta cloud guideline Parent</name>
@@ -90,7 +90,7 @@
                     <configuration>
                         <configFile>${project.root.basedir}/eclipse/formatter.xml
                         </configFile>
-                        <lineEnding>CRLF</lineEnding>
+                        <lineEnding>LF</lineEnding>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -136,7 +136,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
     <dependencyManagement>
@@ -145,6 +144,51 @@
                 <groupId>com.codeborne</groupId>
                 <artifactId>selenide</artifactId>
                 <version>${selenide.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-java</artifactId>
+                <version>${selenium.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-api</artifactId>
+                <version>${selenium.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-support</artifactId>
+                <version>${selenium.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-remote-driver</artifactId>
+                <version>${selenium.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-chrome-driver</artifactId>
+                <version>${selenium.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-ie-driver</artifactId>
+                <version>${selenium.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-edge-driver</artifactId>
+                <version>${selenium.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-firefox-driver</artifactId>
+                <version>${selenium.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-opera-driver</artifactId>
+                <version>${selenium.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.rest-assured</groupId>
@@ -164,6 +208,12 @@
                 <version>${spring.cloud.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.session</groupId>
+                <artifactId>spring-session-core</artifactId>
+                <version>2.1.1.RELEASE</version>
             </dependency>
 
             <!-- == Begin Database == -->
@@ -317,6 +367,12 @@
         </dependency>
         <!-- == End Test == -->
 
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>${webdrivermanager.version}</version>
+        </dependency>
+
     </dependencies>
     <properties>
         <!-- == Maven Plugin Versions == -->
@@ -325,17 +381,20 @@
         <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
         <formatter-maven-plugin.version>0.5.2</formatter-maven-plugin.version>
         <!-- == Dependency Versions == -->
-        <postgresql.version>9.4.1212</postgresql.version>
+        <postgresql.version>42.2.4</postgresql.version>
         <selenide.version>4.4.2</selenide.version>
+        <selenium.version>3.0.1</selenium.version>
+        <webdrivermanager.version>1.6.2</webdrivermanager.version>
         <!-- == Project Properties == -->
         <encoding>UTF-8</encoding>
         <java-version>1.8</java-version>
         <rest.assured.version>3.0.3</rest.assured.version>
-        <spring.cloud.version>Dalston.SR4</spring.cloud.version>
+        <spring.cloud.version>Finchley.SR1</spring.cloud.version>
         <project.root.basedir>${project.basedir}</project.root.basedir>
         <dbunit.version>2.5.4</dbunit.version>
     </properties>
     <modules>
+        <module>smpl</module>
         <module>hlch-dynamo-up</module>
         <module>hlch-dynamo-down</module>
         <module>hlch-rdb-up</module>
@@ -355,7 +414,6 @@
         <module>caab2</module>
         <module>ccab</module>
         <module>ssmn</module>
-        <module>ssmn-no-exclude</module>
         <module>prqu</module>
         <module>prdi</module>
         <module>cwap</module>

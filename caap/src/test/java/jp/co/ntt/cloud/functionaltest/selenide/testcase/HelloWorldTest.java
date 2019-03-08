@@ -12,14 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
-import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.Selenide.screenshot;
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selenide.*;
 
 import org.junit.After;
 import org.junit.Before;
@@ -30,7 +28,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.WebDriverRunner;
 
+import io.github.bonigarcia.wdm.FirefoxDriverManager;
 import jp.co.ntt.cloud.functionaltest.selenide.page.HelloPage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
 import junit.framework.TestCase;
@@ -54,6 +54,12 @@ public class HelloWorldTest extends TestCase {
     private String reportPath;
 
     /*
+     * geckoドライバーバージョン
+     */
+    @Value("${selenide.geckodriverVersion}")
+    private String geckodriverVersion;
+
+    /*
      * ユーザID
      */
     private String userId;
@@ -65,10 +71,20 @@ public class HelloWorldTest extends TestCase {
 
     @Before
     public void setUp() {
+
+        // geckoドライバーの設定
+        if (System.getProperty("webdriver.gecko.driver") == null) {
+            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+                    .setup();
+        }
+
+        // ブラウザの設定
+        Configuration.browser = WebDriverRunner.MARIONETTE;
+
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
     }
- 
+
     @After
     public void tearDown() {
         // ログイン状態の場合ログアウトする。
@@ -82,23 +98,22 @@ public class HelloWorldTest extends TestCase {
      * ログインを実行しHello worldが表示されることを確認する。
      */
     @Test
-    public void helloTest(){
+    public void helloTest() {
 
         // 事前準備
         userId = "0000000002";
         password = "aaaaa11111";
 
         // テスト実行
-        HelloPage helloWorldPage =
-        open(applicationContextUrl, TopPage.class)
-        .login(userId, password);
+        HelloPage helloWorldPage = open(applicationContextUrl, TopPage.class)
+                .login(userId, password);
 
         // アサーション
         $("h1").shouldHave(text("Hello world!"));
         $$("p").get(1).shouldHave(text("Taro Denden"));
-        
+
         // 証跡取得
         screenshot("helloTest");
     }
-    
+
 }

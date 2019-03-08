@@ -12,13 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import com.codeborne.selenide.Configuration;
-import jp.co.ntt.cloud.functionaltest.selenide.page.CaapPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.HelloPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selenide.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,10 +29,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.Selenide.screenshot;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.WebDriverRunner;
+
+import io.github.bonigarcia.wdm.FirefoxDriverManager;
+import jp.co.ntt.cloud.functionaltest.selenide.page.CaapPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
 
 @SuppressWarnings("unused")
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -50,14 +54,34 @@ public class CaapTest {
     @Value("${path.report}")
     private String reportPath;
 
+    /*
+     * geckoドライバーバージョン
+     */
+    @Value("${selenide.geckodriverVersion}")
+    private String geckodriverVersion;
+
     @Before
     public void setUp() {
+
+        // geckoドライバーの設定
+        if (System.getProperty("webdriver.gecko.driver") == null) {
+            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+                    .setup();
+        }
+
+        // ブラウザの設定
+        Configuration.browser = WebDriverRunner.MARIONETTE;
+
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
 
         // ログイン
-        open(applicationContextUrl, TopPage.class)
-                .login("0000000002", "aaaaa11111");
+        open(applicationContextUrl, TopPage.class).login("0000000002",
+                "aaaaa11111");
+
+        // ログイン遷移待ち
+        $("title").shouldHave(exactText("home"));
+
     }
 
     @After
@@ -67,13 +91,13 @@ public class CaapTest {
     }
 
     /*
-     * AWS開発プロジェクトの起動条件として、AutoConfigureが無効化されていること。
-     * すなわち、AmazonElastiCacheがクラスパス上に存在し、DIコンテナ上に存在していないこと。
+     * AWS開発プロジェクトの起動条件として、AutoConfigureが無効化されていること。 すなわち、AmazonElastiCacheがクラスパス上に存在し、DIコンテナ上に存在していないこと。
      */
     @Test
     public void testInspect() {
         // テスト実行
-        final CaapPage page = open(applicationContextUrl, CaapPage.class).inspect();
+        final CaapPage page = open(applicationContextUrl, CaapPage.class)
+                .inspect();
 
         // アサーション
         assertThat(page.isExistFQCNClasspath(), is(true));

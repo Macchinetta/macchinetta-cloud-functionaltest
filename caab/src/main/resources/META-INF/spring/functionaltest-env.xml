@@ -43,6 +43,32 @@
     
     <cache:annotation-driven order="-1" />
 
-    <bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager" c:redisOperations-ref="redisTemplate"/>
+    <bean id="cacheManager"
+        class="org.springframework.data.redis.cache.RedisCacheManager"
+        factory-method="create"
+        c:connection-factory-ref="redisConnectionFactory"
+        p:transaction-aware="true" />
+
+    <beans profile="default">
+        <bean id="redisConnectionFactory"
+            class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+            p:host-name="${spring.redis.host}" p:port="${spring.redis.port}" />
+    </beans>
+
+    <beans profile="ci">
+        <bean id="redisConnectionFactory"
+            class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+            <constructor-arg index="0">
+                <bean
+                    class="org.springframework.data.redis.connection.RedisClusterConfiguration">
+                    <constructor-arg>
+                        <list>
+                            <value>${spring.redis.cluster.nodes}</value>
+                        </list>
+                    </constructor-arg>
+                </bean>
+            </constructor-arg>
+        </bean>
+    </beans>
 
 </beans>

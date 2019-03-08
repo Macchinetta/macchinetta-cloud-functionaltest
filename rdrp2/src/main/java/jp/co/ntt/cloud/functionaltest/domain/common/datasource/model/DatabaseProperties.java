@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.common.datasource.model;
 
@@ -35,7 +36,6 @@ public class DatabaseProperties {
 
     /**
      * データソース情報を格納する {@link List}を取得する。
-     *
      * @return dataSources
      */
     public List<Map<String, String>> getDataSources() {
@@ -44,7 +44,6 @@ public class DatabaseProperties {
 
     /**
      * データソース情報を格納する {@link List}を設定する。
-     *
      * @param dataSources セットする dataSources
      */
     public void setDataSources(List<Map<String, String>> dataSources) {

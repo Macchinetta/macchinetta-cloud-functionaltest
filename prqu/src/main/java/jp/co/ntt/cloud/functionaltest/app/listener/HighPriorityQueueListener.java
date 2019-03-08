@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.listener;
 
@@ -58,7 +59,6 @@ public class HighPriorityQueueListener {
     @Value("${app.priority.queue.high.name}")
     String queueName;
 
-
     /**
      * キューからメッセージを受信し、フロントとの非同期処理を行う
      * @param ftMessage メッセージオブジェクト
@@ -72,8 +72,7 @@ public class HighPriorityQueueListener {
             // メッセージ処理を実施
             LOGGER.info(LogMessages.I_FT_PQ_L0001.getMessage(queueName,
                     messageId));
-            messageService.processMessage(ftMessage, messageId,
-                    queueName);
+            messageService.processMessage(ftMessage, messageId, queueName);
         } catch (DuplicateReceivingException e) {
             // 2重受信の場合は処理をスキップする。
             return;
@@ -82,7 +81,5 @@ public class HighPriorityQueueListener {
                     messageId));
         }
     }
-
-
 
 }

@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.page;
 
@@ -56,11 +57,8 @@ public class ViewCartPage {
 
     /**
      * 注文の個数を変更する
-     *
-     * @param index
-     *            カートに表示されているアイテムのインデックス(0からスタートする)。
-     * @param quantity
-     *            個数
+     * @param index カートに表示されているアイテムのインデックス(0からスタートする)。
+     * @param quantity 個数
      */
     public void changeQuantity(Integer index, Integer quantity) {
         $(byId("itemQuantity" + index)).setValue(quantity.toString());

@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.common.shard.datasource.pool;
 
@@ -27,9 +28,7 @@ import jp.co.ntt.cloud.functionaltest.domain.common.shard.datasource.DataSourceF
 
 /**
  * Tomcatデータソースのファクトリ。
- *
  * @author NTT 電電太郎
- *
  */
 public class TomcatDataSourceFactory implements DataSourceFactory {
 
@@ -39,7 +38,8 @@ public class TomcatDataSourceFactory implements DataSourceFactory {
     private org.apache.tomcat.jdbc.pool.DataSourceFactory factory = new org.apache.tomcat.jdbc.pool.DataSourceFactory();
 
     @Override
-    public DataSource create(Map<String, String> dataSourceProperties, Map<String, String> commonDataSourceProperties) {
+    public DataSource create(Map<String, String> dataSourceProperties,
+            Map<String, String> commonDataSourceProperties) {
         DataSource ret = null;
         Properties properties = new Properties();
 
@@ -51,7 +51,8 @@ public class TomcatDataSourceFactory implements DataSourceFactory {
         try {
             ret = factory.createDataSource(properties);
         } catch (Exception e) {
-            throw new SystemException(LogMessages.E_AR_A0_L9008.getCode(), LogMessages.E_AR_A0_L9008.getMessage(), e);
+            throw new SystemException(LogMessages.E_AR_A0_L9008
+                    .getCode(), LogMessages.E_AR_A0_L9008.getMessage(), e);
         }
         return ret;
     }

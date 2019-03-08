@@ -3,7 +3,7 @@
     href="${pageContext.request.contextPath}/resources/app/css/styles.css">
 <h1>ファイルアップロード</h1>
 <script type="text/javascript"
-    src="${pageContext.request.contextPath}/resources/vendor/jquery/jquery-3.2.1.js"></script>
+    src="${pageContext.request.contextPath}/resources/vendor/jquery/jquery-3.3.1.js"></script>
 <p class="guide">
 アップロードファイルを選択し、[登録]を押してください。
 </p>
@@ -36,61 +36,75 @@
 <script type="text/javascript">
     $("#uploadFile").on('click', function(){
         var file = $('#file').prop('files')[0];
-        
-        if (file) {
+
+        var getAjax = function () {
             var uploadFileName = file.name;
+            var dfd = new $.Deferred();
+
             $.ajax({
                 url: '${pageContext.request.contextPath}/upload?info&filename=' + uploadFileName,
                 type: 'GET'
-            }).done(function(data, textStatus, jqXHR) {
+            }).then(function(data) {
                 if($("#cbox1:checked").val()=='0'){sleep(5000);}
-                var formData = new FormData();
-                formData.append('key', data.objectKey);
-                formData.append('x-amz-credential', data.credential);
-                formData.append('acl', data.acl);
-                formData.append('x-amz-security-token',data.securityToken);
-                formData.append('x-amz-algorithm', data.algorithm);
-                formData.append('x-amz-date', data.date);
-                formData.append('x-amz-meta-filename', data.rawFileName);
-                formData.append('policy', data.policy);
-                formData.append('x-amz-signature', data.signature);
-                formData.append('file',file);
-                $.ajax({
-                    url: data.targetUrl,
-                    type: 'POST',
-                    data: formData,
-                    contentType: false,
-                    processData: false
-                }).done(function(data, textStatus, jqXHR) {
-                    console.log("Upload " + textStatus);
-                    
-                    $('#message').text('アップロードに成功しました。');
-                    $('#file').val('');
-                }).fail(function(jqXHR, textStatus, errorThrown) {
-                    console.log("Error xhr.status: " + jqXHR.status);
-                    console.log("Error xhr.statusText: " + jqXHR.statusText);
-                    console.log("Error status: " + textStatus);
-                    console.log("Error error: " + errorThrown);
-                    res = jqXHR.responseText;
-                    if(res){
-                        var parser = new DOMParser();
-                        var dom = parser.parseFromString(res, 'text/xml');
-                        var errorCode = dom.getElementsByTagName('Code')[0].textContent;
-                        if(errorCode == 'EntityTooLarge'){
-                            $('#message').text('アップロードできるファイルは'+ data.fileSizeLimit +'バイトまでです。');
-                        }else{
-                            $('#message').text('アップロードに失敗しました。');
-                        }
-                    }else{
-                        $('#message').text('アップロードに失敗しました。');
-                    }
-                });
-            }).fail(function(jqXHR, textStatus, errorThrown) {
+                dfd.resolve(data);
+            }).catch(function(jqXHR, textStatus, errorThrown) {
+                dfd.reject(jqXHR, textStatus, errorThrown);
+            });
+            return dfd.promise();
+        }
+
+        var postAjax = function (getresult) {
+            var dfd = new $.Deferred();
+            var formData = new FormData();
+            formData.append('key', getresult.objectKey);
+            formData.append('x-amz-credential', getresult.credential);
+            formData.append('acl', getresult.acl);
+            formData.append('x-amz-security-token',getresult.securityToken);
+            formData.append('x-amz-algorithm', getresult.algorithm);
+            formData.append('x-amz-date', getresult.date);
+            formData.append('x-amz-meta-filename', getresult.rawFileName);
+            formData.append('policy', getresult.policy);
+            formData.append('x-amz-signature', getresult.signature);
+            formData.append('file',file);
+
+            $.ajax({
+                url: getresult.targetUrl,
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false
+            }).then(function(data, textStatus, jqXHR) {
+                console.log("Upload " + textStatus);
+                $('#message').text('アップロードに成功しました。');
+                $('#file').val('');
+                dfd.resolve()
+            }).catch(function(jqXHR, textStatus, errorThrown) {
+                dfd.reject(jqXHR, textStatus, errorThrown, getresult);
+            });
+            return dfd.promise();
+        }
+
+        if (file) {
+            getAjax()
+            .then(postAjax)
+            .catch(function(jqXHR, textStatus, errorThrown, getresult) {
                 console.log("Error xhr.status: " + jqXHR.status);
                 console.log("Error xhr.statusText: " + jqXHR.statusText);
                 console.log("Error status: " + textStatus);
                 console.log("Error error: " + errorThrown);
-                $('#message').text('アップロードに失敗しました。');
+                res = jqXHR.responseText;
+                if(res){
+                    var parser = new DOMParser();
+                    var dom = parser.parseFromString(res, 'text/xml');
+                    var errorCode = dom.getElementsByTagName('Code')[0].textContent;
+                    if(errorCode == 'EntityTooLarge'){
+                        $('#message').text('アップロードできるファイルは'+ getresult.fileSizeLimit +'バイトまでです。');
+                    }else{
+                        $('#message').text('アップロードに失敗しました。');
+                    }
+                }else{
+                    $('#message').text('アップロードに失敗しました。');
+                }
             });
         } else {
             $('#message').text('ファイルを選択してください。');

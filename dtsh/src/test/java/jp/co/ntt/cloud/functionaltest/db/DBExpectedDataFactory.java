@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.db;
 
@@ -25,12 +26,10 @@ import jp.co.ntt.cloud.functionaltest.domain.model.Reservation;
 
 /**
  * @author NTT 電電太郎
- *
  */
 public class DBExpectedDataFactory {
     /**
      * 期待値となる会員情報を設定する。
-     *
      * @return 期待値となる会員情報
      */
     public static List<Member> expectedMembers() {
@@ -66,7 +65,6 @@ public class DBExpectedDataFactory {
 
     /**
      * 期待値となる会員情報を設定する。
-     *
      * @return 期待値となる会員情報
      */
     public static List<Reservation> expectedReserves() {

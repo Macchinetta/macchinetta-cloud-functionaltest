@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.common.logging;
 
@@ -61,12 +62,14 @@ public enum LogMessages {
     /**
      * 指定されたデータベースのインスタンスが存在しない事を通知するログメッセージ。
      */
-    E_AR_A0_L9009("e.ar.a0.L9009", "指定されたデータベースのインスタンスが存在しません。Database ID= {0}"),
+    E_AR_A0_L9009("e.ar.a0.L9009",
+            "指定されたデータベースのインスタンスが存在しません。Database ID= {0}"),
 
     /**
      * 指定されたプロパティキーが不正である事を通知するログメッセージ。
      */
-    E_AR_A0_L9010("e.ar.a0.L9010", "指定されたプロパティキー[{0}]を指定する場合は、データソースファクトリを拡張して下さい。"),
+    E_AR_A0_L9010("e.ar.a0.L9010",
+            "指定されたプロパティキー[{0}]を指定する場合は、データソースファクトリを拡張して下さい。"),
 
     /**
      * 2重受信が発生した事を通知するログメッセージ。

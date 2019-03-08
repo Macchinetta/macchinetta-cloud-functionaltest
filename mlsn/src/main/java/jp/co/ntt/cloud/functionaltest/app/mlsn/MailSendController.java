@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.mlsn;
 
@@ -49,17 +50,16 @@ public class MailSendController {
     public String send(MailForm mailForm, Model model) {
         MailNotification notification = null;
         if ("simple".equals(mailForm.getKind())) {
-            notification = sesMailSender.registerSimple(
-                    mailForm.getTo(),
+            notification = sesMailSender.registerSimple(mailForm.getTo(),
                     mailForm.getBody());
         } else if ("mime".equals(mailForm.getKind())) {
-            notification = sesMailSender.registerMime("X X <XXXX@XX.XX.XX.XX>",
-                    mailForm.getTo(),
-                    "UTF-8",
-                    "MIME Mail test",
-                    mailForm.getBody());
+            notification = sesMailSender.registerMime(
+                    "xxxx xxxx <xxxx@xx.xx>", mailForm
+                            .getTo(), "UTF-8", "MIME Mail test", mailForm
+                                    .getBody());
         } else {
-            throw new IllegalArgumentException("abnormal kind:" + mailForm.getKind());
+            throw new IllegalArgumentException("abnormal kind:" + mailForm
+                    .getKind());
         }
 
         model.addAttribute("result", convertToMailResult(notification));
@@ -75,9 +75,11 @@ public class MailSendController {
         result.setNotificationType(message.getNotificationType());
         StringBuilder builder = new StringBuilder();
         int count = 0;
-        for (MailNotification.Message.Mail.Header header : message.getMail().getHeaders()) {
+        for (MailNotification.Message.Mail.Header header : message.getMail()
+                .getHeaders()) {
             count++;
-            builder.append(header.getName()).append(":").append(header.getValue());
+            builder.append(header.getName()).append(":").append(header
+                    .getValue());
             if (count < message.getMail().getHeaders().size()) {
                 builder.append(",");
             }

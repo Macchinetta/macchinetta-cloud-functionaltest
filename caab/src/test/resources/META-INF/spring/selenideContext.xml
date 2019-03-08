@@ -17,7 +17,9 @@
         </property>
     </bean>
 
-    <bean id="redisTemplateForCache" class="org.springframework.data.redis.core.RedisTemplate" p:connection-factory-ref="jedisConnectionFactoryForCache" />
+    <bean id="redisTemplateForCache" class="org.springframework.data.redis.core.RedisTemplate" p:connection-factory-ref="jedisConnectionFactoryForCache" p:key-serializer-ref="stringKeySerializer"/>
+
+    <bean id ="stringKeySerializer" class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
 
     <beans profile="ci">
         <bean id="jedisConnectionFactoryForCache"

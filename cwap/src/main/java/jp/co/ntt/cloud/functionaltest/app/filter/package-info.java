@@ -12,10 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 /**
  * サーブレットフィルタ確認用パッケージ。
- *
  * @author NTT 電電太郎
  */
 package jp.co.ntt.cloud.functionaltest.app.filter;

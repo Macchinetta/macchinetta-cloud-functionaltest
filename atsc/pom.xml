@@ -6,7 +6,7 @@
     <parent>
         <groupId>jp.co.ntt.cloud.functionaltest</groupId>
         <artifactId>macchinetta-cloud-functionaltest</artifactId>
-        <version>1.0.1.RELEASE</version>
+        <version>1.1.0.RELEASE</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -47,12 +47,6 @@
                             <cargo.logging>low</cargo.logging>
                         </properties>
                     </configuration>
-                    <container>
-                        <containerId>tomcat8x</containerId>
-                        <zipUrlInstaller>
-                            <url>http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.20/bin/apache-tomcat-8.5.20.zip</url> <!-- テストで使うTomcat -->
-                        </zipUrlInstaller>
-                    </container>
                     <deployables>
                         <deployable>
                             <location>${project.build.directory}/${project.artifactId}.war</location>
@@ -76,6 +70,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jms</artifactId>
+            <version>4.3.14.RELEASE</version>
         </dependency>
 
         <dependency>

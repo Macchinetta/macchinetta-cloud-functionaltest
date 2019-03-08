@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.common.shard.datasource.model;
 
@@ -20,12 +21,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-
 /**
  * データソース共通情報。
- *
  * @author NTT 電電太郎
- *
  */
 @ConfigurationProperties(prefix = "database.common")
 public class CommonDatabaseProperties {
@@ -34,7 +32,6 @@ public class CommonDatabaseProperties {
 
     /**
      * データソース共通情報を取得する。
-     *
      * @return dataSource データソース共通情報
      */
     public Map<String, String> getDataSource() {
@@ -43,9 +40,7 @@ public class CommonDatabaseProperties {
 
     /**
      * データソース共通情報を設定する。
-     * 
-     * @param dataSource
-     *            データソース共通情報t
+     * @param dataSource データソース共通情報t
      */
     public void setDataSource(Map<String, String> dataSource) {
         this.dataSource = dataSource;

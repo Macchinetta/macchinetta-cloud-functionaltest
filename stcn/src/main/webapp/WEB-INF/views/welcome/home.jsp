@@ -5,7 +5,7 @@
 <title>Home</title>
 <link rel="stylesheet"
     href="${pageContext.request.contextPath}/resources/app/css/styles.css">
-<script src="${pageContext.request.contextPath}/resources/vendor/jquery/jquery-3.2.1.min.js"></script>
+<script src="${pageContext.request.contextPath}/resources/vendor/jquery/jquery-3.3.1.js"></script>
 <script src="${pageContext.request.contextPath}/resources/app/js/img-load-check.js"></script>
 </head>
 <sec:authentication property="principal.account" var="account" />

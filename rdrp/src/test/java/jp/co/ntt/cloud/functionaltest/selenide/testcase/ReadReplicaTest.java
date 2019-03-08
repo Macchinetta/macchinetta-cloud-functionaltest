@@ -12,14 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selectors.byId;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.Selenide.screenshot;
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selectors.*;
+import static com.codeborne.selenide.Selenide.*;
 
 import org.junit.After;
 import org.junit.Before;
@@ -30,7 +29,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.WebDriverRunner;
 
+import io.github.bonigarcia.wdm.FirefoxDriverManager;
 import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
 import junit.framework.TestCase;
 
@@ -52,6 +53,12 @@ public class ReadReplicaTest extends TestCase {
     private String reportPath;
 
     /*
+     * geckoドライバーバージョン
+     */
+    @Value("${selenide.geckodriverVersion}")
+    private String geckodriverVersion;
+
+    /*
      * 顧客名：姓
      */
     private String lastName;
@@ -63,10 +70,20 @@ public class ReadReplicaTest extends TestCase {
 
     @Before
     public void setUp() {
+
+        // geckoドライバーの設定
+        if (System.getProperty("webdriver.gecko.driver") == null) {
+            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+                    .setup();
+        }
+
+        // ブラウザの設定
+        Configuration.browser = WebDriverRunner.MARIONETTE;
+
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
     }
- 
+
     @After
     public void tearDown() {
     }
@@ -87,12 +104,14 @@ public class ReadReplicaTest extends TestCase {
         open(applicationContextUrl, TopPage.class);
 
         // アサーション
-        
+
         // 顧客テーブルに初期投入データが表示されていることを確認する。
-        $(byId("userListTable")).$("tr", 1).$(".lastName").shouldBe(text("Denden"));
+        $(byId("userListTable")).$("tr", 1).$(".lastName").shouldBe(text(
+                "Denden"));
         $(byId("userListTable")).$("tr", 1).$(".firstName").shouldBe(text(
                 "Hanako"));
-        $(byId("userListTable")).$("tr", 2).$(".lastName").shouldBe(text("Denden"));
+        $(byId("userListTable")).$("tr", 2).$(".lastName").shouldBe(text(
+                "Denden"));
         $(byId("userListTable")).$("tr", 2).$(".firstName").shouldBe(text(
                 "Taro"));
 
@@ -104,18 +123,18 @@ public class ReadReplicaTest extends TestCase {
      * <ul>
      * <li>マスタデータベースにデータを更新できることを確認する。</li>
      * </ul>
+     * @throws InterruptedException
      */
     @Test
-    public void testRDRP0101002() {
+    public void testRDRP0101002() throws InterruptedException {
 
         // 事前準備
         lastName = "Toyosu";
         firstName = "Yoshiko";
 
         // テスト実行
-        open(applicationContextUrl, TopPage.class)
-        .register(lastName, firstName)
-        .reload();
+        open(applicationContextUrl, TopPage.class).register(lastName, firstName)
+                .reload();
 
         // アサーション
         // 顧客テーブルに顧客情報が登録されていることを確認する。

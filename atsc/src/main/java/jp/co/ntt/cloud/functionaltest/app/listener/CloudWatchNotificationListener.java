@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.listener;
 
@@ -40,7 +41,8 @@ public class CloudWatchNotificationListener {
     private final Set<String> messageIdSet = new HashSet<>();
 
     @JmsListener(destination = "TESTAutoScaleNotification", concurrency = "5-10")
-    public void receive(String message, @Header(JmsHeaders.MESSAGE_ID) String messageId) {
+    public void receive(String message,
+            @Header(JmsHeaders.MESSAGE_ID) String messageId) {
         synchronized (messageIdSet) {
             if (messageIdSet.contains(messageId)) {
                 return;
@@ -50,7 +52,7 @@ public class CloudWatchNotificationListener {
         try {
             messageBlockingQueue.put(message);
         } catch (InterruptedException e) {
-            // do nothing.
+            Thread.currentThread().interrupt();
         }
     }
 }

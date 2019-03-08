@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.common.shard.datasource.model;
 
@@ -23,9 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * データソース個別情報。
- *
  * @author NTT 電電太郎
- *
  */
 @ConfigurationProperties(prefix = "database")
 public class DatabaseProperties {
@@ -40,8 +39,7 @@ public class DatabaseProperties {
     }
 
     /**
-     * @param dataSources
-     *            the dataSources to set
+     * @param dataSources the dataSources to set
      */
     public void setDataSources(List<Map<String, String>> dataSources) {
         this.dataSources = dataSources;

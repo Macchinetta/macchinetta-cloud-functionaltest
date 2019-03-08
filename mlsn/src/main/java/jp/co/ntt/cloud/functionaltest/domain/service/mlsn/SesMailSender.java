@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.service.mlsn;
 
@@ -23,6 +24,6 @@ public interface SesMailSender {
 
     MailNotification registerSimple(String to, String body);
 
-    MailNotification registerMime(final String from, final String to, final String charset,
-            String subject, String body);
+    MailNotification registerMime(final String from, final String to,
+            final String charset, String subject, String body);
 }

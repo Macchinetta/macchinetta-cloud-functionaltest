@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.common.shard.annotation;
 
@@ -23,9 +24,7 @@ import java.lang.annotation.Target;
 
 /**
  * シャード対象を示す。
- *
  * @author NTT 電電太郎
- *
  */
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
@@ -33,7 +32,6 @@ import java.lang.annotation.Target;
 public @interface ShardWithAccount {
     /**
      * シャードキーを保持するオブジェクトのパス。
-     *
      * @return
      */
     String value() default "";

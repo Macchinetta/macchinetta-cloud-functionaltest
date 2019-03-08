@@ -33,14 +33,14 @@ logging:
 redis:
   session:
     cluster:
-      node1: atrs-ci.xxxx.clustercfg.apne1.cache.amazonaws.com:6379
+      node1: atrs-ci.XXXX.clustercfg.apne1.cache.amazonaws.com:6379
     maxTotal: 8
     maxIdle: 8
     maxWaitMillis: -1
     minIdle: 0
   cache:
     cluster:
-      node1: atrs-ci-cache.xxxx.clustercfg.apne1.cache.amazonaws.com:6379
+      node1: atrs-ci-cache.XXXX.clustercfg.apne1.cache.amazonaws.com:6379
     maxTotal: 8
     maxIdle: 8
     maxWaitMillis: -1

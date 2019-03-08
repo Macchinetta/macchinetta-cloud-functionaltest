@@ -12,10 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.config;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -23,20 +25,17 @@ import org.springframework.cloud.config.server.EnableConfigServer;
 
 /**
  * Config Server メインクラス
- *
  * @author NTT 電電太郎
- *
  */
 @SpringBootApplication
 @EnableConfigServer
-@EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class })
+@EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class,
+        WebMvcMetricsAutoConfiguration.class })
 public class ConfigServer {
 
     /**
      * メインメソッド
-     *
-     * @param args
-     *            コマンド引数
+     * @param args コマンド引数
      */
     public static void main(String[] args) {
         SpringApplication.run(ConfigServer.class, args);

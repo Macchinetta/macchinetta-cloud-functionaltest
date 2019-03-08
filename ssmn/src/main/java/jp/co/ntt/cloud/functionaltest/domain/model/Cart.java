@@ -12,12 +12,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.model;
 
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -27,15 +29,12 @@ import java.util.Set;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
 import org.springframework.util.SerializationUtils;
 
 /**
  * カート
- *
  * @author NTT 電電太郎
- *
  */
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -46,11 +45,11 @@ public class Cart implements Serializable {
     /**
      * カートに入っている商品
      */
-    private final Map<String, CartItem> cartItems = Collections.synchronizedMap(new LinkedHashMap<>());
+    private final Map<String, CartItem> cartItems = Collections.synchronizedMap(
+            new LinkedHashMap<>());
 
     /**
      * カートに入っているアイテムを取得する。
-     *
      * @return カートに入っているアイテム
      */
     public Collection<CartItem> getCartItems() {
@@ -59,9 +58,7 @@ public class Cart implements Serializable {
 
     /**
      * カートにアイテムを追加する。
-     *
-     * @param cartItem
-     *            カートアイテム
+     * @param cartItem カートアイテム
      * @return カートクラス
      */
     public Cart add(CartItem cartItem) {
@@ -85,7 +82,6 @@ public class Cart implements Serializable {
 
     /**
      * カートに入っているアイテムをクリアする。
-     *
      * @return カートクラス
      */
     public Cart clear() {
@@ -95,9 +91,7 @@ public class Cart implements Serializable {
 
     /**
      * カートに入っているアイテムを複数削除する。
-     *
-     * @param removedItemsIds
-     *            アイテムID
+     * @param removedItemsIds アイテムID
      * @return カートクラス
      */
     public Cart remove(Set<String> removedItemsIds) {
@@ -109,9 +103,7 @@ public class Cart implements Serializable {
 
     /**
      * カートに入っているアイテムを一つ削除する。
-     *
-     * @param removedItemsId
-     *            アイテムID
+     * @param removedItemsId アイテムID
      * @return カートクラス
      */
     public Cart remove(String removedItemsId) {
@@ -121,9 +113,7 @@ public class Cart implements Serializable {
 
     /**
      * カートに入っているアイテムの数量を設定する。
-     *
-     * @param cartItem
-     *            カートアイテム
+     * @param cartItem カートアイテム
      * @return カートクラス
      */
     public Cart setQuantity(CartItem cartItem) {
@@ -137,7 +127,6 @@ public class Cart implements Serializable {
 
     /**
      * カートが空かどうかを返す。空なら{@link true}、それ以外は{@link false}。
-     *
      * @return {@link boolean}
      */
     public boolean isEmpty() {
@@ -146,7 +135,6 @@ public class Cart implements Serializable {
 
     /**
      * カートに入っているアイテムの合計金額を返す。
-     * 
      * @return 合計金額
      */
     public int getTotalAmount() {
@@ -160,7 +148,6 @@ public class Cart implements Serializable {
 
     /**
      * カートの状態を表すハッシュ値を作成する
-     *
      * @param cart
      * @return
      */
@@ -172,6 +159,6 @@ public class Cart implements Serializable {
             signature = messageDigest.digest(serialized);
         } catch (NoSuchAlgorithmException ignored) {
         }
-        return new String(Base64.encode(signature));
+        return Base64.getEncoder().encodeToString(signature);
     }
 }

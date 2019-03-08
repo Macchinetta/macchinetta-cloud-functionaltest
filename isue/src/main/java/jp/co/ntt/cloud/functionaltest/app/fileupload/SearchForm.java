@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.fileupload;
 
@@ -21,43 +22,53 @@ import javax.validation.constraints.Size;
 
 public class SearchForm implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-	
-	/** オブジェクトキー */
-	@Size(min = 0, max = 100)
-	private String objectKey;
-	/** アップロードユーザ */
-	@Size(min = 0, max = 100)
-	private String uploadUser;
-	/** アップロード日付 */
-	@Size(min = 0, max = 100)
-	private String uploadDate;
-	/** バケット名 */
-	@Size(min = 0, max = 100)
-	private String bucketName;
+    private static final long serialVersionUID = 1L;
 
-	public String getObjectKey() {
-		return objectKey;
-	}
-	public void setObjectKey(String objectKey) {
-		this.objectKey = objectKey;
-	}
-	public String getUploadUser() {
-		return uploadUser;
-	}
-	public void setUploadUser(String uploadUser) {
-		this.uploadUser = uploadUser;
-	}
-	public String getUploadDate() {
-		return uploadDate;
-	}
-	public void setUploadDate(String uploadDate) {
-		this.uploadDate = uploadDate;
-	}
-	public String getBucketName() {
-		return bucketName;
-	}
-	public void setBucketName(String bucketName) {
-		this.bucketName = bucketName;
-	}
+    /** オブジェクトキー */
+    @Size(min = 0, max = 100)
+    private String objectKey;
+
+    /** アップロードユーザ */
+    @Size(min = 0, max = 100)
+    private String uploadUser;
+
+    /** アップロード日付 */
+    @Size(min = 0, max = 100)
+    private String uploadDate;
+
+    /** バケット名 */
+    @Size(min = 0, max = 100)
+    private String bucketName;
+
+    public String getObjectKey() {
+        return objectKey;
+    }
+
+    public void setObjectKey(String objectKey) {
+        this.objectKey = objectKey;
+    }
+
+    public String getUploadUser() {
+        return uploadUser;
+    }
+
+    public void setUploadUser(String uploadUser) {
+        this.uploadUser = uploadUser;
+    }
+
+    public String getUploadDate() {
+        return uploadDate;
+    }
+
+    public void setUploadDate(String uploadDate) {
+        this.uploadDate = uploadDate;
+    }
+
+    public String getBucketName() {
+        return bucketName;
+    }
+
+    public void setBucketName(String bucketName) {
+        this.bucketName = bucketName;
+    }
 }

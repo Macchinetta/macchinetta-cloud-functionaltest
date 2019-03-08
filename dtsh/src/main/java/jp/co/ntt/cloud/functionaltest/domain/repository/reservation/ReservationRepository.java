@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.repository.reservation;
 
@@ -32,27 +33,21 @@ public interface ReservationRepository {
 
     /**
      * 予約情報を取得する。
-     *
-     * @param reserveNo
-     *            予約番号
+     * @param reserveNo 予約番号
      * @return 予約情報
      */
     Reservation findOne(String reserveNo);
 
     /**
      * 予約情報を更新する。
-     *
-     * @param reservation
-     *            予約情報
+     * @param reservation 予約情報
      * @return 更新件数
      */
     int update(Reservation reservation);
 
     /**
      * 予約情報を削除する。
-     *
-     * @param reservation
-     *            予約番号
+     * @param reservation 予約番号
      * @return 削除件数
      */
     int delete(String reservationNo);

@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.common.datasource.pool;
 
@@ -24,7 +25,6 @@ import org.terasoluna.gfw.common.exception.SystemException;
 
 import jp.co.ntt.cloud.functionaltest.domain.common.datasource.DataSourceFactory;
 import jp.co.ntt.cloud.functionaltest.domain.common.logging.LogMessages;
-
 
 /**
  * Tomcatデータソースのファクトリ。
@@ -64,8 +64,8 @@ public class TomcatDataSourceFactory implements DataSourceFactory {
                 ret = factory.createDataSource(properties);
             }
         } catch (Exception e) {
-            throw new SystemException(LogMessages.E_AR_A0_L9008.getCode(), LogMessages.E_AR_A0_L9008
-                    .getMessage(), e);
+            throw new SystemException(LogMessages.E_AR_A0_L9008
+                    .getCode(), LogMessages.E_AR_A0_L9008.getMessage(), e);
         }
         return ret;
     }
@@ -76,9 +76,11 @@ public class TomcatDataSourceFactory implements DataSourceFactory {
      * @return {@link DataSource}
      * @throws Exception
      */
-    protected DataSource createReadReplicaDataSource(Properties properties) throws Exception {
-        throw new SystemException(LogMessages.E_AR_A0_L9010.getCode(), LogMessages.E_AR_A0_L9010
-                .getMessage(dbInstanceIdentifierKey));
+    protected DataSource createReadReplicaDataSource(
+            Properties properties) throws Exception {
+        throw new SystemException(LogMessages.E_AR_A0_L9010
+                .getCode(), LogMessages.E_AR_A0_L9010.getMessage(
+                        dbInstanceIdentifierKey));
     }
 
 }

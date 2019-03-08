@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.service.getconfig;
 
@@ -23,7 +24,6 @@ import jp.co.ntt.cloud.functionaltest.domain.model.RdbConfigDto;
 
 /**
  * RDB関連の情報を取得するサービスクラス
- *
  * @author NTT 電電太郎
  */
 @Service
@@ -34,7 +34,6 @@ public class GetRdbConfigService {
 
     /**
      * RDB関連の情報を取得する。
-     * 
      * @return RDB関連の情報
      */
     public RdbConfigDto getConfig() {

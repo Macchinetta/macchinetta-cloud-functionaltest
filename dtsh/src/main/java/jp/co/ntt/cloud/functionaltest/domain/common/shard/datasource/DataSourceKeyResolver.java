@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.common.shard.datasource;
 
@@ -26,11 +27,10 @@ import jp.co.ntt.cloud.functionaltest.domain.common.shard.datasource.model.Datab
 
 /**
  * シャードの割り当て決定。
- *
  * @author NTT 電電太郎
- *
  */
-public class DataSourceKeyResolver implements ShardKeyResolver, InitializingBean {
+public class DataSourceKeyResolver implements ShardKeyResolver,
+                                   InitializingBean {
 
     /**
      * デフォルトキーをインジェクト
@@ -49,9 +49,7 @@ public class DataSourceKeyResolver implements ShardKeyResolver, InitializingBean
     private List<Map<String, String>> dataSources;
 
     /**
-     *
-     * @param databaseProperties
-     *            データソース個別情報プロパティ
+     * @param databaseProperties データソース個別情報プロパティ
      */
     public DataSourceKeyResolver(DatabaseProperties databaseProperties) {
         this.databaseProperties = databaseProperties;
@@ -63,8 +61,10 @@ public class DataSourceKeyResolver implements ShardKeyResolver, InitializingBean
     @Override
     public void afterPropertiesSet() throws Exception {
         this.dataSources = new ArrayList<>();
-        for (Map<String, String> dataSource : this.databaseProperties.getDataSources()) {
-            if (!databaseDefaultSchemaName.equals(dataSource.get(ShardKeyResolver.SCHEMA_KEY_NAME))) {
+        for (Map<String, String> dataSource : this.databaseProperties
+                .getDataSources()) {
+            if (!databaseDefaultSchemaName.equals(dataSource.get(
+                    ShardKeyResolver.SCHEMA_KEY_NAME))) {
                 this.dataSources.add(dataSource);
             }
         }

@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.common.logging;
 
@@ -22,7 +23,6 @@ import java.text.MessageFormat;
  * @author NTT 電電太郎
  */
 public enum LogMessages {
-
 
     /**
      * 2重受信が発生した事を通知するログメッセージ。

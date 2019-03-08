@@ -29,7 +29,7 @@
 
     <!-- mail messages-->
     <bean id="templateMessage" class="org.springframework.mail.SimpleMailMessage">
-        <property name="from" value="XX@XX.XX.XX.XX"/>
+        <property name="from" value="xxxx@xx.xx"/>
         <property name="subject" value="testmail"/>
     </bean>
 

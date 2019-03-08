@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.config;
 
@@ -34,15 +35,15 @@ import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 
 /**
  * 環境リポジトリクラス
- *
  * @author NTT 電電太郎
- *
  */
 @ConfigurationProperties("spring.cloud.config.server.s3")
 public class S3EnvironmentRepository extends AbstractScmEnvironmentRepository
-        implements EnvironmentRepository, SearchPathLocator, InitializingBean {
+                                     implements EnvironmentRepository,
+                                     SearchPathLocator, InitializingBean {
 
-    private static Log logger = LogFactory.getLog(S3EnvironmentRepository.class);
+    private static Log logger = LogFactory.getLog(
+            S3EnvironmentRepository.class);
 
     public S3EnvironmentRepository(ConfigurableEnvironment environment) {
         super(environment);
@@ -50,18 +51,14 @@ public class S3EnvironmentRepository extends AbstractScmEnvironmentRepository
 
     /**
      * 対象となる環境リポジトリから、ファイルをダウンロードおよびチェックアウトして、ローカルの一時ディレクトリに保存して、ロケーションを返却する。
-     *
-     * @param application
-     *            アプリケーション名
-     * @param profile
-     *            プロファイル名
-     * @param label
-     *            ラベル名
-     *
+     * @param application アプリケーション名
+     * @param profile プロファイル名
+     * @param label ラベル名
      * @return 環境依存値ファイルのロケーション
      */
     @Override
-    public synchronized Locations getLocations(String application, String profile, String label) {
+    public synchronized Locations getLocations(String application,
+            String profile, String label) {
 
         AmazonS3 amazonS3 = AmazonS3ClientBuilder.defaultClient();
         TransferManager tm = null;
@@ -69,9 +66,11 @@ public class S3EnvironmentRepository extends AbstractScmEnvironmentRepository
             String bucketName = new AmazonS3URI(getUri()).getBucket();
             logger.info("bucket name:" + bucketName);
 
-            tm = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
+            tm = TransferManagerBuilder.standard().withS3Client(amazonS3)
+                    .build();
             logger.info("local temp dir:" + getBasedir().getAbsolutePath());
-            MultipleFileDownload download = tm.downloadDirectory(bucketName, null, getBasedir());
+            MultipleFileDownload download = tm.downloadDirectory(bucketName,
+                    null, getBasedir());
             download.waitForCompletion();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -83,8 +82,8 @@ public class S3EnvironmentRepository extends AbstractScmEnvironmentRepository
             }
         }
 
-        return new Locations(application, profile, label, null,
-                getSearchLocations(getWorkingDirectory(), application, profile, label));
+        return new Locations(application, profile, label, null, getSearchLocations(
+                getWorkingDirectory(), application, profile, label));
     }
 
     /**
@@ -92,7 +91,8 @@ public class S3EnvironmentRepository extends AbstractScmEnvironmentRepository
      */
     @Override
     public void afterPropertiesSet() {
-        Assert.state(getUri() != null, "You need to configure a uri for the s3 bucket (e.g. 's3://bucket/')");
+        Assert.state(getUri() != null,
+                "You need to configure a uri for the s3 bucket (e.g. 's3://bucket/')");
         // S3 URIを検証するためにインスタンス化
         new AmazonS3URI(getUri());
     }

@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.service.reservation;
 
@@ -27,9 +28,11 @@ import javax.inject.Inject;
 import java.util.concurrent.ArrayBlockingQueue;
 
 @Service
-public class ReservationInspectionServiceImpl implements ReservationInspectionService {
+public class ReservationInspectionServiceImpl implements
+                                              ReservationInspectionService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ReservationInspectionServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            ReservationInspectionServiceImpl.class);
 
     @Inject
     DuplicateMessageChecker duplicateMessageChecker;
@@ -41,7 +44,8 @@ public class ReservationInspectionServiceImpl implements ReservationInspectionSe
     @Override
     public void inspectAndNotify(Reservation reservation, String messageId) {
 
-        logger.info("### checker before reserveNo[{}]", reservation.getReserveNo());
+        logger.info("### checker before reserveNo[{}]", reservation
+                .getReserveNo());
 
         duplicateMessageChecker.checkDuplicateMessage(messageId);
 
@@ -49,7 +53,8 @@ public class ReservationInspectionServiceImpl implements ReservationInspectionSe
             throw new BusinessException("Retryable business exception");
         }
 
-        logger.info("### checker after reserveNo[{}]", reservation.getReserveNo());
+        logger.info("### checker after reserveNo[{}]", reservation
+                .getReserveNo());
 
         // business-process.
         reservationBlockingQueue.add(reservation);

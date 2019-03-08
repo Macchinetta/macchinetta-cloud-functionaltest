@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.common;
 
@@ -31,11 +32,10 @@ import java.util.List;
 
 /**
  * トランザクショントークンチェック有効化用PostProcessor
- *
  * @author NTT 電電太郎
  */
-public class RequestDataValueProcessorPostProcessor
-        implements BeanDefinitionRegistryPostProcessor {
+public class RequestDataValueProcessorPostProcessor implements
+                                                    BeanDefinitionRegistryPostProcessor {
 
     /**
      * {@inheritDoc}
@@ -56,8 +56,7 @@ public class RequestDataValueProcessorPostProcessor
         values.add(new TransactionTokenRequestDataValueProcessor());
         values.add(new CsrfRequestDataValueProcessor());
         cav.addGenericArgumentValue(values);
-        RootBeanDefinition rootBeanDefinition = new RootBeanDefinition(
-                CompositeRequestDataValueProcessor.class, cav, null);
+        RootBeanDefinition rootBeanDefinition = new RootBeanDefinition(CompositeRequestDataValueProcessor.class, cav, null);
 
         registry.removeBeanDefinition("requestDataValueProcessor");
         registry.registerBeanDefinition("requestDataValueProcessor",

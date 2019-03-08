@@ -12,12 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.exception;
 
 /**
  * カスタム例外ハンドラ確認用例外。
- *
  * @author NTT 電電太郎
  */
 public class CwapCustomException extends RuntimeException {
