@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.model;
 
@@ -22,7 +23,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * 会員情報。
- *
  * @author NTT 電電太郎
  */
 public class Member implements Serializable {
@@ -49,7 +49,6 @@ public class Member implements Serializable {
 
     /**
      * お客様番号を取得する。
-     *
      * @return お客様番号
      */
     public String getCustomerNo() {
@@ -58,9 +57,7 @@ public class Member implements Serializable {
 
     /**
      * お客様番号を設定する。
-     *
-     * @param customerNo
-     *            お客様番号
+     * @param customerNo お客様番号
      */
     public void setCustomerNo(String customerNo) {
         this.customerNo = customerNo;
@@ -68,7 +65,6 @@ public class Member implements Serializable {
 
     /**
      * 名前を取得する。
-     *
      * @return 名前
      */
     public String getName() {
@@ -77,9 +73,7 @@ public class Member implements Serializable {
 
     /**
      * 名前を設定する。
-     *
-     * @param name
-     *            名前
+     * @param name 名前
      */
     public void setName(String name) {
         this.name = name;
@@ -87,7 +81,6 @@ public class Member implements Serializable {
 
     /**
      * フリガナ名を取得する。
-     *
      * @return フリガナ名。
      */
     public String getFuriName() {
@@ -96,9 +89,7 @@ public class Member implements Serializable {
 
     /**
      * フリガナ名を設定する。
-     *
-     * @param kanaName
-     *            フリガナ名
+     * @param kanaName フリガナ名
      */
     public void setFuriName(String furiName) {
         this.furiName = furiName;
@@ -109,7 +100,8 @@ public class Member implements Serializable {
      */
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+        return ToStringBuilder.reflectionToString(this,
+                ToStringStyle.MULTI_LINE_STYLE);
     }
 
 }

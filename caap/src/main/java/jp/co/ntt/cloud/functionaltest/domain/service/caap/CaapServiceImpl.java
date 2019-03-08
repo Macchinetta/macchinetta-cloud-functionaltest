@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.service.caap;
 
@@ -26,7 +27,8 @@ import javax.inject.Inject;
 @Service
 public class CaapServiceImpl implements CaapService {
 
-    private static final Logger logger = LoggerFactory.getLogger(CaapServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            CaapServiceImpl.class);
 
     @Inject
     ApplicationContext applicationContext;
@@ -37,10 +39,11 @@ public class CaapServiceImpl implements CaapService {
         final CaapProjectInfo caapProjectInfo = new CaapProjectInfo();
 
         final Class<AmazonElastiCache> elastiCacheClass = AmazonElastiCache.class;
-        caapProjectInfo.setExistFQCNClasspath(
-                isLoadableClass(elastiCacheClass.getCanonicalName()));
+        caapProjectInfo.setExistFQCNClasspath(isLoadableClass(elastiCacheClass
+                .getCanonicalName()));
 
-        caapProjectInfo.setExistInApplicationContext(containsInApplicationContext(elastiCacheClass));
+        caapProjectInfo.setExistInApplicationContext(
+                containsInApplicationContext(elastiCacheClass));
 
         return caapProjectInfo;
     }

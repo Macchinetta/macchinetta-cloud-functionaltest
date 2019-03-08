@@ -12,24 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import com.codeborne.selenide.Configuration;
-import jp.co.ntt.cloud.functionaltest.selenide.page.ConfirmTokenPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.CustomErrorPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.LoggingPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.LoginPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.ShowCustomViewPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.openqa.selenium.By;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import sun.rmi.runtime.Log;
+import static com.codeborne.selenide.Selenide.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -39,12 +28,24 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.UUID;
 
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selectors.byId;
-import static com.codeborne.selenide.Selectors.byName;
-import static com.codeborne.selenide.Selenide.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.openqa.selenium.By;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.WebDriverRunner;
+
+import io.github.bonigarcia.wdm.FirefoxDriverManager;
+import jp.co.ntt.cloud.functionaltest.selenide.page.ConfirmTokenPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.CustomErrorPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.LoggingPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.LoginPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.ShowCustomViewPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -63,18 +64,33 @@ public class CwapTest {
     @Value("${path.report}")
     private String reportPath;
 
+    /*
+     * geckoドライバーバージョン
+     */
+    @Value("${selenide.geckodriverVersion}")
+    private String geckodriverVersion;
+
     @Before
     public void setUp() {
+
+        // geckoドライバーの設定
+        if (System.getProperty("webdriver.gecko.driver") == null) {
+            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+                    .setup();
+        }
+
+        // ブラウザの設定
+        Configuration.browser = WebDriverRunner.MARIONETTE;
+
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
     }
 
     /*
-     * (注：回帰試験によるログファイルの堆積により、試験時間の延伸が懸念されるため、手動で実行すること）
-     * Spring Bootによるログファイルパス指定と、カスタムLogback定義ファイル(appName-logback-spring.xml)の
-     * アプリケーションログ出力の確認を行う。
+     * (注：回帰試験によるログファイルの堆積により、試験時間の延伸が懸念されるため、手動で実行すること） Spring
+     * Bootによるログファイルパス指定と、カスタムLogback定義ファイル(appName-logback-spring.xml)の アプリケーションログ出力の確認を行う。
      */
-//    @Test
+    // @Test
     public void testApplicationLog() {
 
         // 準備 ログイン
@@ -98,9 +114,8 @@ public class CwapTest {
     private void assertLog(String uuid) {
         final File f = new File("/var/log/applogs/cwap/spring.log");
         final String searchText = "outputUUID=" + uuid;
-        try (BufferedReader r = new BufferedReader(
-                new InputStreamReader(new FileInputStream(f),
-                        Charset.forName("UTF-8")))) {
+        try (BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(f), Charset
+                .forName("UTF-8")))) {
             String line = "";
             do {
                 if (line.contains(searchText)) {
@@ -108,8 +123,8 @@ public class CwapTest {
                 }
                 line = r.readLine();
             } while (line != null);
-            throw new IllegalStateException(
-                    "Can't find target text:" + searchText);
+            throw new IllegalStateException("Can't find target text:"
+                    + searchText);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
@@ -136,15 +151,14 @@ public class CwapTest {
     }
 
     /*
-     * トランザクショントークンチェックエラー発生を確認する。
-     * 遷移前にトークンチェックを行う画面に対し、直接GETを発行する。
+     * トランザクショントークンチェックエラー発生を確認する。 遷移前にトークンチェックを行う画面に対し、直接GETを発行する。
      */
     @Test
     public void testTransactionTokenCheckError() {
         // 準備 ログイン
         open(applicationContextUrl, LoginPage.class).login();
 
-        //テスト実行
+        // テスト実行
         open(applicationContextUrl + "confirmToken");
 
         // アサーション
@@ -177,8 +191,7 @@ public class CwapTest {
     }
 
     /*
-     * <mvc:view-resolver/>に<mvc:bean-name/>を追加し、カスタムビュー定義が
-     * 使用可能であることを確認する。
+     * <mvc:view-resolver/>に<mvc:bean-name/>を追加し、カスタムビュー定義が 使用可能であることを確認する。
      */
     @Test
     public void testShowCustomView() {
@@ -206,7 +219,8 @@ public class CwapTest {
                 LoginPage.class).login().customError();
 
         // アサーション
-        assertThat(customErrorPage.getErrorMessage(), is("Cwap custom error message."));
+        assertThat(customErrorPage.getErrorMessage(), is(
+                "Cwap custom error message."));
 
         // 証跡取得
         screenshot("testConfirmSystemError");

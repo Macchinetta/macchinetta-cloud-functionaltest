@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
@@ -19,10 +20,11 @@ import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.*;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +32,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.WebDriverRunner;
 
+import io.github.bonigarcia.wdm.FirefoxDriverManager;
 import jp.co.ntt.cloud.functionaltest.selenide.page.HelloPage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
 
@@ -52,6 +56,12 @@ public class HelloWorldTest {
     private String reportPath;
 
     /*
+     * geckoドライバーバージョン
+     */
+    @Value("${selenide.geckodriverVersion}")
+    private String geckodriverVersion;
+
+    /*
      * ユーザID
      */
     private String userId;
@@ -63,6 +73,16 @@ public class HelloWorldTest {
 
     @Before
     public void setUp() {
+
+        // geckoドライバーの設定
+        if (System.getProperty("webdriver.gecko.driver") == null) {
+            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+                    .setup();
+        }
+
+        // ブラウザの設定
+        Configuration.browser = "jp.co.ntt.cloud.functionaltest.selenide.testcase.FirefoxWebDriverProvider";
+
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
     }
@@ -77,11 +97,10 @@ public class HelloWorldTest {
     }
 
     /*
-     * PRCD20101_001
-     * 署名付きCookieを利用して、アクセス制限が設定されているCloudFront上のファイルにIP制限に因ってアクセスできないことを確認する
+     * PRCD20101_001 署名付きCookieを利用して、アクセス制限が設定されているCloudFront上のファイルにIP制限に因ってアクセスできないことを確認する
      */
     @Test
-    public void testPRCD20101_001() {
+    public void testPRCD20101_001() throws InterruptedException {
 
         // 事前準備
         userId = "0000000002";
@@ -97,19 +116,9 @@ public class HelloWorldTest {
         $$("p").get(1).shouldHave(text("Taro Denden"));
 
         // コンテンツの閲覧期限に達したので閲覧可能だがIP制限で閲覧不可
-
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(5000);
         helloWorldPage.loadVerificationContent();
-
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(10000);
 
         String cloudfrontVal = $(byId("cloudFrontResult")).val();
         assertThat(cloudfrontVal, isEmptyOrNullString());

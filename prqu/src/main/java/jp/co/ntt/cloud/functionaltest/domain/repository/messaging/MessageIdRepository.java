@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.repository.messaging;
 
@@ -23,14 +24,12 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface MessageIdRepository {
 
-
     /**
      * メッセージIDをメッセージIDテーブルに登録する。
      * @param queueName キュー名
      * @param id メッセージID
      * @return 登録件数
      */
-    int register(@Param("queueName") String queueName,
-            @Param("id") String id);
+    int register(@Param("queueName") String queueName, @Param("id") String id);
 
 }

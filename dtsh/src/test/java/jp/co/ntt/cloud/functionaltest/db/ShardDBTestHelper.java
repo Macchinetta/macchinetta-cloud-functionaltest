@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.db;
 
@@ -41,9 +42,7 @@ import jp.co.ntt.cloud.functionaltest.selenide.page.HelloPage;
 
 /**
  * シャードのテストヘルパー
- *
  * @author NTT 電電太郎
- *
  */
 public class ShardDBTestHelper {
 
@@ -66,14 +65,12 @@ public class ShardDBTestHelper {
 
     /**
      * シャード1に予約番号が偶数の予約情報、シャード2に予約番号奇数の予約情報が登録されていること
-     *
-     * @param expectedReservations
-     *            予約情報の期待値
+     * @param expectedReservations 予約情報の期待値
      * @throws SQLException
      * @throws ClassNotFoundException
      */
-    public void shardInsertTest(String serviceUrl, List<Reservation> expectedReservations)
-            throws ClassNotFoundException, SQLException {
+    public void shardInsertTest(String serviceUrl,
+            List<Reservation> expectedReservations) throws ClassNotFoundException, SQLException {
 
         // シャード1,2に接続して予約情報が登録されていることを確認する。
         try ( // @formatter:off
@@ -82,9 +79,8 @@ public class ShardDBTestHelper {
                 Connection shard2Conn = dbUtil.getShard2Connection();
                 Statement defaultStmt = defaultConn.createStatement();
                 Statement shard1Stmt = shard1Conn.createStatement();
-                Statement shard2Stmt = shard2Conn.createStatement();){
-             // @formatter:on
-
+                Statement shard2Stmt = shard2Conn.createStatement();) {
+            // @formatter:on
 
             defaultStmt.executeUpdate(SQLConst.MEMBER.TRUNCATE);
             shard1Stmt.executeUpdate(SQLConst.RESERVATION.TRUNCATE);
@@ -94,9 +90,11 @@ public class ShardDBTestHelper {
             given().get("reserve/" + serviceUrl + "/register");
 
             try ( // @formatter:off
-                    ResultSet shard1Rset = shard1Stmt.executeQuery(SQLConst.RESERVATION.SELECT_ALL);
-                    ResultSet shard2Rset = shard2Stmt.executeQuery(SQLConst.RESERVATION.SELECT_ALL);){
-                  // @formatter:on
+                    ResultSet shard1Rset = shard1Stmt.executeQuery(
+                            SQLConst.RESERVATION.SELECT_ALL);
+                    ResultSet shard2Rset = shard2Stmt.executeQuery(
+                            SQLConst.RESERVATION.SELECT_ALL);) {
+                // @formatter:on
 
                 // shard1のアサート
                 // 予約情報期待値リストのインデックス
@@ -104,13 +102,15 @@ public class ShardDBTestHelper {
                 // 期待値の予約情報の会員情報が偶数となっているリスト
                 List<Reservation> expectedReservationsEven = new ArrayList<>();
                 for (Reservation reservation : expectedReservations) {
-                    if (Integer.parseInt(reservation.getRepMember().getCustomerNo()) % NUMBER_OF_SHARD == 0) {
+                    if (Integer.parseInt(reservation.getRepMember()
+                            .getCustomerNo()) % NUMBER_OF_SHARD == 0) {
                         expectedReservationsEven.add(reservation);
                     }
                 }
                 while (shard1Rset.next()) {
 
-                    Reservation expected = expectedReservationsEven.get(expextedShard1Index);
+                    Reservation expected = expectedReservationsEven.get(
+                            expextedShard1Index);
                     AssertHelper.assertDBReservation(expected, shard1Rset);
 
                     if (expextedShard1Index < expectedReservationsEven.size()) {
@@ -131,13 +131,15 @@ public class ShardDBTestHelper {
                 // 期待値の予約情報の会員情報が奇数となっているリスト
                 List<Reservation> expectedReservationsOdd = new ArrayList<>();
                 for (Reservation reservation : expectedReservations) {
-                    if (Integer.parseInt(reservation.getRepMember().getCustomerNo()) % NUMBER_OF_SHARD == 1) {
+                    if (Integer.parseInt(reservation.getRepMember()
+                            .getCustomerNo()) % NUMBER_OF_SHARD == 1) {
                         expectedReservationsOdd.add(reservation);
                     }
                 }
                 while (shard2Rset.next()) {
 
-                    Reservation expected = expectedReservationsOdd.get(expextedShard2Index);
+                    Reservation expected = expectedReservationsOdd.get(
+                            expextedShard2Index);
                     AssertHelper.assertDBReservation(expected, shard2Rset);
 
                     if (expextedShard2Index < expectedReservationsOdd.size()) {
@@ -155,23 +157,21 @@ public class ShardDBTestHelper {
     }
 
     /**
-     *
      * シャード1,2から予約1件取得できること
-     *
      * @param serviceUrl
-     *            {@link Reservation1ArgController}を使用するなら{@code "arg1"}を、{@link Reservation2ArgController}を使用するなら、{@code "arg2"}を指定する。
-     * @param expectedReservations
-     *            予約情報の期待値
+     *        {@link Reservation1ArgController}を使用するなら{@code "arg1"}を、{@link Reservation2ArgController}を使用するなら、{@code "arg2"}を指定する。
+     * @param expectedReservations 予約情報の期待値
      */
-    public void shardSelectTest(String serviceUrl, List<Reservation> expectedReservations) {
+    public void shardSelectTest(String serviceUrl,
+            List<Reservation> expectedReservations) {
 
         // 取得する予約情報(shard1から)
         Reservation expected = expectedReservations.get(0);
 
-        HelloPage helloPage = open(
-                applicationContextUrl + "reserve/" + serviceUrl + "/get?customerNo="
-                        + expected.getRepMember().getCustomerNo() + "&reserveNo=" + expected.getReserveNo(),
-                HelloPage.class);
+        HelloPage helloPage = open(applicationContextUrl + "reserve/"
+                + serviceUrl + "/get?customerNo=" + expected.getRepMember()
+                        .getCustomerNo() + "&reserveNo=" + expected
+                                .getReserveNo(), HelloPage.class);
 
         AssertHelper.assertViewResvation(expected, helloPage);
 
@@ -181,10 +181,9 @@ public class ShardDBTestHelper {
         // 取得する予約情報(shard2)から
         expected = expectedReservations.get(1);
 
-        helloPage = open(
-                applicationContextUrl + "reserve/" + serviceUrl + "/get?customerNo="
-                        + expected.getRepMember().getCustomerNo() + "&reserveNo=" + expected.getReserveNo(),
-                HelloPage.class);
+        helloPage = open(applicationContextUrl + "reserve/" + serviceUrl
+                + "/get?customerNo=" + expected.getRepMember().getCustomerNo()
+                + "&reserveNo=" + expected.getReserveNo(), HelloPage.class);
 
         AssertHelper.assertViewResvation(expected, helloPage);
 
@@ -194,14 +193,12 @@ public class ShardDBTestHelper {
 
     /**
      * シャード1,2から1件の予約情報を更新(旅行代金を0にする)できること
-     *
-     * @param expectedReservations
-     *            予約情報の期待値
+     * @param expectedReservations 予約情報の期待値
      * @throws SQLException
      * @throws ClassNotFoundException
      */
-    public void shardUpdateTest(String serviceUrl, List<Reservation> expectedReservations)
-            throws ClassNotFoundException, SQLException {
+    public void shardUpdateTest(String serviceUrl,
+            List<Reservation> expectedReservations) throws ClassNotFoundException, SQLException {
 
         // 取得する予約情報の会員番号
         Reservation shard1Expected = expectedReservations.get(0);
@@ -210,32 +207,39 @@ public class ShardDBTestHelper {
         shard1Expected.setTotalFare(0);
         shard2Expected.setTotalFare(0);
 
-        given().get("reserve/" + serviceUrl + "/update?customerNo=" + shard1Expected.getRepMember().getCustomerNo()
-                + "&reserveNo=" + shard1Expected.getReserveNo());
-        given().get("reserve/" + serviceUrl + "/update?customerNo=" + shard2Expected.getRepMember().getCustomerNo()
-                + "&reserveNo=" + shard2Expected.getReserveNo());
+        given().get("reserve/" + serviceUrl + "/update?customerNo="
+                + shard1Expected.getRepMember().getCustomerNo() + "&reserveNo="
+                + shard1Expected.getReserveNo());
+        given().get("reserve/" + serviceUrl + "/update?customerNo="
+                + shard2Expected.getRepMember().getCustomerNo() + "&reserveNo="
+                + shard2Expected.getReserveNo());
 
         // Default DBに接続して予約情報が更新されていることを確認する。
         try ( // @formatter:off
                 Connection shard1Conn = dbUtil.getShard1Connection();
                 Connection shard2Conn = dbUtil.getShard2Connection();
-                PreparedStatement shard1Pstmt = shard1Conn.prepareStatement(SQLConst.RESERVATION.SELECT_FIND_ONE,
-                        ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-                PreparedStatement shard2Pstmt = shard2Conn.prepareStatement(SQLConst.RESERVATION.SELECT_FIND_ONE,
-                        ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);){
-              // @formatter:on
+                PreparedStatement shard1Pstmt = shard1Conn.prepareStatement(
+                        SQLConst.RESERVATION.SELECT_FIND_ONE,
+                        ResultSet.TYPE_SCROLL_SENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE);
+                PreparedStatement shard2Pstmt = shard2Conn.prepareStatement(
+                        SQLConst.RESERVATION.SELECT_FIND_ONE,
+                        ResultSet.TYPE_SCROLL_SENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE);) {
+            // @formatter:on
 
             shard1Pstmt.setString(1, shard1Expected.getReserveNo());
             shard2Pstmt.setString(1, shard2Expected.getReserveNo());
 
             try ( // @formatter:off
                     ResultSet shard1Rset = shard1Pstmt.executeQuery();
-                    ResultSet shard2Rset = shard2Pstmt.executeQuery();){
-                  // @formatter:on
+                    ResultSet shard2Rset = shard2Pstmt.executeQuery();) {
+                // @formatter:on
 
                 // shard1のアサート
                 while (shard1Rset.next()) {
-                    AssertHelper.assertDBReservation(shard1Expected, shard1Rset);
+                    AssertHelper.assertDBReservation(shard1Expected,
+                            shard1Rset);
                 }
                 // 取得件数が0件でないことの確認
                 shard1Rset.last();
@@ -243,7 +247,8 @@ public class ShardDBTestHelper {
 
                 // shard2のアサート
                 while (shard2Rset.next()) {
-                    AssertHelper.assertDBReservation(shard2Expected, shard2Rset);
+                    AssertHelper.assertDBReservation(shard2Expected,
+                            shard2Rset);
                 }
                 // 取得件数が0件でないことの確認
                 shard1Rset.last();
@@ -254,41 +259,45 @@ public class ShardDBTestHelper {
 
     /**
      * シャード1,2から1件の予約情報を削除できること
-     *
-     * @param expectedReservations
-     *            予約情報の期待値
+     * @param expectedReservations 予約情報の期待値
      * @throws SQLException
      * @throws ClassNotFoundException
      */
-    public void shardDeleteTest(String serviceUrl, List<Reservation> expectedReservations)
-            throws ClassNotFoundException, SQLException {
+    public void shardDeleteTest(String serviceUrl,
+            List<Reservation> expectedReservations) throws ClassNotFoundException, SQLException {
 
         // 取得する予約情報の会員番号
         Reservation shard1Expected = expectedReservations.get(0);
         Reservation shard2Expected = expectedReservations.get(1);
 
-        given().get("reserve/" + serviceUrl + "/delete?customerNo=" + shard1Expected.getRepMember().getCustomerNo()
-                + "&reserveNo=" + shard1Expected.getReserveNo());
-        given().get("reserve/" + serviceUrl + "/delete?customerNo=" + shard2Expected.getRepMember().getCustomerNo()
-                + "&reserveNo=" + shard2Expected.getReserveNo());
+        given().get("reserve/" + serviceUrl + "/delete?customerNo="
+                + shard1Expected.getRepMember().getCustomerNo() + "&reserveNo="
+                + shard1Expected.getReserveNo());
+        given().get("reserve/" + serviceUrl + "/delete?customerNo="
+                + shard2Expected.getRepMember().getCustomerNo() + "&reserveNo="
+                + shard2Expected.getReserveNo());
 
         // Default DBに接続して予約情報が削除されていることを確認する。
         try ( // @formatter:off
                 Connection shard1Conn = dbUtil.getShard1Connection();
                 Connection shard2Conn = dbUtil.getShard2Connection();
-                PreparedStatement shard1Pstmt = shard1Conn.prepareStatement(SQLConst.RESERVATION.SELECT_FIND_ONE,
-                        ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-                PreparedStatement shard2Pstmt = shard2Conn.prepareStatement(SQLConst.RESERVATION.SELECT_FIND_ONE,
-                        ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);){
-             // @formatter:on
+                PreparedStatement shard1Pstmt = shard1Conn.prepareStatement(
+                        SQLConst.RESERVATION.SELECT_FIND_ONE,
+                        ResultSet.TYPE_SCROLL_SENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE);
+                PreparedStatement shard2Pstmt = shard2Conn.prepareStatement(
+                        SQLConst.RESERVATION.SELECT_FIND_ONE,
+                        ResultSet.TYPE_SCROLL_SENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE);) {
+            // @formatter:on
 
             shard1Pstmt.setString(1, shard1Expected.getReserveNo());
             shard2Pstmt.setString(1, shard2Expected.getReserveNo());
 
             try ( // @formatter:off
-                   ResultSet shard1Rset = shard1Pstmt.executeQuery();
-                   ResultSet shard2Rset = shard2Pstmt.executeQuery();){
-                  // @formatter:on
+                    ResultSet shard1Rset = shard1Pstmt.executeQuery();
+                    ResultSet shard2Rset = shard2Pstmt.executeQuery();) {
+                // @formatter:on
 
                 // 取得件数が0件であることの確認
                 shard1Rset.last();

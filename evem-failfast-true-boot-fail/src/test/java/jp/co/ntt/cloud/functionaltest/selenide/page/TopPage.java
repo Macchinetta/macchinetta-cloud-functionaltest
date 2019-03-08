@@ -1,3 +1,6 @@
+/*
+ * Copyright(c) 2017 NTT Corporation.
+ */
 package jp.co.ntt.cloud.functionaltest.selenide.page;
 
 import static com.codeborne.selenide.Selectors.byId;
@@ -15,7 +18,7 @@ public class TopPage {
      * @param password パスワード
      * @return TopPage トップページ
      */
-    public HelloPage login(String userId, String password){
+    public HelloPage login(String userId, String password) {
         $(byId("userId")).clear();
         $(byId("userId")).setValue(userId);
         $(byId("password")).clear();

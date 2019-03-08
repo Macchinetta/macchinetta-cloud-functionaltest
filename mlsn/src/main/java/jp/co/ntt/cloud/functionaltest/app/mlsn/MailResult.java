@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.mlsn;
 
@@ -22,8 +23,11 @@ package jp.co.ntt.cloud.functionaltest.app.mlsn;
 public class MailResult {
 
     private String messageId;
+
     private String topicArn;
+
     private String notificationType;
+
     private String headers;
 
     public String getNotificationType() {

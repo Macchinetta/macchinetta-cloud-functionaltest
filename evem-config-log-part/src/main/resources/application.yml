@@ -9,7 +9,7 @@ spring:
 # Config Server 設定値
 server:
   port: 8888
-security:
+spring.security:
   user:
     name: user
     password: user
@@ -21,4 +21,4 @@ cloud.aws:
     instanceProfile: false
 
 # シャットダウン用エンドポイント(CIテスト用)
-endpoints.shutdown.enabled: true
+management.endpoints.shutdown.enabled: true

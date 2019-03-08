@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.welcome;
 
@@ -37,18 +38,16 @@ public class HelloController {
     /**
      * ロガー。
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(HelloController.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            HelloController.class);
 
     /**
      * Hello画面を表示する。
-     *
      * @param locale 地域情報を保持するクラス
      * @param model 出力情報を保持するクラス
      * @return View論理名
      */
-    @RequestMapping(method = { RequestMethod.GET,
-            RequestMethod.POST })
+    @RequestMapping(method = { RequestMethod.GET, RequestMethod.POST })
     public String home(Locale locale, Model model) {
         logger.info("Welcome home! The client locale is {}.", locale);
 

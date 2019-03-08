@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.config;
 
@@ -30,9 +31,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * ログ出力チェック用フィルター
- *
  * @author NTT 電電太郎
- *
  */
 @Component
 public class LoggingFilter implements Filter {
@@ -40,11 +39,11 @@ public class LoggingFilter implements Filter {
     /**
      * ロガー。
      */
-    private static final Logger logger = LoggerFactory.getLogger(LoggingFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            LoggingFilter.class);
 
     /*
      * (non-Javadoc)
-     *
      * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
      */
     @Override
@@ -53,13 +52,12 @@ public class LoggingFilter implements Filter {
 
     /**
      * ログ試験用のフィルター
-     *
-     * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
-     *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
+     * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse,
+     *      javax.servlet.FilterChain)
      */
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response,
+            FilterChain chain) throws IOException, ServletException {
         logger.warn("this is logging filter! WARN logging!");
         logger.info("this is logging filter! INFO logging!");
         chain.doFilter(request, response);
@@ -68,7 +66,6 @@ public class LoggingFilter implements Filter {
 
     /*
      * (non-Javadoc)
-     *
      * @see javax.servlet.Filter#destroy()
      */
     @Override

@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.page;
 
@@ -25,11 +26,9 @@ public class LoginPage {
 
         $(By.name("username")).setValue("0000000001");
         $(By.name("password")).setValue("aaaaa11111");
-        $(By.name("submit")).submit();
+        $(By.name("submit")).click();
 
-        return new TopPage(
-                $(By.id("counter")).text(),
-                $(By.name("_csrf")).text(),
-                $(By.name("_TRANSACTION_TOKEN")).text());
+        return new TopPage($(By.id("counter")).text(), $(By.name("_csrf"))
+                .text(), $(By.name("_TRANSACTION_TOKEN")).text());
     }
 }

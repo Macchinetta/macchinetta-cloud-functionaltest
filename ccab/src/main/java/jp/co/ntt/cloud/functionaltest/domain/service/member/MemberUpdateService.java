@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.service.member;
 
@@ -19,43 +20,33 @@ import jp.co.ntt.cloud.functionaltest.domain.model.Member;
 
 /**
  * 会員情報サービスクラス。
- *
  * @author NTT 電電太郎
- *
  */
 public interface MemberUpdateService {
 
     /**
      * 会員番号を指定して、会員情報を1件取得する。CacheにHeapを使用している。
-     *
-     * @param customerNo
-     *            会員番号
+     * @param customerNo 会員番号
      * @return 会員情報
      */
     Member findMemberWithHeapCache(String customerNo);
 
     /**
      * 会員情報を更新する。CacheにHeapを使用している。
-     *
-     * @param member
-     *            会員情報
+     * @param member 会員情報
      */
     void updateMemberWithHeapCache(Member member);
 
     /**
      * 会員番号を指定して、会員情報を1件取得する。CacheにRedisを使用している。
-     *
-     * @param customerNo
-     *            会員番号
+     * @param customerNo 会員番号
      * @return 会員情報
      */
     Member findMemberWithRedisCache(String customerNo);
 
     /**
      * 会員情報を更新する。CacheにRedisを使用している。
-     *
-     * @param member
-     *            会員情報
+     * @param member 会員情報
      */
     void updateMemberWithRedisCache(Member member);
 }

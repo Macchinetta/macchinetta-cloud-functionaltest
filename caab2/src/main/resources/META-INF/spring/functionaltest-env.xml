@@ -43,11 +43,11 @@
 
     <cache:annotation-driven order="-1" />
 
-    <bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager">
-        <constructor-arg ref="redisTemplateForCache" />
-    </bean>
-
-    <bean id="redisTemplateForCache" class="org.springframework.data.redis.core.RedisTemplate" p:connection-factory-ref="jedisConnectionFactoryForCache" />
+    <bean id="cacheManager"
+        class="org.springframework.data.redis.cache.RedisCacheManager"
+        factory-method="create"
+        c:connection-factory-ref="jedisConnectionFactoryForCache"
+        p:transaction-aware="true" />
 
     <beans profile="ci">
         <bean id="jedisConnectionFactoryForCache"

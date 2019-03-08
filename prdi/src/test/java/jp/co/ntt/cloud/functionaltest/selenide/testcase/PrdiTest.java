@@ -12,26 +12,30 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.Selenide.screenshot;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selenide.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
 
-import com.codeborne.selenide.Configuration;
-import jp.co.ntt.cloud.functionaltest.selenide.page.DownloadPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.PrdiMainPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.WebDriverRunner;
+
+import io.github.bonigarcia.wdm.FirefoxDriverManager;
+import jp.co.ntt.cloud.functionaltest.selenide.page.DownloadPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.PrdiMainPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
 
 @SuppressWarnings("unused")
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -51,23 +55,39 @@ public class PrdiTest {
     @Value("${path.report}")
     private String reportPath;
 
-    @BeforeClass
-    public static void setUpClass() {
-        System.setProperty("selenide.timeout", "60000");
-        System.setProperty("selenide.pollingInterval", "500");
-    }
+    /*
+     * geckoドライバーバージョン
+     */
+    @Value("${selenide.geckodriverVersion}")
+    private String geckodriverVersion;
 
     /*
      * ログイン
      */
     @Before
     public void setUp() {
+
+        // geckoドライバーの設定
+        if (System.getProperty("webdriver.gecko.driver") == null) {
+            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+                    .setup();
+        }
+
+        // ブラウザの設定
+        Configuration.browser = WebDriverRunner.MARIONETTE;
+
+        // タイムアウトの設定
+        Configuration.timeout = 1200000;
+
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
 
         // ログイン
-        open(applicationContextUrl, TopPage.class)
-                .login("0000000001", "aaaaa11111");
+        open(applicationContextUrl, TopPage.class).login("0000000001",
+                "aaaaa11111");
+
+        // ログイン後画面の遷移待ち
+        $("title").shouldHave(exactText("Home"));
     }
 
     /*
@@ -79,20 +99,20 @@ public class PrdiTest {
     }
 
     /*
-     * S3による署名つきURLのファイルをダウンロードする。
-     * オブジェクトキーは landscape/logo.jpg (既存)
+     * S3による署名つきURLのファイルをダウンロードする。 オブジェクトキーは landscape/logo.jpg (既存)
      */
     @Test
     public void testNormalDownload() throws Exception {
         // テスト実行
-        DownloadPage downloadPage = open(applicationContextUrl, PrdiMainPage.class)
-                .clickDownload()
-                .download("landscape/logo.jpg");
+        DownloadPage downloadPage = open(applicationContextUrl,
+                PrdiMainPage.class).clickDownload().download(
+                        "landscape/logo.jpg");
 
         // アサーション
-        assertThat(downloadPage.getStatus(), is("load complete."));
+        $("#status").should(exactText("load complete."));
         assertThat(downloadPage.getSelectedKey(), is("landscape/logo.jpg"));
-        assertThat(downloadPage.getLocalBase64(), is(downloadPage.getS3Base64()));
+        assertThat(downloadPage.getLocalBase64(), is(downloadPage
+                .getS3Base64()));
 
         // 証跡取得
         screenshot("testNormalDownload");
@@ -100,18 +120,16 @@ public class PrdiTest {
     }
 
     /*
-     * 有効期限30秒を超えた署名つきURLを使用したとき、ダウンロードに失敗すること。
-     * オブジェクトキーは expire/logo.jpg (既存だがダウンロード不可)
+     * 有効期限30秒を超えた署名つきURLを使用したとき、ダウンロードに失敗すること。 オブジェクトキーは expire/logo.jpg (既存だがダウンロード不可)
      */
     @Test
     public void testExpiredFileDownload() throws Exception {
         // テスト実行
-        DownloadPage downloadPage = open(applicationContextUrl, PrdiMainPage.class)
-                .clickDownload()
-                .download("expire/logo.jpg");
+        DownloadPage downloadPage = open(applicationContextUrl,
+                PrdiMainPage.class).clickDownload().download("expire/logo.jpg");
 
         // アサーション
-        assertThat(downloadPage.getStatus(), is("load failure."));
+        $("#status").should(exactText("load failure."));
         assertThat(downloadPage.getSelectedKey(), is("expire/logo.jpg"));
 
         // 証跡取得
@@ -119,19 +137,17 @@ public class PrdiTest {
     }
 
     /*
-     * S3上に存在しないオブジェクトキーを使用してファイルダウンロードを行う。
-     * オブジェクトキーは  invalid-object-key.jpg (S3上に存在しない)
-     *
+     * S3上に存在しないオブジェクトキーを使用してファイルダウンロードを行う。 オブジェクトキーは invalid-object-key.jpg (S3上に存在しない)
      */
     @Test
     public void testNotExistObjectKeyDownload() throws Exception {
         // テスト実行
-        DownloadPage downloadPage = open(applicationContextUrl, PrdiMainPage.class)
-                .clickDownload()
-                .download("invalid-object-key.jpg");
+        DownloadPage downloadPage = open(applicationContextUrl,
+                PrdiMainPage.class).clickDownload().download(
+                        "invalid-object-key.jpg");
 
         // アサーション
-        assertThat(downloadPage.getStatus(), is("load failure."));
+        $("#status").should(exactText("load failure."));
         assertThat(downloadPage.getSelectedKey(), is("invalid-object-key.jpg"));
 
         // 証跡取得

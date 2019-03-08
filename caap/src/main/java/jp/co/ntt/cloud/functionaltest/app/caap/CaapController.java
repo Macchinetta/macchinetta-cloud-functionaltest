@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.caap;
 
@@ -32,7 +33,8 @@ public class CaapController {
 
     @RequestMapping(value = "inspect", method = RequestMethod.GET)
     public String inspect(Model model) {
-        final CaapProjectInfo caapProjectInfo = caapService.inspectElastiCache();
+        final CaapProjectInfo caapProjectInfo = caapService
+                .inspectElastiCache();
         model.addAttribute("caapProjectInfo", caapProjectInfo);
         return "caap/home";
     }

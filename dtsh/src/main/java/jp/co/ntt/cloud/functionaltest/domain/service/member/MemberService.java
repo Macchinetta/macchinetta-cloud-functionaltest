@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.service.member;
 
@@ -28,9 +29,7 @@ import jp.co.ntt.cloud.functionaltest.domain.repository.member.MemberRepository;
 
 /**
  * メンバー登録サービス
- *
  * @author NTT 電電太郎
- *
  */
 @Service
 public class MemberService {
@@ -46,7 +45,6 @@ public class MemberService {
 
     /**
      * メンバーを登録する。
-     *
      * @param member
      * @return
      */
@@ -55,8 +53,9 @@ public class MemberService {
         memberRepository.insert(member);
 
         ShardingAccount shardingAccount = new ShardingAccount();
-        shardingAccount.setUserId(member.getCustomerNo());
-        shardingAccount.setDataSourceKey(shardKeyResolver.resolveShardKey(Integer.parseInt(member.getCustomerNo())));
+        shardingAccount.setId(member.getCustomerNo());
+        shardingAccount.setDataSourceKey(shardKeyResolver.resolveShardKey(
+                Integer.parseInt(member.getCustomerNo())));
 
         // シャードのマッピング情報をKVSに登録する。
         accountShardKeyRepository.save(shardingAccount);
@@ -66,9 +65,7 @@ public class MemberService {
 
     /**
      * メンバーを1件取得する
-     *
-     * @param customerNo
-     *            会員番号
+     * @param customerNo 会員番号
      * @return 会員情報
      */
     @Transactional(readOnly = true)
@@ -78,9 +75,7 @@ public class MemberService {
 
     /**
      * 会員情報を更新する。
-     *
-     * @param member
-     *            会員情報
+     * @param member 会員情報
      */
     @Transactional
     public void update(Member member) {
@@ -89,9 +84,7 @@ public class MemberService {
 
     /**
      * 会員情報を削除する
-     *
-     * @param customerNo
-     *            会員番号
+     * @param customerNo 会員番号
      */
     @Transactional
     public void delete(String customerNo) {

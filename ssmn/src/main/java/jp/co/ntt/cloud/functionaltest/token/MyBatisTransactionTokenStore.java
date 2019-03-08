@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.token;
 
@@ -46,7 +47,8 @@ public class MyBatisTransactionTokenStore implements TransactionTokenStore {
 
     private final TokenStringGenerator generator;
 
-    public MyBatisTransactionTokenStore(int transactionTokenSizePerTokenName, TokenStringGenerator generator) {
+    public MyBatisTransactionTokenStore(int transactionTokenSizePerTokenName,
+            TokenStringGenerator generator) {
         this.transactionTokenSizePerTokenName = transactionTokenSizePerTokenName;
         this.generator = generator;
     }
@@ -93,7 +95,8 @@ public class MyBatisTransactionTokenStore implements TransactionTokenStore {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public String createAndReserveTokenKey(String tokenName) {
         String sessionId = getSession().getId();
-        tokenRepository.deleteOlderThanNLatest(tokenName, sessionId, transactionTokenSizePerTokenName - 1);
+        tokenRepository.deleteOlderThanNLatest(tokenName, sessionId,
+                transactionTokenSizePerTokenName - 1);
         return generator.generate(UUID.randomUUID().toString());
     }
 

@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.page;
 
@@ -23,7 +24,6 @@ import java.io.FileNotFoundException;
 
 import com.codeborne.selenide.SelenideElement;
 
-
 /*
  * Helloページのページオブジェクトクラス。
  */
@@ -33,7 +33,7 @@ public class HelloPage {
      * ログアウトする。
      * @return TopPage トップページ
      */
-    public TopPage logout(){
+    public TopPage logout() {
         $("button").click();
         return new TopPage();
     }
@@ -60,7 +60,6 @@ public class HelloPage {
 
     /**
      * 画像読み込み状態を取得する。
-     *
      * @return 画像読み込み状態
      */
     public SelenideElement getImgLoadState() {

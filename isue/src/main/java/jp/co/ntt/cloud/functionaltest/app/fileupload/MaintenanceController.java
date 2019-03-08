@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.fileupload;
 
@@ -32,15 +33,14 @@ import jp.co.ntt.cloud.functionaltest.domain.service.fileupload.MaintenanceServi
 
 /**
  * メンテナンス画面表示コントローラ。
- * 
  * @author NTT 電電太郎
  */
 @Controller
 public class MaintenanceController {
 
     /** ロガー。 */
-    private static final Logger logger = LoggerFactory
-            .getLogger(MaintenanceController.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            MaintenanceController.class);
 
     /** ファイルアップロード処理用サービス */
     @Inject
@@ -48,7 +48,6 @@ public class MaintenanceController {
 
     /**
      * メンテナンス画面を初期表示する。
-     * 
      * @param model 出力情報を保持するクラス
      * @return View論理名
      */
@@ -56,95 +55,87 @@ public class MaintenanceController {
             RequestMethod.POST })
     public String maintenance(Model model) {
         logger.info("do Maintenance.");
-        
-        model.addAttribute("bucketNameList", 
-        		FileUploadControllerUtil.createBucketPulldown(false));
+
+        model.addAttribute("bucketNameList", FileUploadControllerUtil
+                .createBucketPulldown(false));
         model.addAttribute(new MaintenanceForm());
         return "fileupload/maintenance";
     }
 
     /**
      * ファイルアップロードを実行する。
-     * 
      * @param form 画面フォーム
      * @param result バリデーション結果
      * @param redirectAttributes リダイレクトパラメータ
      * @return View論理名
      */
     @RequestMapping(value = "/upload", method = { RequestMethod.POST })
-    public String upload(@Validated MaintenanceForm form, 
-    		BindingResult result, RedirectAttributes redirectAttributes) {
+    public String upload(@Validated MaintenanceForm form, BindingResult result,
+            RedirectAttributes redirectAttributes) {
         logger.info("do File Upload.");
 
         if (result.hasErrors()) {
-        	return "fileupload/maintenance";
+            return "fileupload/maintenance";
         }
-        
-        fileUploadService.doUpload(
-        		form.getuUploadUser(),
-        		form.getuBucketName(),
-        		form.getuFile());
+
+        fileUploadService.doUpload(form.getuUploadUser(), form.getuBucketName(),
+                form.getuFile());
 
         redirectAttributes.addFlashAttribute(ResultMessages.success().add(
-        		"i.xx.at.0001"));
-        
+                "i.xx.at.0001"));
+
         return "redirect:/upload?complete";
     }
 
     /**
      * アップロード完了後画面（自画面）への遷移。
-     * 
      * @param model 出力情報を保持するクラス
      * @return View論理名
      */
     @RequestMapping(value = "/upload", method = RequestMethod.GET, params = "complete")
     public String uploadComplete(Model model) {
         logger.info("File Upload completed.");
-        model.addAttribute("bucketNameList", 
-        		FileUploadControllerUtil.createBucketPulldown(false));
+        model.addAttribute("bucketNameList", FileUploadControllerUtil
+                .createBucketPulldown(false));
         model.addAttribute(new MaintenanceForm());
         return "fileupload/maintenance";
     }
 
     /**
      * ファイル削除を実行する。
-     * 
      * @param form 画面フォーム
      * @param result バリデーション結果
      * @param redirectAttributes リダイレクトパラメータ
      * @return View論理名
      */
     @RequestMapping(value = "/delete", method = { RequestMethod.POST })
-    public String delete(@Validated MaintenanceForm form, 
-    		BindingResult result, RedirectAttributes redirectAttributes) {
+    public String delete(@Validated MaintenanceForm form, BindingResult result,
+            RedirectAttributes redirectAttributes) {
         logger.info("do File Delete.");
 
         if (result.hasErrors()) {
-        	return "fileupload/maintenance";
+            return "fileupload/maintenance";
         }
-        
-        fileUploadService.doDelete(
-        		form.getdBucketName(),
-        		form.getdObjectKey(),
-        		form.getdUploadUser());
+
+        fileUploadService.doDelete(form.getdBucketName(), form.getdObjectKey(),
+                form.getdUploadUser());
 
         redirectAttributes.addFlashAttribute(ResultMessages.success().add(
-        		"i.xx.at.0001"));
-        
+                "i.xx.at.0001"));
+
         return "redirect:/delete?complete";
     }
 
     /**
      * 削除完了後画面（自画面）への遷移。
-     * 
      * @param model 出力情報を保持するクラス
      * @return View論理名
      */
     @RequestMapping(value = "/delete", method = RequestMethod.GET, params = "complete")
     public String deleteComplete(Model model) {
         logger.info("File Delete completed.");
-        model.addAttribute("bucketNameList", 
-        		FileUploadControllerUtil.createBucketPulldown(false));
+        model.addAttribute("bucketNameList", FileUploadControllerUtil
+                .createBucketPulldown(false));
         model.addAttribute(new MaintenanceForm());
         return "fileupload/maintenance";
     }

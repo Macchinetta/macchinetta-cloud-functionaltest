@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.common;
 
@@ -20,12 +21,11 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 
 /**
  * DynamoDB ファクトリクラス
- * 
  * @author NTT 電電太郎
- *
  */
 public class DynamoDBClientFactory {
     public static AmazonDynamoDB create(String region) {
-        return AmazonDynamoDBClientBuilder.standard().withRegion(region).build();
+        return AmazonDynamoDBClientBuilder.standard().withRegion(region)
+                .build();
     }
 }

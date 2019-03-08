@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.atsc;
 
@@ -45,14 +46,14 @@ public class AtscController {
         return "atsc/home";
     }
 
-    @RequestMapping(value= "/listen", method = RequestMethod.POST)
+    @RequestMapping(value = "/listen", method = RequestMethod.POST)
     public String listen(Model model) throws InterruptedException {
         String notification = messageQueue.poll(3L, TimeUnit.MINUTES);
         if (notification == null) {
             throw new IllegalStateException("Timeout: notification is empty.");
         }
-        model.addAttribute("notification",
-                notificationParseService.parseNotification(notification));
+        model.addAttribute("notification", notificationParseService
+                .parseNotification(notification));
         return "atsc/home";
     }
 }

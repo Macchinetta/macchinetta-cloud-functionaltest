@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.page;
 
@@ -28,8 +29,9 @@ public class AfterLoginOp {
      * ログアウトする。
      * @return TopPage トップページ
      */
-    public LoginPage logout(){
+    public LoginPage logout() throws InterruptedException {
         $(byId("logout")).click();
+        Thread.sleep(2000);
         return new LoginPage();
     }
 

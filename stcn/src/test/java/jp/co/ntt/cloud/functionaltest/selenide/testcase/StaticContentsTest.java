@@ -12,12 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.Selenide.screenshot;
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selenide.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,12 +36,15 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
+import org.openqa.selenium.By;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.WebDriverRunner;
 
+import io.github.bonigarcia.wdm.FirefoxDriverManager;
 import jp.co.ntt.cloud.functionaltest.selenide.page.HelloPage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
 import junit.framework.TestCase;
@@ -82,6 +85,12 @@ public class StaticContentsTest extends TestCase {
     private String testDataPath;
 
     /*
+     * geckoドライバーバージョン
+     */
+    @Value("${selenide.geckodriverVersion}")
+    private String geckodriverVersion;
+
+    /*
      * ユーザID
      */
     private String userId;
@@ -94,9 +103,19 @@ public class StaticContentsTest extends TestCase {
     @Override
     @Before
     public void setUp() {
+
+        // geckoドライバーの設定
+        if (System.getProperty("webdriver.gecko.driver") == null) {
+            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+                    .setup();
+        }
+
+        // ブラウザの設定
+        Configuration.browser = WebDriverRunner.MARIONETTE;
+
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
-     }
+    }
 
     @Override
     @After
@@ -119,10 +138,11 @@ public class StaticContentsTest extends TestCase {
 
         // テスト実行
         HelloPage helloWorldPage = open(applicationContextUrl, TopPage.class)
-        .login(userId, password);
+                .login(userId, password);
 
         // 画像の読み込みが完了した場合に js でページ内の要素を"Image loading is complete"に書き換えているのでチェックする
-        helloWorldPage.getImgLoadState().shouldHave(text("Image loading is complete"));
+        helloWorldPage.getImgLoadState().shouldHave(text(
+                "Image loading is complete"));
     }
 
     /*
@@ -137,23 +157,24 @@ public class StaticContentsTest extends TestCase {
 
         // テスト実行
         HelloPage helloWorldPage = open(applicationContextUrl, TopPage.class)
-        .login(userId, password);
+                .login(userId, password);
 
         // 画像のURL取得
-        String imgSrc = helloWorldPage.getImagFromCloudFront().getAttribute("src");
+        String imgSrc = helloWorldPage.getImagFromCloudFront().getAttribute(
+                "src");
 
         // CloudFrontから取得した画像の保存先
         String tempImgPath = temporaryFolder.getRoot() + "ochiboHiroi_temp.jpg";
 
         // CloudFrontから画像ダウンロード
-        FileUtils.copyURLToFile(new URL(imgSrc),
-                new File(tempImgPath));
+        FileUtils.copyURLToFile(new URL(imgSrc), new File(tempImgPath));
 
         File imgFromLocal = new File(testDataPath + "image/ochiboHiroi.jpg");
         File imgFromCloudFront = new File(tempImgPath);
 
         // アサーション
-        assertEquals(FileUtils.checksumCRC32(imgFromLocal), FileUtils.checksumCRC32(imgFromCloudFront));
+        assertEquals(FileUtils.checksumCRC32(imgFromLocal), FileUtils
+                .checksumCRC32(imgFromCloudFront));
 
         // 証跡取得
         screenshot(testName.getMethodName());
@@ -170,19 +191,23 @@ public class StaticContentsTest extends TestCase {
         password = "aaaaa11111";
 
         // テスト実行
-        HelloPage helloWorldPage = open(applicationContextUrl, TopPage.class).login(userId, password);
+        HelloPage helloWorldPage = open(applicationContextUrl, TopPage.class)
+                .login(userId, password);
 
         // 画像のURL取得
-        String imgSrc = helloWorldPage.getImagFromCloudFront().getAttribute("src");
+        String imgSrc = helloWorldPage.getImagFromCloudFront().getAttribute(
+                "src");
 
         CloseableHttpClient client = HttpClients.createDefault();
 
         // CloudFrontに画像をキャッシュさせるためにアクセス
-        try (CloseableHttpResponse response = client.execute(new HttpGet(imgSrc))) {
+        try (CloseableHttpResponse response = client.execute(
+                new HttpGet(imgSrc))) {
         }
 
         // CloudFrontのキャッシュから画像を取得
-        try (CloseableHttpResponse response = client.execute(new HttpGet(imgSrc))) {
+        try (CloseableHttpResponse response = client.execute(
+                new HttpGet(imgSrc))) {
             // X-Cache の値を取得
             String xCacheResult = response.getFirstHeader("X-Cache").getValue();
 

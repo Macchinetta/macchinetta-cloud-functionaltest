@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.token;
 
@@ -28,7 +29,8 @@ import jp.co.ntt.cloud.functionaltest.domain.repository.token.StoredTransactionT
 
 public class TransactionTokenCleaningListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(TransactionTokenCleaningListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            TransactionTokenCleaningListener.class);
 
     @Inject
     StoredTransactionTokenRepository tokenRepository;
@@ -39,9 +41,13 @@ public class TransactionTokenCleaningListener {
         String sessionId = event.getSession().getId();
         try {
             tokenRepository.deleteBySessionId(sessionId);
-            logger.info("Transaction tokens created by sessionId={} have been cleaned.", sessionId);
+            logger.info(
+                    "Transaction tokens created by sessionId={} have been cleaned.",
+                    sessionId);
         } catch (DataAccessException e) {
-            logger.warn("Failed to clean abandoned transaction tokens created by sessionId={}.", sessionId, e);
+            logger.warn(
+                    "Failed to clean abandoned transaction tokens created by sessionId={}.",
+                    sessionId, e);
         }
     }
 }

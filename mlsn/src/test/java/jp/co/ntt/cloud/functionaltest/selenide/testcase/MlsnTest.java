@@ -12,11 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import com.codeborne.selenide.Configuration;
-import jp.co.ntt.cloud.functionaltest.selenide.page.MlsnPage;
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selenide.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,11 +28,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.Selenide.screenshot;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.WebDriverRunner;
+
+import io.github.bonigarcia.wdm.FirefoxDriverManager;
+import jp.co.ntt.cloud.functionaltest.selenide.page.MlsnPage;
 
 /**
  * メール送信機能確認テストケース。
@@ -43,14 +47,12 @@ public class MlsnTest {
     /*
      * 正常送信確認用アドレス
      */
-    private static final String ADDRESS_DELIVERY =
-            "success@simulator.amazonses.com";
+    private static final String ADDRESS_DELIVERY = "success@simulator.amazonses.com";
 
     /*
      * バウンスメール確認用アドレス
      */
-    private static final String ADDRESS_BOUNCE =
-            "bounce@simulator.amazonses.com";
+    private static final String ADDRESS_BOUNCE = "bounce@simulator.amazonses.com";
 
     /*
      * SimpleMailMessageを使用する。
@@ -74,8 +76,24 @@ public class MlsnTest {
     @Value("${path.report}")
     private String reportPath;
 
+    /*
+     * geckoドライバーバージョン
+     */
+    @Value("${selenide.geckodriverVersion}")
+    private String geckodriverVersion;
+
     @Before
     public void setUp() {
+
+        // geckoドライバーの設定
+        if (System.getProperty("webdriver.gecko.driver") == null) {
+            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+                    .setup();
+        }
+
+        // ブラウザの設定
+        Configuration.browser = WebDriverRunner.MARIONETTE;
+
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
     }
@@ -87,12 +105,13 @@ public class MlsnTest {
     public void testSimpleDelivery() {
 
         // テスト実行
-        MlsnPage send = open(applicationContextUrl, MlsnPage.class)
-                .send(ADDRESS_DELIVERY, KIND_SIMPLE, "simple message");
+        MlsnPage send = open(applicationContextUrl, MlsnPage.class).send(
+                ADDRESS_DELIVERY, KIND_SIMPLE, "simple message");
 
         // 検証
-        assertThat(send.notificationType(), is("Delivery"));
-        assertThat(send.headers(), is(containsString("To:success@simulator.amazonses.com")));
+        $("#notificationType").should(exactText("Delivery"));
+        assertThat(send.headers(), is(containsString(
+                "To:success@simulator.amazonses.com")));
         assertThat(send.headers(), is(containsString("Subject:testmail")));
 
         // 証跡取得
@@ -106,12 +125,13 @@ public class MlsnTest {
     public void testSimpleBounce() {
 
         // テスト実行
-        MlsnPage send = open(applicationContextUrl, MlsnPage.class)
-                .send(ADDRESS_BOUNCE, KIND_SIMPLE, "simple message");
+        MlsnPage send = open(applicationContextUrl, MlsnPage.class).send(
+                ADDRESS_BOUNCE, KIND_SIMPLE, "simple message");
 
         // 検証
-        assertThat(send.notificationType(), is("Bounce"));
-        assertThat(send.headers(), is(containsString("To:bounce@simulator.amazonses.com")));
+        $("#notificationType").should(exactText("Bounce"));
+        assertThat(send.headers(), is(containsString(
+                "To:bounce@simulator.amazonses.com")));
         assertThat(send.headers(), is(containsString("Subject:testmail")));
 
         // 証跡取得
@@ -125,17 +145,19 @@ public class MlsnTest {
     public void testMimeDelivery() {
 
         // テスト実行
-        MlsnPage send = open(applicationContextUrl, MlsnPage.class)
-                   .send(ADDRESS_DELIVERY, KIND_MIME, "MIME Message.");
+        MlsnPage send = open(applicationContextUrl, MlsnPage.class).send(
+                ADDRESS_DELIVERY, KIND_MIME, "MIME Message.");
 
         // 検証
-        assertThat(send.notificationType(), is("Delivery"));
-        assertThat(send.headers(), is(containsString("To:success@simulator.amazonses.com")));
-        assertThat(send.headers(), is(containsString("Subject:MIME Mail test")));
+        $("#notificationType").should(exactText("Delivery"));
+        assertThat(send.headers(), is(containsString(
+                "To:success@simulator.amazonses.com")));
+        assertThat(send.headers(), is(containsString(
+                "Subject:MIME Mail test")));
 
         // 証跡取得
         screenshot("testMimeDelivery");
-   }
+    }
 
     /*
      * MimeMessageHelperを使用し、バウンスメールが通知されること。
@@ -144,16 +166,17 @@ public class MlsnTest {
     public void testMimeBounce() {
 
         // テスト実行
-        MlsnPage send = open(applicationContextUrl, MlsnPage.class)
-                .send(ADDRESS_BOUNCE, KIND_MIME, "MIME Message.");
+        MlsnPage send = open(applicationContextUrl, MlsnPage.class).send(
+                ADDRESS_BOUNCE, KIND_MIME, "MIME Message.");
 
         // 検証
-        assertThat(send.notificationType(), is("Bounce"));
-        assertThat(send.headers(), is(containsString("To:bounce@simulator.amazonses.com")));
-        assertThat(send.headers(), is(containsString("Subject:MIME Mail test")));
+        $("#notificationType").should(exactText("Bounce"));
+        assertThat(send.headers(), is(containsString(
+                "To:bounce@simulator.amazonses.com")));
+        assertThat(send.headers(), is(containsString(
+                "Subject:MIME Mail test")));
 
         // 証跡取得
         screenshot("testMimeBounce");
     }
 }
-

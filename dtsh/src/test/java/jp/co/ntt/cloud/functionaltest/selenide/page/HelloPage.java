@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.page;
 
@@ -30,7 +31,7 @@ public class HelloPage {
      * ログアウトする。
      * @return TopPage トップページ
      */
-    public TopPage logout(){
+    public TopPage logout() {
         $("button").click();
         return new TopPage();
     }
@@ -48,7 +49,6 @@ public class HelloPage {
 
     /**
      * 予約番号を返却する。
-     *
      * @return SelenideElement 予約番号
      */
     public SelenideElement getReserveNo() {
@@ -57,7 +57,6 @@ public class HelloPage {
 
     /**
      * 予約日を返却する。
-     *
      * @return SelenideElement 予約日
      */
     public SelenideElement getReserveDate() {
@@ -66,7 +65,6 @@ public class HelloPage {
 
     /**
      * 合計金額を返却する。
-     *
      * @return SelenideElement 合計金額
      */
     public SelenideElement getTotalFare() {
@@ -75,7 +73,6 @@ public class HelloPage {
 
     /**
      * 予約代表者会員番号を返却する。
-     *
      * @return SelenideElement 予約代表者会員番号
      */
     public SelenideElement getRepCustomerNo() {
@@ -84,7 +81,6 @@ public class HelloPage {
 
     /**
      * 予約代表者会員氏名を返却する。
-     *
      * @return SelenideElement 予約代表者会員氏名
      */
     public SelenideElement getRepName() {
@@ -93,7 +89,6 @@ public class HelloPage {
 
     /**
      * 予約代表者会員氏名(ふりがな)を返却する。
-     *
      * @return SelenideElement 予約代表者会員氏名(ふりがな)
      */
     public SelenideElement getRepFuriName() {
@@ -102,7 +97,6 @@ public class HelloPage {
 
     /**
      * 会員番号を返却する。
-     *
      * @return SelenideElement 会員番号
      */
     public SelenideElement getCustomerNo() {
@@ -111,7 +105,6 @@ public class HelloPage {
 
     /**
      * 会員氏名を返却する。
-     *
      * @return SelenideElement 会員氏名
      */
     public SelenideElement getName() {
@@ -120,7 +113,6 @@ public class HelloPage {
 
     /**
      * 会員氏名(ふりがな)を返却する。
-     *
      * @return SelenideElement 会員氏名(ふりがな)
      */
     public SelenideElement getFuriName() {

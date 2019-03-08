@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.service.reservation;
 
@@ -26,9 +27,7 @@ import jp.co.ntt.cloud.functionaltest.domain.repository.reservation.ReservationR
 
 /**
  * 予約情報サービス。シャーディングテスト用。
- *
  * @author NTT 電電太郎
- *
  */
 @Service
 public class Reservation1ArgService {
@@ -38,9 +37,7 @@ public class Reservation1ArgService {
 
     /**
      * 予約情報登録。
-     *
-     * @param reservation
-     *            予約情報
+     * @param reservation 予約情報
      */
     @Transactional
     @ShardWithAccount("reservation.repMember.customerNo")
@@ -50,9 +47,7 @@ public class Reservation1ArgService {
 
     /**
      * 予約情報取得。
-     *
-     * @param reservation
-     *            予約情報
+     * @param reservation 予約情報
      */
     @Transactional
     @ShardWithAccount("reservation.repMember.customerNo")
@@ -62,9 +57,7 @@ public class Reservation1ArgService {
 
     /**
      * 予約情報更新。
-     *
-     * @param reservation
-     *            予約情報
+     * @param reservation 予約情報
      */
     @Transactional
     @ShardWithAccount("reservation.repMember.customerNo")
@@ -74,9 +67,7 @@ public class Reservation1ArgService {
 
     /**
      * 予約情報削除。
-     *
-     * @param reservation
-     *            予約情報
+     * @param reservation 予約情報
      */
     @Transactional
     @ShardWithAccount("reservation.repMember.customerNo")

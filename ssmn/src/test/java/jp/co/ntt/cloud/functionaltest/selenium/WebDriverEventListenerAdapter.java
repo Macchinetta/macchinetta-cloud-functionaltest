@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenium;
 
@@ -24,7 +25,8 @@ public abstract class WebDriverEventListenerAdapter implements
                                                     WebDriverEventListener {
 
     @Override
-    public void afterChangeValueOf(WebElement arg0, WebDriver arg1) {
+    public void afterChangeValueOf(WebElement arg0, WebDriver arg1,
+            CharSequence[] arg2) {
     }
 
     @Override
@@ -52,7 +54,8 @@ public abstract class WebDriverEventListenerAdapter implements
     }
 
     @Override
-    public void beforeChangeValueOf(WebElement arg0, WebDriver arg1) {
+    public void beforeChangeValueOf(WebElement arg0, WebDriver arg1,
+            CharSequence[] arg2) {
     }
 
     @Override

@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.common;
 
@@ -19,17 +20,14 @@ import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 
-
 /**
  * DynamoDB ファクトリクラス。
- *
  * @author NTT 電電太郎
- *
  */
 public class DynamoDBClientFactory {
 
     public static AmazonDynamoDB create(String endpoint) {
-        return AmazonDynamoDBClientBuilder.standard()
-                .withEndpointConfiguration(new EndpointConfiguration(endpoint, null)).build();
+        return AmazonDynamoDBClientBuilder.standard().withEndpointConfiguration(
+                new EndpointConfiguration(endpoint, null)).build();
     }
 }

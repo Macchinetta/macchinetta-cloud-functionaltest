@@ -7,7 +7,7 @@
     <parent>
         <groupId>jp.co.ntt.cloud.functionaltest</groupId>
         <artifactId>macchinetta-cloud-functionaltest</artifactId>
-        <version>1.0.1.RELEASE</version>
+        <version>1.1.0.RELEASE</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -20,11 +20,11 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.session</groupId>
-            <artifactId>spring-session</artifactId>
+            <artifactId>spring-session-data-redis</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -73,12 +73,6 @@
                             <cargo.logging>low</cargo.logging>
                         </properties>
                     </configuration>
-                    <container>
-                        <containerId>tomcat8x</containerId>
-                        <zipUrlInstaller>
-                            <url>http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.20/bin/apache-tomcat-8.5.20.zip</url> <!-- テストで使うTomcat -->
-                        </zipUrlInstaller>
-                    </container>
                     <deployables>
                         <deployable>
                             <location>${project.build.directory}/${project.artifactId}.war</location>
@@ -163,10 +157,10 @@
                 <cargo.rmi.port>58095</cargo.rmi.port>
                 <cargo.tomcat.ajp.port>58096</cargo.tomcat.ajp.port>
                 <cargo.jvmargs>-Dspring.profiles.active=ci</cargo.jvmargs>
-                <db.url.default>jdbc:postgresql://ci-functionaltest.XXXX.ap-northeast-1.rds.amazonaws.com:5432/functionaltest</db.url.default>
+                <db.url.default>jdbc:postgresql://ci-functionaltest.xxxxxxxxxxxx.ap-northeast-1.rds.amazonaws.com:5432/functionaltest</db.url.default>
                 <redis.host></redis.host>
                 <redis.port></redis.port>
-                <redis.cluster.endpoint>functionaltest-0001-001.xxxx.0001.apne1.cache.amazonaws.com:6379</redis.cluster.endpoint>
+                <redis.cluster.endpoint>functionaltest-0001-001.xxxxxx.0001.apne1.cache.amazonaws.com:6379</redis.cluster.endpoint>
             </properties>
         </profile>
     </profiles>

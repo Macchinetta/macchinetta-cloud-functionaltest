@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.listener;
 
@@ -37,7 +38,8 @@ public class ReservationMessageListener {
     private final Set<String> eliminateDuplicationSet = new HashSet<>();
 
     @JmsListener(destination = "TEST_SQS_DELIVERIES", concurrency = "5-10")
-    public void receive(String message, @Header(JmsHeaders.MESSAGE_ID) String messageId) {
+    public void receive(String message,
+            @Header(JmsHeaders.MESSAGE_ID) String messageId) {
         synchronized (eliminateDuplicationSet) {
             if (eliminateDuplicationSet.contains(messageId)) {
                 // duplicated.

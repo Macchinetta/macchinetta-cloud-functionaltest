@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.page;
 
@@ -30,7 +31,7 @@ public class TopPage {
      * @param password パスワード
      * @return TopPage トップページ
      */
-    public HelloPage login(String userId, String password){
+    public HelloPage login(String userId, String password) {
         $(byId("userId")).clear();
         $(byId("userId")).setValue(userId);
         $(byId("password")).clear();

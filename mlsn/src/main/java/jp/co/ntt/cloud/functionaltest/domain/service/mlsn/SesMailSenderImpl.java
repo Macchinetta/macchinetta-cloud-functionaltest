@@ -12,22 +12,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.service.mlsn;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.mail.internet.MimeMessage;
+
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.mail.internet.MimeMessage;
-import java.io.IOException;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Amazon SESによるメール送信機能。
@@ -60,16 +64,15 @@ public class SesMailSenderImpl implements SesMailSender {
     }
 
     @Override
-    public MailNotification registerMime(final String from, final String to, final String charset,
-            String subject, String body) {
+    public MailNotification registerMime(final String from, final String to,
+            final String charset, String subject, String body) {
         // for previous delay receive.
         receiveQueue.clear();
 
         mailSender.send(new MimeMessagePreparator() {
             @Override
             public void prepare(MimeMessage mimeMessage) throws Exception {
-                MimeMessageHelper helper = new MimeMessageHelper(mimeMessage,
-                        charset);
+                MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, charset);
                 helper.setFrom(from);
                 helper.setTo(to);
                 helper.setSubject(subject);
@@ -85,7 +88,7 @@ public class SesMailSenderImpl implements SesMailSender {
         try {
             src = receiveQueue.poll(1, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
-            // Ignore.
+            Thread.currentThread().interrupt();
         }
         if (src == null) {
             throw new IllegalStateException("Receive timeout exceeded");
@@ -94,14 +97,14 @@ public class SesMailSenderImpl implements SesMailSender {
     }
 
     private MailNotification convertToNotification(String src) {
-        final ObjectMapper mapper = new ObjectMapper();
+        final ObjectMapper mapper = new ObjectMapper().configure(
+                DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         MailNotification notification = null;
         try {
             notification = mapper.readValue(src, MailNotification.class);
             // because of returning String literal(NOT JSON) from AWS.
-            notification.setMessage(mapper.readValue(
-                    notification.getMessageStr(),
-                    MailNotification.Message.class));
+            notification.setMessage(mapper.readValue(notification
+                    .getMessageStr(), MailNotification.Message.class));
         } catch (IOException e) {
             throw new IllegalStateException("Invalid JSON Format.", e);
         }

@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.messaging;
 
@@ -28,7 +29,8 @@ import javax.inject.Inject;
 @Component
 public class DuplicateMessageCheckerImpl implements DuplicateMessageChecker {
 
-    private static final Logger logger = LoggerFactory.getLogger(DuplicateMessageCheckerImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            DuplicateMessageCheckerImpl.class);
 
     @Inject
     MessageIdRepository repository;

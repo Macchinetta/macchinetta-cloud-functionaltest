@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.initdb.task;
 
@@ -115,9 +116,8 @@ public class RedisTask extends Task {
                 && StringUtils.isEmpty(redisClusterNodes)) {
             sb.append("Redisホストと").append(" Redisポート").append(" または、").append(
                     " RedisClusterNodes");
-        } else if (!StringUtils.isEmpty(redisHost)
-                && StringUtils.isEmpty(redisPort)
-                && StringUtils.isEmpty(redisClusterNodes)) {
+        } else if (!StringUtils.isEmpty(redisHost) && StringUtils.isEmpty(
+                redisPort) && StringUtils.isEmpty(redisClusterNodes)) {
             sb.append(" Redisポート");
         }
         if (sb.length() > 0) {

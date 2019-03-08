@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.config;
 
@@ -27,9 +28,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * 環境リポジトリ登録クラス
- *
  * @author NTT 電電太郎
- *
  */
 @Configuration
 @EnableConfigurationProperties(ConfigServerProperties.class)
@@ -37,9 +36,7 @@ public class CustomEnvironmentRepositoryConfiguration {
 
     /**
      * spring profile が s3 のときに設定する環境レポジトリ
-     *
      * @author NTT 電電太郎
-     *
      */
     @Configuration
     @Profile(value = { "loginfo", "logwarn" })
@@ -50,7 +47,6 @@ public class CustomEnvironmentRepositoryConfiguration {
 
         /**
          * 環境レポジトリをBean登録する。
-         *
          * @return S3 環境レポジトリ
          */
         @Bean

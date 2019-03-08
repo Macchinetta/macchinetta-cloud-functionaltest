@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.db;
 
@@ -23,7 +24,6 @@ import org.springframework.beans.factory.annotation.Value;
 
 /**
  * @author NTT 電電太郎
- *
  */
 public class DBUtil {
 
@@ -65,9 +65,7 @@ public class DBUtil {
 
     /**
      * DBのドライバークラスを設定する。
-     *
-     * @param driverClassName
-     *            ドライバークラス名
+     * @param driverClassName ドライバークラス名
      */
     public void setDriverClassName(String driverClassName) {
         this.driverClassName = driverClassName;
@@ -75,9 +73,7 @@ public class DBUtil {
 
     /**
      * デフォルトDBのURLを設定する。
-     *
-     * @param urlDefault
-     *            デフォルトDBのURL
+     * @param urlDefault デフォルトDBのURL
      */
     public void setUrlDefault(String urlDefault) {
         this.urlDefault = urlDefault;
@@ -85,9 +81,7 @@ public class DBUtil {
 
     /**
      * シャード1のURLを設定する。
-     *
-     * @param urlShard1
-     *            シャード1のURL
+     * @param urlShard1 シャード1のURL
      */
     public void setUrlShard1(String urlShard1) {
         this.urlShard1 = urlShard1;
@@ -95,9 +89,7 @@ public class DBUtil {
 
     /**
      * シャード2のURLを設定する。
-     *
-     * @param urlShard2
-     *            シャード2のURL
+     * @param urlShard2 シャード2のURL
      */
     public void setUrlShard2(String urlShard2) {
         this.urlShard2 = urlShard2;
@@ -105,9 +97,7 @@ public class DBUtil {
 
     /**
      * DBのユーザー名を設定する。
-     *
-     * @param user
-     *            DBのユーザー名
+     * @param user DBのユーザー名
      */
     public void setUser(String user) {
         this.user = user;
@@ -115,9 +105,7 @@ public class DBUtil {
 
     /**
      * DBのパスワードを設定する。
-     *
-     * @param password
-     *            DBのパスワード
+     * @param password DBのパスワード
      */
     public void setPassword(String password) {
         this.password = password;
@@ -125,7 +113,6 @@ public class DBUtil {
 
     /**
      * デフォルトDBのコネクションを取得する。
-     *
      * @return
      * @throws SQLException
      * @throws ClassNotFoundException
@@ -137,7 +124,6 @@ public class DBUtil {
 
     /**
      * シャード1のコネクションを取得する。
-     *
      * @return
      * @throws SQLException
      * @throws ClassNotFoundException
@@ -149,7 +135,6 @@ public class DBUtil {
 
     /**
      * シャード2のコネクションを取得する。
-     *
      * @return
      * @throws SQLException
      * @throws ClassNotFoundException

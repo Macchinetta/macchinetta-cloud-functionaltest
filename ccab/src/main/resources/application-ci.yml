@@ -34,10 +34,4 @@ logging:
 spring:
   redis:
     cluster:
-      nodes:
-        - atrs-ci-cache.xxxx.clustercfg.apne1.cache.amazonaws.com:6379
-    pool:
-      max-active: 8
-      max-idle: 8
-      max-wait: -1
-      min-idle: 0
+      nodes: atrs-ci-cache.XXXX.clustercfg.apne1.cache.amazonaws.com:6379

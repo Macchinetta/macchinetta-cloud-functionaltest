@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.api.testcase;
 
@@ -35,7 +36,8 @@ import io.restassured.RestAssured;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:META-INF/spring/selenideContext.xml" })
+@ContextConfiguration(locations = {
+        "classpath:META-INF/spring/selenideContext.xml" })
 public class HealthCheckDisableDynamoDBTest extends TestCase {
 
     /*
@@ -72,12 +74,12 @@ public class HealthCheckDisableDynamoDBTest extends TestCase {
     public void disableDynamoDBHealthCheckTest() throws IOException {
 
         // @formatter:off
-        given().get("/management/health").then()
-                .body("status", equalTo("UP"))
-                .body("$", not(hasItem("dynamodb")))
-                .body("diskSpace.status", equalTo("UP"))
-                .body("db.status", equalTo("UP"))
-                .body("refreshScope.status", equalTo("UP"));
+        given().get("/management/health").then().body("status", equalTo("UP"))
+                .body("$", not(hasItem("dynamodb"))).body(
+                        "details.diskSpace.status", equalTo("UP")).body(
+                                "details.db.status", equalTo("UP")).body(
+                                        "details.refreshScope.status", equalTo(
+                                                "UP"));
         // @formatter:on
     }
 }

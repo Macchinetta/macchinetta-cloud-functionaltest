@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.task.configserver;
 
@@ -33,9 +34,7 @@ import org.apache.tools.ant.Task;
 
 /**
  * Config Serverを起動するタスク
- *
  * @author NTT 電電太郎
- *
  */
 public class ConfigServerStartUpTask extends Task {
 
@@ -81,19 +80,15 @@ public class ConfigServerStartUpTask extends Task {
 
     /**
      * Config Server プロジェクトへのパスを設定する。
-     *
-     * @param configServerProjectDir
-     *            Config Server プロジェクトへのパス
+     * @param configServerProjectDir Config Server プロジェクトへのパス
      */
     public void setConfigServerProjectDir(String configServerProjectDir) {
         this.configServerProjectDir = whenSetValidation(configServerProjectDir);
-   }
+    }
 
     /**
      * Config Server プロファイルを設定する。
-     *
-     * @param configServerProfile
-     *            Config Server プロファイル
+     * @param configServerProfile Config Server プロファイル
      */
     public void setConfigServerProfile(String configServerProfile) {
         this.configServerProfile = whenSetValidation(configServerProfile);
@@ -101,9 +96,7 @@ public class ConfigServerStartUpTask extends Task {
 
     /**
      * Config Server が起動しているかチェックするURLを設定する。
-     *
-     * @param configServerPingUrl
-     *            Config Server が起動しているかチェックするURL
+     * @param configServerPingUrl Config Server が起動しているかチェックするURL
      */
     public void setConfigServerPingUrl(String configServerPingUrl) {
         this.configServerPingUrl = whenSetValidation(configServerPingUrl);
@@ -111,9 +104,7 @@ public class ConfigServerStartUpTask extends Task {
 
     /**
      * Config Serverに接続する user名を設定する。
-     *
-     * @param configUser
-     *            Config Serverに接続する user名
+     * @param configUser Config Serverに接続する user名
      */
     public void setConfigServerUser(String configUser) {
         this.configUser = whenSetValidation(configUser);
@@ -121,9 +112,7 @@ public class ConfigServerStartUpTask extends Task {
 
     /**
      * Config Serverに接続するPasswordを設定する。
-     *
-     * @param configPassword
-     *            Config Serverに接続するPassword
+     * @param configPassword Config Serverに接続するPassword
      */
     public void setConfigServerPassword(String configPassword) {
         this.configPassword = whenSetValidation(configPassword);
@@ -131,9 +120,7 @@ public class ConfigServerStartUpTask extends Task {
 
     /**
      * Config Server が起動するまでのタイムアウト時間を設定する。
-     *
-     * @param timeout
-     *            Config Server が起動するまでのタイムアウト時間
+     * @param timeout Config Server が起動するまでのタイムアウト時間
      */
     public void setTimeout(String timeout) {
         if (timeout != null && timeout.startsWith("${")) {
@@ -144,9 +131,7 @@ public class ConfigServerStartUpTask extends Task {
 
     /**
      * mvnへのパスを設定する。
-     *
-     * @param mvnPath
-     *            mvnへのパス
+     * @param mvnPath mvnへのパス
      */
     public void setMvnPath(String mvnPath) {
         this.mvnPath = whenSetValidation(mvnPath);
@@ -154,7 +139,6 @@ public class ConfigServerStartUpTask extends Task {
 
     /*
      * (非 Javadoc)
-     *
      * @see org.apache.tools.ant.Task#execute()
      */
     @Override
@@ -163,17 +147,17 @@ public class ConfigServerStartUpTask extends Task {
         Path dir = Paths.get(configServerProjectDir).resolve("pom.xml");
         String pomPath = dir.toAbsolutePath().toString();
 
-        ProcessBuilder processBuilder = new ProcessBuilder(mvnPath, "-f", pomPath,
-                "spring-boot:run", "-P", configServerProfile);
-
+        ProcessBuilder processBuilder = new ProcessBuilder(mvnPath, "-f", pomPath, "spring-boot:run", "-P", configServerProfile);
 
         processBuilder.inheritIO();
 
         try {
-            System.out.println("*********************** Config Server を起動します。pomPath=" + pomPath
-                    + " configServerProfile=" + configServerProfile + " timeout=" + timeout
-                    + " mvnPath=" + mvnPath + " configServerPingUrl=" + configServerPingUrl
-                    + " ***********************");
+            System.out.println(
+                    "*********************** Config Server を起動します。pomPath="
+                            + pomPath + " configServerProfile="
+                            + configServerProfile + " timeout=" + timeout
+                            + " mvnPath=" + mvnPath + " configServerPingUrl="
+                            + configServerPingUrl + " ***********************");
             processBuilder.start();
         } catch (IOException e) {
             throw new BuildException(e);
@@ -181,18 +165,21 @@ public class ConfigServerStartUpTask extends Task {
 
         // Basic認証設定
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(configUser, configPassword));
+        credentialsProvider.setCredentials(AuthScope.ANY,
+                new UsernamePasswordCredentials(configUser, configPassword));
 
-        CloseableHttpClient client = HttpClientBuilder.create().setDefaultCredentialsProvider(credentialsProvider)
-                .build();
+        CloseableHttpClient client = HttpClientBuilder.create()
+                .setDefaultCredentialsProvider(credentialsProvider).build();
 
         long start = System.currentTimeMillis();
         long timeDiff = 0;
         boolean configServerStartUpFlag = false;
         while (true) {
-            try (CloseableHttpResponse response = client.execute(new HttpGet(configServerPingUrl))) {
+            try (CloseableHttpResponse response = client.execute(
+                    new HttpGet(configServerPingUrl))) {
                 if (200 == response.getStatusLine().getStatusCode()) {
-                    System.out.println("*********************** Config Server が起動しました。 ***********************");
+                    System.out.println(
+                            "*********************** Config Server が起動しました。 ***********************");
                     configServerStartUpFlag = true;
                 }
             } catch (ClientProtocolException e) {
@@ -206,21 +193,21 @@ public class ConfigServerStartUpTask extends Task {
             try {
                 Thread.sleep(100); // 100ミリ秒Sleepする
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
 
             long end = System.currentTimeMillis();
             timeDiff = end - start;
             if (timeDiff >= timeout) {
-                throw new BuildException("Config Server の起動がタイムアウトしました。 timeout=" + timeout + " ms");
+                throw new BuildException("Config Server の起動がタイムアウトしました。 timeout="
+                        + timeout + " ms");
             }
         }
     }
 
     /**
      * 入力文字列チェック
-     *
-     * @param str
-     *            入力文字列
+     * @param str 入力文字列
      * @return 入力文字列("${" で始まっていたら {@link null}を返す)
      */
     private String whenSetValidation(String str) {

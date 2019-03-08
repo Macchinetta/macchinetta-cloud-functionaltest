@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.session;
 
@@ -21,9 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * セッション試験用(認証なし場合)コントローラ
- *
  * @author NTT 電電太郎
- *
  */
 @Controller
 @RequestMapping("session/noAuthenticated")
@@ -31,7 +30,6 @@ public class SessionNoAuthenticatedController {
 
     /**
      * POST 実行
-     *
      * @return
      */
     @RequestMapping(method = RequestMethod.POST, params = "postTest")
@@ -41,7 +39,6 @@ public class SessionNoAuthenticatedController {
 
     /**
      * GET 実行
-     *
      * @return
      */
     @RequestMapping(method = RequestMethod.GET, params = "getTest")
@@ -51,7 +48,6 @@ public class SessionNoAuthenticatedController {
 
     /**
      * セッション試験のWelcomeページ表示
-     *
      * @return
      */
     @RequestMapping(method = RequestMethod.GET)

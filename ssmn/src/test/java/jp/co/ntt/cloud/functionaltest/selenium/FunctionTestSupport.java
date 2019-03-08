@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenium;
 
@@ -161,7 +162,7 @@ public class FunctionTestSupport extends ApplicationObjectSupport {
         webDrivers.remove(webDriver);
     }
 
-    protected void bootDefaultWebDriver() {
+    protected synchronized void bootDefaultWebDriver() {
         if (driver == null) {
             driver = newWebDriver();
         }
@@ -180,7 +181,7 @@ public class FunctionTestSupport extends ApplicationObjectSupport {
         return webDriver;
     }
 
-    protected void quitDefaultWebDriver() {
+    protected synchronized void quitDefaultWebDriver() {
         if (driver != null) {
             try {
                 driver.quit();

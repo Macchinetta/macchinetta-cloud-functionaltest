@@ -12,17 +12,34 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenium;
 
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.annotation.Value;
+
+import io.github.bonigarcia.wdm.FirefoxDriverManager;
 
 public class FirefoxDriverFactoryBean implements FactoryBean<FirefoxDriver> {
 
+    /*
+     * geckoドライバーバージョン
+     */
+    @Value("${selenium.geckodriverVersion}")
+    private String geckodriverVersion;
+
     @Override
     public FirefoxDriver getObject() {
+
+        // geckoドライバーの設定
+        if (System.getProperty("webdriver.gecko.driver") == null) {
+            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+                    .setup();
+        }
+
         FirefoxProfile profile = new FirefoxProfile();
         profile.setPreference("browser.startup.homepage_override.mstone",
                 "ignore");

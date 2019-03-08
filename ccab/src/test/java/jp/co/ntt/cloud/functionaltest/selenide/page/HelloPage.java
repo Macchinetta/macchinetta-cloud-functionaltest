@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.page;
 
@@ -30,7 +31,7 @@ public class HelloPage {
      * ログアウトする。
      * @return TopPage トップページ
      */
-    public TopPage logout(){
+    public TopPage logout() {
         $("button").click();
         return new TopPage();
     }
@@ -48,7 +49,6 @@ public class HelloPage {
 
     /**
      * メンバーに割り振られるランダムな数字を取得する。
-     *
      * @return SelenideElement メンバーに割り振られるランダムな数字
      */
     public SelenideElement getMemberRandomNo() {

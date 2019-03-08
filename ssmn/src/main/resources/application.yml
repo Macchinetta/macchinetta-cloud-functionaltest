@@ -17,4 +17,6 @@ cloud:
       auto: false
 
 management:
-  context-path: /management
+  endpoints:
+    web:
+      base-path: /management

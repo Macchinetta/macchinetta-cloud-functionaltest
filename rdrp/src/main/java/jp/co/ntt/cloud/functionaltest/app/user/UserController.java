@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.app.user;
 
@@ -30,7 +31,6 @@ import jp.co.ntt.cloud.functionaltest.domain.model.UserInfo;
 import jp.co.ntt.cloud.functionaltest.domain.service.userregister.UserRegisterService;
 import jp.co.ntt.cloud.functionaltest.domain.service.usersearch.UserSearchService;
 
-
 @Controller
 public class UserController {
 
@@ -48,7 +48,7 @@ public class UserController {
 
     @RequestMapping(value = "/")
     public String userlist(Model model) {
-        
+
         List<User> userList = userSearchService.userSearchAll();
 
         List<UserInfo> userInfoList = new ArrayList<UserInfo>();
@@ -63,7 +63,7 @@ public class UserController {
 
         return "user/userManagement";
     }
-    
+
     @RequestMapping(value = "register")
     public String userRegister(UserForm form) {
         UserInfo userInfo = new UserInfo();

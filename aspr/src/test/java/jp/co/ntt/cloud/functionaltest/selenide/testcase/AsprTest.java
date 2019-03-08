@@ -12,10 +12,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import com.codeborne.selenide.Configuration;
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selectors.*;
+import static com.codeborne.selenide.Selenide.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
+
+import java.util.Arrays;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,16 +38,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.WebDriverRunner;
 
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selectors.byId;
-import static com.codeborne.selenide.Selenide.*;
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.CoreMatchers.*;
+import io.github.bonigarcia.wdm.FirefoxDriverManager;
 
 @SuppressWarnings("unused")
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -43,7 +49,8 @@ import static org.hamcrest.CoreMatchers.*;
         "classpath:META-INF/spring/selenideContext.xml" })
 public class AsprTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(AsprTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            AsprTest.class);
 
     /*
      * アプリケーション URL
@@ -57,12 +64,31 @@ public class AsprTest {
     @Value("${path.report}")
     private String reportPath;
 
+    /*
+     * geckoドライバーバージョン
+     */
+    @Value("${selenide.geckodriverVersion}")
+    private String geckodriverVersion;
+
     @Inject
     private JdbcTemplate jdbcTemplate;
 
     @Before
     public void setUp() throws Exception {
         logger.debug("+++ start setUp");
+
+        // geckoドライバーの設定
+        if (System.getProperty("webdriver.gecko.driver") == null) {
+            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+                    .setup();
+        }
+
+        // ブラウザの設定
+        Configuration.browser = WebDriverRunner.MARIONETTE;
+
+        // タイムアウトの設定
+        Configuration.timeout = 1200000;
+
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
 
@@ -72,10 +98,7 @@ public class AsprTest {
     }
 
     /**
-     * Selenide関連のクリア処理。
-     * setUp()内で実施すると画面が真っ白になるなどの不具合が確認できたため、
-     * 本メソッドで共通的に実施
-     *
+     * Selenide関連のクリア処理。 setUp()内で実施すると画面が真っ白になるなどの不具合が確認できたため、 本メソッドで共通的に実施
      * @throws Exception 予期しない例外
      */
     private void clearSetup() throws Exception {
@@ -98,9 +121,7 @@ public class AsprTest {
     }
 
     /**
-     * 同期送信の確認。
-     * SQSのreservation-queueにUUIDを送信することで、同一メッセージが同期受信できること。
-     *
+     * 同期送信の確認。 SQSのreservation-queueにUUIDを送信することで、同一メッセージが同期受信できること。
      * @throws Exception 意図しない例外
      */
     @Test
@@ -126,9 +147,7 @@ public class AsprTest {
     }
 
     /**
-     * JMSリスナを使用し、3件のメッセージを非同期に受信する。
-     * メッセージの受信件数を揃えるため、3件のメッセージ同期受信の後、JMSリスナを起動する。
-     *
+     * JMSリスナを使用し、3件のメッセージを非同期に受信する。 メッセージの受信件数を揃えるため、3件のメッセージ同期受信の後、JMSリスナを起動する。
      * @throws Exception 予期しない例外
      */
     @Test
@@ -171,18 +190,14 @@ public class AsprTest {
         screenshot("testReceiveMessageByAsync_receive_async");
 
         // 検証：RDSのメッセージIDが3件存在すること(MESSAGE IDのみ記録されているため、件数のみ確認)。
-        assertThat(
-                jdbcTemplate.queryForList("SELECT MESSAGE_ID FROM MESSAGE_ID_STORE").size(),
-                is(3));
+        assertThat(jdbcTemplate.queryForList(
+                "SELECT MESSAGE_ID FROM MESSAGE_ID_STORE").size(), is(3));
         logger.debug("+++ end testReceiveMessageByAsync");
     }
 
     /**
-     * JMSリスナによる非同期受信で重複したメッセージを受信した場合の挙動を確認する。
-     * RDSによるメッセージIDの管理テーブルが一意制約違反を検出し、
-     * 業務処理（ここではBlockingQueueにメッセージを追加）が行われず、
+     * JMSリスナによる非同期受信で重複したメッセージを受信した場合の挙動を確認する。 RDSによるメッセージIDの管理テーブルが一意制約違反を検出し、 業務処理（ここではBlockingQueueにメッセージを追加）が行われず、
      * SQSスタンダードキューからのメッセージが削除されていることを確認する。
-     *
      * @throws Exception 予期しない例外
      */
     @Test
@@ -208,7 +223,9 @@ public class AsprTest {
 
         // 事前準備:メッセージID管理テーブルに対し、二重受信エラーを発生させるため、
         // メッセージIDを先行登録する。
-        int insertCount = jdbcTemplate.update("INSERT INTO MESSAGE_ID_STORE (MESSAGE_ID) VALUES (?)", messageId);
+        int insertCount = jdbcTemplate.update(
+                "INSERT INTO MESSAGE_ID_STORE (MESSAGE_ID) VALUES (?)",
+                messageId);
         assertThat(insertCount, is(1));
 
         // テスト実行(JMSリスナを起動)
@@ -234,7 +251,8 @@ public class AsprTest {
         // 証跡取得
         screenshot("testPseudoDuplicationReceive_reservation-queue_empty");
 
-        open(applicationContextUrl + "browse/reservation-deadletter?delete=true");
+        open(applicationContextUrl
+                + "browse/reservation-deadletter?delete=true");
         $(byId("status")).shouldHave(text("status:EMPTY"));
 
         // 証跡取得
@@ -286,7 +304,8 @@ public class AsprTest {
         screenshot("testDispatchDeadLetterQueue_reservation-queue_empty");
 
         // 検証:デッドレターキューに移動したメッセージIDが受信時と同一であること。
-        open(applicationContextUrl + "browse/reservation-deadletter?delete=true");
+        open(applicationContextUrl
+                + "browse/reservation-deadletter?delete=true");
         $(byId("status")).shouldHave(text("status:" + messageId));
 
         // 証跡取得

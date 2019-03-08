@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.page;
 
@@ -25,10 +26,14 @@ public class OrderFormPage {
 
     /**
      * 注文IDが奇数のものだけ注文する
+     * @throws InterruptedException
      */
-    public void orderOddIdProduct() {
+    public void orderOddIdProduct() throws InterruptedException {
         $(byId("add1")).click();
+        Thread.sleep(2000);
+
         $(byId("add3")).click();
+        Thread.sleep(2000);
     }
 
     /**

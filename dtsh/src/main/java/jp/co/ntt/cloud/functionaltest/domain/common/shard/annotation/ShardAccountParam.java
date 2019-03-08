@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.common.shard.annotation;
 
@@ -22,11 +23,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * {@link jp.co.ntt.cloud.functionaltest.domain.common.shard.annotation.ShardWithAccount}
- * が付与されているメソッドで使用する。 メソッド引数が複数ある場合に、シャードキーを保持するオブジェクトを特定する。
- *
+ * {@link jp.co.ntt.cloud.functionaltest.domain.common.shard.annotation.ShardWithAccount} が付与されているメソッドで使用する。
+ * メソッド引数が複数ある場合に、シャードキーを保持するオブジェクトを特定する。
  * @author NTT 電電太郎
- *
  */
 @Target({ ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)

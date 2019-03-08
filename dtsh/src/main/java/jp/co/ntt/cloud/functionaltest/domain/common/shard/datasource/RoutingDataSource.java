@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.common.shard.datasource;
 
@@ -22,16 +23,15 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
 /**
  * 複数のデータソースを動的に切り替えるクラス。
- *
  * @author NTT 電電太郎
- *
  */
 public class RoutingDataSource extends AbstractRoutingDataSource {
 
     /**
      * ロガー。
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(RoutingDataSource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(
+            RoutingDataSource.class);
 
     @Value("${database.default.schema.name:default}")
     private String databaseDefaultSchemaName;
@@ -40,8 +40,10 @@ public class RoutingDataSource extends AbstractRoutingDataSource {
 
     public RoutingDataSource(RoutingDataSourceBuilder routingDataSourceBuilder,
             RoutingDataSourceLookUpKeyHolder dataSourceLookUpKeyHolder) {
-        super.setDefaultTargetDataSource(routingDataSourceBuilder.getDefaultTargetSource());
-        super.setTargetDataSources(routingDataSourceBuilder.getTargetDataSources());
+        super.setDefaultTargetDataSource(routingDataSourceBuilder
+                .getDefaultTargetSource());
+        super.setTargetDataSources(routingDataSourceBuilder
+                .getTargetDataSources());
         this.dataSourceLookupKeyHolder = dataSourceLookUpKeyHolder;
     }
 
@@ -49,7 +51,8 @@ public class RoutingDataSource extends AbstractRoutingDataSource {
     protected Object determineCurrentLookupKey() {
         String returnKey = dataSourceLookupKeyHolder.get();
         if (LOGGER.isDebugEnabled()) {
-            String param = null == returnKey ? databaseDefaultSchemaName : returnKey;
+            String param = null == returnKey ? databaseDefaultSchemaName
+                    : returnKey;
             LOGGER.debug(String.format("シャードキー[ %s ]を選択しました。", param));
         }
         return returnKey;

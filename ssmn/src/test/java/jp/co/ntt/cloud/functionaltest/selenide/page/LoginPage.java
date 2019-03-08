@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenide.page;
 
@@ -31,13 +32,16 @@ public class LoginPage {
      * @param userId 顧客番号
      * @param password パスワード
      * @return TopPage トップページ
+     * @throws InterruptedException
      */
-    public AfterLoginOp login(String userId, String password) {
+    public AfterLoginOp login(String userId,
+            String password) throws InterruptedException {
         $(byId("userId")).clear();
         $(byId("userId")).setValue(userId);
         $(byId("password")).clear();
         $(byId("password")).setValue(password);
         $$("tr").get(2).$("input").click();
+        Thread.sleep(2000);
         return new AfterLoginOp();
     }
 

@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.selenium;
 
@@ -69,7 +70,7 @@ public class PageSource {
 
         try {
             FileUtils.writeStringToFile(pageSourceFile, webDriver
-                    .getPageSource());
+                    .getPageSource(), "UTF-8");
 
         } catch (IOException e) {
             logger.error(e.toString());

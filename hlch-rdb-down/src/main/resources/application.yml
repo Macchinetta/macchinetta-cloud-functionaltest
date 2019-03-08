@@ -2,25 +2,22 @@
 
 spring:
   application:
-    name: hlch-dynamo-down
+    name: hlch-rdb-down
   datasource:
     initialize: false
 
 management:
-  context-path: /management
-  # Disable security for actuator endpoints
-  security:
-    enabled: false
-
-
-endpoints:
-  # Set all actuator endpoints disabled by default
-  enabled: false
-  health:
-    # Disable sensitive filter for the health endpoint
-    sensitive: false
-    # Enable only health endpoint
-    enabled: true  
+  endpoints:
+    web:
+      base-path: /management
+    # Set all actuator endpoints disabled by default
+    enabled-by-default: false
+  endpoint:
+    health:
+      # Disable sensitive filter for the health endpoint
+      show-details: ALWAYS
+      # Enable only health endpoint
+      enabled: true
 
 cloud:
   aws:

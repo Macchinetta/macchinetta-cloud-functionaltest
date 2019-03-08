@@ -12,10 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.common.shard.interceptor;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -28,11 +30,10 @@ import jp.co.ntt.cloud.functionaltest.domain.common.shard.repository.AccountShar
 
 /**
  * シャーディングのインタセプタ。
- *
  * @author NTT 電電太郎
- *
  */
-public class AccountShardInterceptor implements MethodInterceptor, InitializingBean {
+public class AccountShardInterceptor implements MethodInterceptor,
+                                     InitializingBean {
 
     /**
      * シャードアカウントのリポジトリー。
@@ -43,8 +44,10 @@ public class AccountShardInterceptor implements MethodInterceptor, InitializingB
 
     private RoutingDataSourceLookUpKeyHolder dataSourceLookupKeyHolder;
 
-    public AccountShardInterceptor(AccountShardKeyRepository accountShardKeyRepository,
-            ShardAccountHelper shardAccountHelper, RoutingDataSourceLookUpKeyHolder dataSourceLookupKeyHolder) {
+    public AccountShardInterceptor(
+            AccountShardKeyRepository accountShardKeyRepository,
+            ShardAccountHelper shardAccountHelper,
+            RoutingDataSourceLookUpKeyHolder dataSourceLookupKeyHolder) {
         this.accountShardKeyRepository = accountShardKeyRepository;
         this.shardAccountHelper = shardAccountHelper;
         this.dataSourceLookupKeyHolder = dataSourceLookupKeyHolder;
@@ -52,7 +55,6 @@ public class AccountShardInterceptor implements MethodInterceptor, InitializingB
 
     @Override
     public void afterPropertiesSet() throws Exception {
-
 
     }
 
@@ -66,9 +68,10 @@ public class AccountShardInterceptor implements MethodInterceptor, InitializingB
         String acccount = shardAccountHelper.getAccountValue(invocation);
         if (Objects.nonNull(acccount)) {
             // リポジトリに問い合わせ
-            ShardingAccount shardingAccount = accountShardKeyRepository.findOne(acccount);
+            Optional<ShardingAccount> shardingAccount = accountShardKeyRepository
+                    .findById(acccount);
             if (Objects.nonNull(shardingAccount)) {
-                dataSourceKey = shardingAccount.getDataSourceKey();
+                dataSourceKey = shardingAccount.get().getDataSourceKey();
             }
         }
         dataSourceLookupKeyHolder.set(dataSourceKey);

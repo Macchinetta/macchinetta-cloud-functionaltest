@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.infra.redis;
 
@@ -39,9 +40,7 @@ import redis.clients.jedis.JedisPool;
 
 /**
  * Redis操作クラス
- *
  * @author NTT 電電太郎
- *
  */
 public class RedisUtil {
 
@@ -75,7 +74,8 @@ public class RedisUtil {
 
     private static final String VALIDATION_MESSAGE = "%sの設定は必須です。";
 
-    public RedisUtil(String redisHost, String redisPort, String redisClusterEndPoint) {
+    public RedisUtil(String redisHost, String redisPort,
+            String redisClusterEndPoint) {
         this.redisHost = redisHost;
         this.redisPort = redisPort;
         this.redisClusterEndPoint = redisClusterEndPoint;
@@ -85,7 +85,8 @@ public class RedisUtil {
         if (StringUtils.isEmpty(redisHost)) {
             this.jedisClusterNodes = createNodes(this.redisClusterEndPoint);
         } else {
-            this.jedisSingleNode = createJedis(redisHost, Integer.valueOf(redisPort));
+            this.jedisSingleNode = createJedis(redisHost, Integer.valueOf(
+                    redisPort));
         }
 
     }
@@ -105,8 +106,8 @@ public class RedisUtil {
         List<String> nodes = splitNodes(redisClusterNodes);
         Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
         for (String node : nodes) {
-            jedisClusterNodes
-                    .add(new HostAndPort(getHostFromEndPoint(node), Integer.valueOf(getPortFromEndPoint(node))));
+            jedisClusterNodes.add(new HostAndPort(getHostFromEndPoint(
+                    node), Integer.valueOf(getPortFromEndPoint(node))));
         }
         return new JedisCluster(jedisClusterNodes);
 
@@ -114,7 +115,6 @@ public class RedisUtil {
 
     /**
      * Redis を初期化するメソッド
-     *
      * @throws IOException
      */
     public void flushRedis() throws IOException {
@@ -126,7 +126,8 @@ public class RedisUtil {
             RedisClusterConfiguration clusterConfiguration = new RedisClusterConfiguration(nodes);
             JedisConnectionFactory factory = new JedisConnectionFactory(clusterConfiguration);
             factory.afterPropertiesSet();
-            Iterator<RedisClusterNode> cnodes = factory.getClusterConnection().clusterGetNodes().iterator();
+            Iterator<RedisClusterNode> cnodes = factory.getClusterConnection()
+                    .clusterGetNodes().iterator();
             while (cnodes.hasNext()) {
                 RedisClusterNode node = cnodes.next();
                 if (node.isMaster()) {
@@ -138,40 +139,42 @@ public class RedisUtil {
 
     /**
      * Redis を初期化する
-     *
      * @throws IOException
      */
-    private void flushDB(String redisHost, Integer redisPort) throws IOException {
-        System.out.println("*********************** Redisマスターノード" + redisHost + ":" + redisPort
-                + "をフラッシュします。 ***********************");
+    private void flushDB(String redisHost,
+            Integer redisPort) throws IOException {
+        System.out.println("*********************** Redisマスターノード" + redisHost
+                + ":" + redisPort + "をフラッシュします。 ***********************");
         Jedis jedis = new Jedis(redisHost, redisPort);
         String result = jedis.flushDB();
         jedis.close();
-        System.out.println("*********************** ホスト " + redisHost + " Redis#flushDB() -> " + result
-                + " ***********************");
+        System.out.println("*********************** ホスト " + redisHost
+                + " Redis#flushDB() -> " + result + " ***********************");
         if (!"OK".equals(result)) {
             throw new IOException("RedisのflushDBに失敗しました。");
         }
-        System.out.println("*********************** Redisマスターノード" + redisHost + ":" + redisPort
-                + "をフラッシュしました。 ***********************");
+        System.out.println("*********************** Redisマスターノード" + redisHost
+                + ":" + redisPort + "をフラッシュしました。 ***********************");
     }
 
     /**
      * Redisに保存されている Cart の情報を取得する
-     *
      * @param sessionId
      * @throws BuildException
      * @throws ClassNotFoundException
      * @throws IOException
      */
-    public Cart getFromRedis(String sessionId) throws BuildException, ClassNotFoundException, IOException {
+    public Cart getFromRedis(
+            String sessionId) throws BuildException, ClassNotFoundException, IOException {
         byte[] key = ("spring:session:sessions:" + sessionId).getBytes();
         byte[] field = "sessionAttr:scopedTarget.cart".getBytes();
 
         if (StringUtils.isEmpty(redisHost)) {
-            return (Cart) ByteObjectConvarter.toObject(jedisClusterNodes.hget(key, field));
+            return (Cart) ByteObjectConvarter.toObject(jedisClusterNodes.hget(
+                    key, field));
         } else {
-            return (Cart) ByteObjectConvarter.toObject(jedisSingleNode.hget(key, field));
+            return (Cart) ByteObjectConvarter.toObject(jedisSingleNode.hget(key,
+                    field));
         }
     }
 
@@ -181,7 +184,8 @@ public class RedisUtil {
     public int getSpringSessionSize() {
         if (StringUtils.isEmpty(redisHost)) {
 
-            Map<String, JedisPool> clusterNodes = jedisClusterNodes.getClusterNodes();
+            Map<String, JedisPool> clusterNodes = jedisClusterNodes
+                    .getClusterNodes();
             int keySize = 0;
             for (String k : clusterNodes.keySet()) {
                 JedisPool jedisPool = clusterNodes.get(k);
@@ -201,21 +205,21 @@ public class RedisUtil {
         StringBuilder sb = new StringBuilder();
         if (StringUtils.isEmpty(redisHost) && StringUtils.isEmpty(redisPort)
                 && StringUtils.isEmpty(redisClusterEndPoint)) {
-            sb.append("Redisホストと").append(" Redisポート").append(" または、").append(" RedisClusterNodes");
-        } else if (!StringUtils.isEmpty(redisHost) && StringUtils.isEmpty(redisPort)
-                && StringUtils.isEmpty(redisClusterEndPoint)) {
+            sb.append("Redisホストと").append(" Redisポート").append(" または、").append(
+                    " RedisClusterNodes");
+        } else if (!StringUtils.isEmpty(redisHost) && StringUtils.isEmpty(
+                redisPort) && StringUtils.isEmpty(redisClusterEndPoint)) {
             sb.append(" Redisポート");
         }
         if (sb.length() > 0) {
-            throw new BuildException(String.format(VALIDATION_MESSAGE, sb.toString()));
+            throw new BuildException(String.format(VALIDATION_MESSAGE, sb
+                    .toString()));
         }
     }
 
     /**
      * Redisノードエンドポイント文字列分割
-     *
-     * @param redisClusterNodes
-     *            Redisノードエンドポイント文字列
+     * @param redisClusterNodes Redisノードエンドポイント文字列
      * @return
      */
     private List<String> splitNodes(String redisClusterNodes) {
@@ -225,9 +229,7 @@ public class RedisUtil {
 
     /**
      * Redisのクラスターモード時にEndPointかホストを取得する
-     *
-     * @param endPoint
-     *            エンドポイント文字列
+     * @param endPoint エンドポイント文字列
      * @return ポート番号
      */
     private String getHostFromEndPoint(String endPoint) {
@@ -236,9 +238,7 @@ public class RedisUtil {
 
     /**
      * Redisのクラスターモード時にEndPointからポート番号を取得する
-     *
-     * @param endPoint
-     *            エンドポイント文字列
+     * @param endPoint エンドポイント文字列
      * @return ポート番号
      */
     private String getPortFromEndPoint(String endPoint) {

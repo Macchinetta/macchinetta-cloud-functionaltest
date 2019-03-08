@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.model;
 
@@ -69,7 +70,6 @@ public class Member implements Serializable {
 
     /**
      * 名前を取得する。
-     *
      * @return 名前
      */
     public String getName() {
@@ -78,9 +78,7 @@ public class Member implements Serializable {
 
     /**
      * 名前を設定する。
-     *
-     * @param name
-     *            名前
+     * @param name 名前
      */
     public void setName(String name) {
         this.name = name;
@@ -88,7 +86,6 @@ public class Member implements Serializable {
 
     /**
      * フリガナ名を取得する。
-     *
      * @return フリガナ名。
      */
     public String getFuriName() {
@@ -97,9 +94,7 @@ public class Member implements Serializable {
 
     /**
      * フリガナ名を設定する。
-     *
-     * @param kanaName
-     *            フリガナ名
+     * @param kanaName フリガナ名
      */
     public void setFuriName(String furiName) {
         this.furiName = furiName;
@@ -107,7 +102,6 @@ public class Member implements Serializable {
 
     /**
      * ランダムな数字を取得する。
-     *
      * @return ランダムな数字。
      */
     public Integer getRandomNo() {
@@ -116,9 +110,7 @@ public class Member implements Serializable {
 
     /**
      * ランダムな数字を設定する。
-     *
-     * @param randomNo
-     *            ランダムな数字
+     * @param randomNo ランダムな数字
      */
     public void setRandomNo(Integer randomNo) {
         this.randomNo = randomNo;

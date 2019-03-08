@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package jp.co.ntt.cloud.functionaltest.domain.service;
 
@@ -32,9 +33,11 @@ public class NotificationParseServiceImpl implements NotificationParseService {
         ObjectMapper mapper = new ObjectMapper();
         Notification notification;
         try {
-            notification = mapper.readValue(notificationStr, Notification.class);
+            notification = mapper.readValue(notificationStr,
+                    Notification.class);
             String messageStr = notification.getMessageStr();
-            Notification.Message message = mapper.readValue(messageStr, Notification.Message.class);
+            Notification.Message message = mapper.readValue(messageStr,
+                    Notification.Message.class);
             notification.setMessage(message);
         } catch (IOException e) {
             throw new IllegalArgumentException("JSON mapping failed.", e);
