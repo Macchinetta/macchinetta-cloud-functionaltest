@@ -17,11 +17,13 @@
 package jp.co.ntt.cloud.functionaltest.api.testcase;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyArray;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -57,22 +59,15 @@ public class UploadFileTest extends TestCase {
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
 
-    /*
-     * バケット名
-     */
     @Value("${bucketName}")
     private String bucketName;
 
-    /*
-     * S3クライアント
-     */
     private AmazonS3 s3Client;
 
-    /*
-     * s3バケット内のオブジェクト（tempディレクトリ配下）を削除する。 削除後はディレクトリも削除されるため、新たにtempディレクトリを追加する。
-     */
     @After
     public void tearDown() {
+
+        // s3バケット内のオブジェクト（tempディレクトリ配下）を削除する。 削除後はディレクトリも削除されるため、新たにtempディレクトリを追加する。
         ObjectListing list = s3Client.listObjects(bucketName, "temp/");
         List<KeyVersion> keys = new ArrayList<KeyVersion>();
         if (list.getObjectSummaries() != null) {
@@ -87,18 +82,18 @@ public class UploadFileTest extends TestCase {
     }
 
     /**
-     * UPFM0101001<br>
-     * ファイルのアップロードが行える事を確認する。
+     * UPFM0101 001 ファイルのアップロードが行える事を確認する。
+     * @throws IOException
      */
     @Test
-    public void testUpload() throws Exception {
+    public void testUpload() throws IOException {
 
+        // 事前準備
         File uploadFile = new File("src/test/resources/files/Liberty.jpg");
 
-        // @formatter:off
+        // テスト実行:ファイルをアップロードする
         String response = given().multiPart("file", uploadFile).when().post(
                 applicationContextUrl + "api/").asString();
-        // @formatter:on
 
         // ファイルがアップロードされたことの確認
         // 引用符を削除
@@ -114,169 +109,179 @@ public class UploadFileTest extends TestCase {
         byte[] b1 = Files.readAllBytes(uploadFile.toPath());
         byte[] b2 = Files.readAllBytes(remoteFile.toPath());
         remoteFile.delete();
+
+        // アサート:アップロードに使用したファイルと、実施後にS3から取得したファイルを比較し、同一であることを確認する。
         assertTrue(Arrays.equals(b1, b2));
     }
 
     /**
-     * UPFM0102001<br>
-     * 単一ファイルの削除が行える事を確認する。
+     * UPFM0102 001 単一ファイルの削除が行える事を確認する。
      */
     @Test
-    public void testDelete() throws Exception {
+    public void testDelete() {
 
-        // 事前準備
+        // 事前準備:削除するためのファイル(単一)をアップロードしておく
         File uploadFile = new File("src/test/resources/files/Gleaners.jpg");
-
         String objectKey = "temp/deleteTestFile_" + UUID.randomUUID();
         s3Client.putObject(bucketName, objectKey, uploadFile);
 
+        // サスペンド:アップロード確認
         assertTrue(s3Client.doesObjectExist(bucketName, objectKey));
 
-        // @formatter:off
+        // テスト実行:ファイルを削除する
         given().delete(applicationContextUrl + "api?objectkey=" + objectKey);
-        // @formatter:on
 
+        // アサート:削除したファイルが、S3上に存在しないことを、SDKを使用して確認する。
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey));
     }
 
     /**
-     * UPFM0103001<br>
-     * 複数ファイルの削除が行える事を確認する。
+     * UPFM0103 001 複数ファイルの削除が行える事を確認する。
      */
     @Test
-    public void testMultiDelete() throws Exception {
+    public void testMultiDelete() {
 
-        // 事前準備
+        // 事前準備:削除するためのファイル(複数)をアップロードしておく
         File uploadFile1 = new File("src/test/resources/files/Liberty.jpg");
         File uploadFile2 = new File("src/test/resources/files/Gleaners.jpg");
-
         String objectKey1 = "temp/deleteTestFile_" + UUID.randomUUID();
         String objectKey2 = "temp/deleteTestFile_" + UUID.randomUUID();
         s3Client.putObject(bucketName, objectKey1, uploadFile1);
         s3Client.putObject(bucketName, objectKey2, uploadFile2);
 
+        // サスペンド:アップロード確認
         assertTrue(s3Client.doesObjectExist(bucketName, objectKey1));
         assertTrue(s3Client.doesObjectExist(bucketName, objectKey2));
 
-        // @formatter:off
+        // テスト実行:ファイルを削除する
         given().delete(applicationContextUrl + "api?objectkeys=" + objectKey1
                 + "&objectkeys=" + objectKey2);
-        // @formatter:on
 
+        // アサート:削除したファイルが、S3上に存在しないことを、SDKを使用して確認する。
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey1));
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey2));
     }
 
     /**
-     * UPFM0104001<br>
-     * ファイル検索が行える事を確認する。
+     * UPFM0104 001 ファイル検索が行える事を確認する。
      */
     @Test
-    public void testSearch() throws Exception {
+    public void testSearch() {
 
-        // 事前準備
+        // 事前準備:検索するためのファイル(複数)をアップロードしておく
         File uploadFile1 = new File("src/test/resources/files/Liberty.jpg");
         File uploadFile2 = new File("src/test/resources/files/Gleaners.jpg");
-
         String objectKey1 = "temp/searchTestFile_" + UUID.randomUUID();
         String objectKey2 = "temp/searchTestFile_" + UUID.randomUUID();
         s3Client.putObject(bucketName, objectKey1, uploadFile1);
         s3Client.putObject(bucketName, objectKey2, uploadFile2);
 
+        // サスペンド:アップロード確認
         assertTrue(s3Client.doesObjectExist(bucketName, objectKey1));
         assertTrue(s3Client.doesObjectExist(bucketName, objectKey2));
 
+        // 検索パターン
         String pattern = "temp/searchTestFile*";
-        // @formatter:off
+
+        // テスト実行:ファイルを検索する
         String[] searchResult = given().get(applicationContextUrl
                 + "api?pattern=" + pattern).as(String[].class);
         List<String> list = Arrays.asList(searchResult);
         System.out.println("test" + searchResult[0]);
-        // @formatter:on
-
         String[] expectedArray = { objectKey1, objectKey2 };
 
+        // アサート:検索結果のオブジェクトキーと、事前にファイルを配置した際のオブジェクトキーを比較して、同一であることを確認する。
         assertThat(list, hasItems(expectedArray));
     }
 
     /**
-     * UPFM0105001<br>
-     * S3上に存在しないオブジェクトキーを指定して単一ファイルの削除をしても例外が発生せず、そのままAPIがリターンすること。
+     * UPFM0105 001 S3上に存在しないオブジェクトキーを指定して単一ファイルの削除を行う。
      */
     @Test
     public void testDeleteNonExistObject() {
+
+        // 事前準備:削除対象のオブジェクトキー(単一)を作成しておく
         String objectKey1 = "temp/searchTestFile_" + UUID.randomUUID();
+
+        // サスペンド:削除対象のオブジェクトキーが存在しないことを確認
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey1));
 
+        // テスト実行:オブジェクトキーを指定して削除する
         int status = given().delete(applicationContextUrl + "api?objectkey="
                 + objectKey1).getStatusCode();
+
+        // アサート:例外が発生せず、そのままAPIがリターンすること。
         assertThat(status, is(200));
     }
 
     /**
-     * UPFM0105002<br>
-     * S3上に存在しないオブジェクトキーを指定して複数ファイルの削除をしても例外が発生せず、そのままAPIがリターンすること。
+     * UPFM0105 002 S3上に存在しないオブジェクトキーを指定して複数ファイルの削除を行う。
      */
     @Test
     public void testDeleteNonExistObjects() {
+
+        // 事前準備:削除対象のオブジェクトキー(複数)を作成しておく
         String objectKey1 = "temp/searchTestFile_" + UUID.randomUUID();
         String objectKey2 = "temp/searchTestFile_" + UUID.randomUUID();
 
+        // サスペンド:削除対象のオブジェクトキーが存在しないことを確認
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey1));
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey2));
 
+        // テスト実行:オブジェクトキーを指定して削除する
         int status = given().delete(applicationContextUrl + "api?objectkeys="
                 + objectKey1 + "&objectkeys=" + objectKey2).getStatusCode();
 
+        // アサート:例外が発生せず、そのままAPIがリターンすること。
         assertThat(status, is(200));
     }
 
     /**
-     * UPFM0105003<br>
-     * S3上に存在・非存在が混在しているオブジェクトキーを指定して複数ファイルの削除をしても例外が発生せず、S3上に存在するオブジェクトが削除されていること。
+     * UPFM0105 003 S3上に存在・非存在が混在しているオブジェクトキーを指定して複数ファイルの削除を行う。
      */
     @Test
     public void testDeleteExistAndNonExistObjects() {
 
+        // 事前準備:削除対象のオブジェクトキー(複数)を作成しておく
         File uploadFile1 = new File("src/test/resources/files/Liberty.jpg");
-
         String objectKey1 = "temp/searchTestFile_" + UUID.randomUUID();
         String objectKey2 = "temp/searchTestFile_" + UUID.randomUUID();
 
-        // put only objectKey1
+        // 事前準備:objectKey1をアップロードしておく
         s3Client.putObject(bucketName, objectKey1, uploadFile1);
 
+        // サスペンド:削除対象のオブジェクトキーについて存在・非存在が混在していることを確認
         assertTrue(s3Client.doesObjectExist(bucketName, objectKey1));
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey2));
 
+        // テスト実行:オブジェクトキーを指定して削除する
         int status = given().delete(applicationContextUrl + "api?objectkeys="
                 + objectKey1 + "&objectkeys=" + objectKey2).getStatusCode();
 
+        // アサート:例外が発生せず、S3上に存在するオブジェクトが削除されていること。
         assertThat(status, is(200));
-
-        // confirm delete file by objectkey1
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey1));
     }
 
     /**
-     * UPFM0106001<br>
-     * S3上に存在しないオブジェクトキーパターンを指定してファイル検索を行うと、検索条件にマッチする配列が空であること。
+     * UPFM0106 001 S3上に存在しないオブジェクトキーパターンを指定してファイル検索を行う。
      */
     @Test
     public void testSearchNonExistObject() {
 
-        // 事前準備
+        // 事前準備:パターン検索するためのファイルをアップロードしておく
         File uploadFile1 = new File("src/test/resources/files/Liberty.jpg");
         String objectKey1 = "temp/searchTestFile_" + UUID.randomUUID();
         s3Client.putObject(bucketName, objectKey1, uploadFile1);
 
+        // 検索パターン
         String pattern = "temp/dummy*";
 
-        // @formatter:off
+        // テスト実行:ファイルを検索する
         String[] searchResult = given().get(applicationContextUrl
                 + "api?pattern=" + pattern).as(String[].class);
-        // @formatter:on
 
+        // アサート:検索条件にマッチする配列が空であること。
         assertThat(searchResult, is(emptyArray()));
     }
 

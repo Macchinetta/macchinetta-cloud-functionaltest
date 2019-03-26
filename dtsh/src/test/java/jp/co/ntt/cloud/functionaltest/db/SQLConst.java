@@ -18,7 +18,6 @@ package jp.co.ntt.cloud.functionaltest.db;
 
 /**
  * テスト用SQL文
- * @author NTT 電電太郎
  */
 public class SQLConst {
 

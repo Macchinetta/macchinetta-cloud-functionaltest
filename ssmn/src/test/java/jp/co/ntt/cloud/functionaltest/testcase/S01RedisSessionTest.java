@@ -16,10 +16,14 @@
  */
 package jp.co.ntt.cloud.functionaltest.testcase;
 
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.Selenide.screenshot;
 
 import java.io.IOException;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -37,21 +41,17 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.WebDriverRunner;
 
-import io.github.bonigarcia.wdm.FirefoxDriverManager;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import io.restassured.RestAssured;
 import jp.co.ntt.cloud.functionaltest.domain.model.Cart;
 import jp.co.ntt.cloud.functionaltest.domain.model.CartItem;
 import jp.co.ntt.cloud.functionaltest.infra.redis.RedisUtil;
-import jp.co.ntt.cloud.functionaltest.selenide.page.AfterLoginOp;
-import jp.co.ntt.cloud.functionaltest.selenide.page.LoginPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.OrderConfirmPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.OrderFormPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.SessionIndexPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.SessionInvalidErrorPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.SessionSuccessPostPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.ViewCartPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.redissession.HomePage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.redissession.IndexPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.redissession.LoginPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.redissession.OrderConfirmPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.redissession.ViewCartPage;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -60,60 +60,32 @@ import junit.framework.TestCase;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class S01RedisSessionTest extends TestCase {
 
-    @Rule
-    public TestName testName = new TestName();
-
-    /**
-     * アプリケーションURL
-     */
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
 
-    /**
-     * テスト結果出力先
-     */
     @Value("${path.report}")
     private String reportPath;
+
+    @Value("${until.session.timeout.sec}")
+    private Integer untilSessionTimeout;
+
+    @Value("${selenide.geckodriverVersion}")
+    private String geckodriverVersion;
 
     @Inject
     private RedisUtil redisUtil;
 
-    /**
-     * セッションタイムアウトするまでの時間(秒単位)
-     */
-    @Value("${until.session.timeout.sec}")
-    private Integer untilSessionTimeout;
+    @Rule
+    public TestName testName = new TestName();
 
-    /*
-     * geckoドライバーバージョン
-     */
-    @Value("${selenide.geckodriverVersion}")
-    private String geckodriverVersion;
-
-    /*
-     * ユーザID
-     */
-    private String userId;
-
-    /*
-     * パスワード
-     */
-    private String password;
-
-    @Override
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
+
         // geckoドライバーの設定
         if (System.getProperty("webdriver.gecko.driver") == null) {
-            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+            WebDriverManager.firefoxdriver().version(geckodriverVersion)
                     .setup();
         }
-
-        // ブラウザの設定
-        Configuration.browser = WebDriverRunner.MARIONETTE;
-
-        // タイムアウトの設定
-        Configuration.timeout = 1200000;
 
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
@@ -122,195 +94,165 @@ public class S01RedisSessionTest extends TestCase {
         RestAssured.baseURI = this.applicationContextUrl;
     }
 
-    @Override
     @After
     public void tearDown() throws InterruptedException {
+
         // ログイン状態の場合ログアウトする。
-        AfterLoginOp afterLoginOp = open(applicationContextUrl,
-                AfterLoginOp.class);
-        if (afterLoginOp.isLoggedIn()) {
-            afterLoginOp.logout();
+        HomePage homePage = open(applicationContextUrl, HomePage.class);
+        if (homePage.isLoggedIn()) {
+            homePage.logout();
         }
     }
 
     /**
-     * SSMN0201001<br>
-     * Redisにセッション情報が保存されていることを確認する。 セッション情報を更新すると、Redisに保存されているセッションも更新されていること。
+     * SSMN0201 001 SessionがRedisに保存され、Session情報の新規作成、更新ができること
+     * @throws IOException
      * @throws InterruptedException
+     * @throws ClassNotFoundException
+     * @throws BuildException
      */
     @Test
-    public void session01RedisTest() throws BuildException, ClassNotFoundException, IOException, InterruptedException {
+    public void session01RedisTest() throws IOException, InterruptedException, BuildException, ClassNotFoundException {
 
         // 事前準備
         redisUtil.flushRedis();
-        userId = "0000000002";
-        password = "aaaaa11111";
 
-        open(applicationContextUrl + "order/form", LoginPage.class).login(
-                userId, password);
-
-        OrderFormPage orderFormPage = new OrderFormPage();
-
-        // 注文してカートに商品を入れる
-        orderFormPage.orderOddIdProduct();
-
-        // カート表示
-        ViewCartPage viewCartPage = orderFormPage.viewCart();
+        // 注文してカートに商品を入れたあと、 カート表示する。
+        ViewCartPage viewCartPage = open(applicationContextUrl + "order/form",
+                LoginPage.class).loginOrderForm("0000000002", "aaaaa11111")
+                        .orderOddIdProduct().viewCart();
 
         // Redisに保存されているセッション情報を取得
-        String sessionId = viewCartPage.getSessionId();
+        String sessionId = viewCartPage.getSessionId().getText();
         Cart cart = redisUtil.getFromRedis(sessionId);
 
-        // アサート
+        // アサート:Redisに保存されているSessionと画面に表示したSession情報が一致していること。
         int index = 0;
         for (CartItem cartItem : cart.getCartItems()) {
-            assertEquals(viewCartPage.getCartItemName(index).getText(), cartItem
-                    .getProduct().getName());
-            assertEquals(moneyUnitToInteger(viewCartPage.getCartItemPrice(index)
-                    .getText()), (Integer) cartItem.getProduct().getPrice());
-
+            viewCartPage.getCartItemName(index).shouldHave(exactText(cartItem
+                    .getProduct().getName()));
+            viewCartPage.getCartItemPrice(index).shouldHave(text(
+                    moneyUnitToString(cartItem.getProduct().getPrice())));
             index++;
         }
+
         // 証跡取得
         screenshot("session01RedisTest-viewCart");
 
         // セッション情報を更新する(カートに表示されているアイテムの個数を変更)。
-        viewCartPage.changeQuantity(0, 7);
-        viewCartPage.changeQuantity(1, 5);
+        viewCartPage.changeQuantity(0, 7).changeQuantity(1, 5);
+
         // 証跡取得
         screenshot("session01RedisTest-viewCart-changeQuantity");
 
         // 注文内容確認
         OrderConfirmPage orderConfirmPage = viewCartPage.orderConfirm();
+
         // Redisに保存されているセッション情報を取得
         cart = redisUtil.getFromRedis(sessionId);
-        // アサート
+
+        // アサート:Session情報を更新すると、Redisに保存されているセッションも更新されていること。
         index = 0;
         for (CartItem cartItem : cart.getCartItems()) {
-            assertEquals(orderConfirmPage.getCartItemName(index).getText(),
-                    cartItem.getProduct().getName());
-            assertEquals(moneyUnitToInteger(orderConfirmPage.getCartItemPrice(
-                    index).getText()), (Integer) cartItem.getProduct()
-                            .getPrice());
-            assertEquals(Integer.parseInt(orderConfirmPage.getCartItemQuantity(
-                    index).getText()), cartItem.getQuantity());
+            orderConfirmPage.getCartItemName(index).shouldHave(exactText(
+                    cartItem.getProduct().getName()));
+            orderConfirmPage.getCartItemPrice(index).shouldHave(text(
+                    moneyUnitToString(cartItem.getProduct().getPrice())));
+            orderConfirmPage.getCartItemQuantity(index).shouldHave(exactText(
+                    String.valueOf(cartItem.getQuantity())));
             index++;
         }
+
         // 証跡取得
         screenshot(testName.getMethodName() + "-orderConfirm");
-
-        orderConfirmPage.orderFinish();
-        screenshot(testName.getMethodName() + "-orderFinish");
     }
 
     /**
-     * SSMN0202001<br>
-     * ログイン後に認証が必要なページにアクセスしてから、ログアウトし、再度認証が必要なページにアクセスし、ログイン画面に遷移すること
+     * SSMN0202 001 ログイン後に認証が必要なページにアクセスしてから、ログアウトし、再度認証が必要なページにアクセスし、ログイン画面に遷移すること。
      * @throws InterruptedException
      */
     @Test
     public void session02NoSessionTest() throws InterruptedException {
 
-        // 事前準備
-        userId = "0000000002";
-        password = "aaaaa11111";
-
-        // ログイン
-        LoginPage loginPage = open(applicationContextUrl
-                + "session/isAuthenticated", LoginPage.class);
-        Thread.sleep(5000);
-        loginPage.login(userId, password);
-
-        open(applicationContextUrl + "session/isAuthenticated");
-        SessionIndexPage sessionIndexPage = new SessionIndexPage();
-
         // POST メソッド実行
-        sessionIndexPage.getPostButton().click();
-        SessionSuccessPostPage sessionSuccessPostPage = new SessionSuccessPostPage();
-        assertEquals("Is Authenticated Post Success", sessionSuccessPostPage
-                .getMessage().text());
+        IndexPage sessionIndexPage = open(applicationContextUrl
+                + "session/isAuthenticated", LoginPage.class)
+                        .loginIsAuthenticated("0000000002", "aaaaa11111");
+
+        // サスペンド:画面遷移確認
+        sessionIndexPage.getH2().shouldHave(exactText(
+                "Session Management Functional Test(Is Authenticated)"));
+
+        // 証跡取得
         screenshot(testName.getMethodName() + "-whenPost");
 
         // ログアウト
-        open(applicationContextUrl, AfterLoginOp.class).logout();
+        open(applicationContextUrl, HomePage.class).logout();
 
         // 認証が必要なページにアクセスする
-        loginPage = open(applicationContextUrl + "session/isAuthenticated",
-                LoginPage.class);
-
-        // ログイン画面が表示されていること
-        assertEquals("Login with Username and Password", loginPage.getMessage()
-                .text());
+        // アサート:ログアウト後にセッションが無効化されていること
+        open(applicationContextUrl + "session/isAuthenticated", LoginPage.class)
+                .getMessage().shouldHave(exactText(
+                        "Login with Username and Password"));
     }
 
     /**
-     * SSMN0203001<br>
-     * セッションタイムアウト時に、認証が必要なページにGETメソッドでアクセスし、Session Invalidation Error 画面へ遷移すること。
+     * SSMN0203 001 セッションタイムアウト後に認証が必要なページでGETを行い、Invalid Sessionエラーになること
      * @throws InterruptedException
      */
     @Test
     public void session03_01TimeoutTest() throws InterruptedException {
-        // 事前準備
-        userId = "0000000002";
-        password = "aaaaa11111";
 
-        open(applicationContextUrl + "session/isAuthenticated", LoginPage.class)
-                .login(userId, password);
-        SessionIndexPage sessionIndexPage = new SessionIndexPage();
+        // ログイン
+        IndexPage sessionIndexPage = open(applicationContextUrl
+                + "session/isAuthenticated", LoginPage.class)
+                        .loginIsAuthenticated("0000000002", "aaaaa11111");
 
-        // セッションタイムアウトまで待つ
-        Thread.sleep((long)untilSessionTimeout * 1000);
+        // サスペンド:セッションタイムアウトまで待つ
+        Thread.sleep((long) untilSessionTimeout * 1000);
 
         // GET メソッド実行
-        sessionIndexPage.getGetButton().click();
-        SessionInvalidErrorPage sessionInvalidErrorPage = new SessionInvalidErrorPage();
-        assertEquals("Session Invalid Error", sessionInvalidErrorPage
-                .getErrorTitle().text());
-        screenshot(testName.getMethodName() + "-whenGet");
+        // アサート:/error/invalidSessionに遷移すること
+        sessionIndexPage.clickGetButtonAfterTimeout().getErrorTitle()
+                .shouldHave(exactText("Session Invalid Error"));
 
+        // 証跡取得
+        screenshot(testName.getMethodName() + "-whenGet");
     }
 
     /**
-     * SSMN0203002<br>
-     * セッションタイムアウト時に、認証が必要なページにPOSTメソッドでアクセスし、Session Invalidation Error 画面へ遷移すること。
+     * SSMN0203 002 セッションタイムアウト後に認証が必要なページでPOSTを行い、Invalid Sessionエラーになること
      * @throws InterruptedException
      */
     @Test
     public void session03_02TimeoutTest() throws InterruptedException {
-        // 事前準備
-        userId = "0000000002";
-        password = "aaaaa11111";
 
-        open(applicationContextUrl + "session/isAuthenticated", LoginPage.class)
-                .login(userId, password);
-        SessionIndexPage sessionIndexPage = new SessionIndexPage();
+        // ログイン
+        IndexPage sessionIndexPage = open(applicationContextUrl
+                + "session/isAuthenticated", LoginPage.class)
+                        .loginIsAuthenticated("0000000002", "aaaaa11111");
 
-        // セッションタイムアウトまで待つ
-        Thread.sleep((long)untilSessionTimeout * 1000);
+        // サスペンド:セッションタイムアウトまで待つ
+        Thread.sleep((long) untilSessionTimeout * 1000);
 
         // POST メソッド実行
-        sessionIndexPage.getPostButton().click();
-        SessionInvalidErrorPage sessionInvalidErrorPage = new SessionInvalidErrorPage();
-        assertEquals("Session Invalid Error", sessionInvalidErrorPage
-                .getErrorTitle().text());
-        screenshot(testName.getMethodName() + "-whenGet");
+        // アサート:/error/invalidSessionに遷移すること
+        sessionIndexPage.clickPostButtonAfterTimeout().getErrorTitle()
+                .shouldHave(exactText("Session Invalid Error"));
 
+        // 証跡取得
+        screenshot(testName.getMethodName() + "-whenGet");
     }
 
     /**
-     * 金額表現をintegerに変換する
+     * 数値を通貨形式(String)に変換する
      * @param input
      * @return
      */
-    private Integer moneyUnitToInteger(String input) {
-        String result = "";
-        for (int i = 0; i < input.length(); i++) {
-            char ch = input.charAt(i);
-            if (Character.isDigit(ch)) {
-                result += ch;
-            }
-        }
-        return Integer.parseInt(result);
+    private String moneyUnitToString(Integer input) {
+        Locale locale = new Locale("ja", "JP");
+        NumberFormat curIns = NumberFormat.getCurrencyInstance(locale);
+        return curIns.format(input).replace("￥", "");
     }
 
 }

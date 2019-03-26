@@ -16,10 +16,9 @@
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selenide.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.*;
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.screenshot;
 
 import org.junit.After;
 import org.junit.Before;
@@ -30,125 +29,105 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.WebDriverRunner;
 
-import io.github.bonigarcia.wdm.FirefoxDriverManager;
-import jp.co.ntt.cloud.functionaltest.selenide.page.DownloadPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.PrdiMainPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import jp.co.ntt.cloud.functionaltest.selenide.page.IndexPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.LoginPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.HomePage;
 
-@SuppressWarnings("unused")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
 public class PrdiTest {
 
-    /*
-     * アプリケーションURL
-     */
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
 
-    /*
-     * レポート出力パス
-     */
     @Value("${path.report}")
     private String reportPath;
 
-    /*
-     * geckoドライバーバージョン
-     */
     @Value("${selenide.geckodriverVersion}")
     private String geckodriverVersion;
 
-    /*
-     * ログイン
-     */
     @Before
     public void setUp() {
 
         // geckoドライバーの設定
         if (System.getProperty("webdriver.gecko.driver") == null) {
-            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+            WebDriverManager.firefoxdriver().version(geckodriverVersion)
                     .setup();
         }
 
-        // ブラウザの設定
-        Configuration.browser = WebDriverRunner.MARIONETTE;
-
-        // タイムアウトの設定
+        // 検証メソッドタイムアウトの設定
         Configuration.timeout = 1200000;
 
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
 
         // ログイン
-        open(applicationContextUrl, TopPage.class).login("0000000001",
-                "aaaaa11111");
-
-        // ログイン後画面の遷移待ち
-        $("title").shouldHave(exactText("Home"));
+        // サスペンド:画面遷移確認
+        open(applicationContextUrl, LoginPage.class).login("0000000001",
+                "aaaaa11111").getH().shouldHave(exactText("Hello world!"));
     }
 
-    /*
-     * ログアウト
-     */
     @After
     public void tearDown() {
-        open(applicationContextUrl, PrdiMainPage.class).logout();
+        open(applicationContextUrl, HomePage.class).logout();
     }
 
-    /*
-     * S3による署名つきURLのファイルをダウンロードする。 オブジェクトキーは landscape/logo.jpg (既存)
+    /**
+     * PRDI0101 001 S3バケットから署名付きURLにてダウンロードできることを確認する。
      */
     @Test
-    public void testNormalDownload() throws Exception {
-        // テスト実行
-        DownloadPage downloadPage = open(applicationContextUrl,
-                PrdiMainPage.class).clickDownload().download(
-                        "landscape/logo.jpg");
+    public void testNormalDownload() {
 
-        // アサーション
-        $("#status").should(exactText("load complete."));
-        assertThat(downloadPage.getSelectedKey(), is("landscape/logo.jpg"));
-        assertThat(downloadPage.getLocalBase64(), is(downloadPage
-                .getS3Base64()));
+        // テスト実行:ファイルをダウンロードする。
+        IndexPage indexPage = open(applicationContextUrl, HomePage.class)
+                .clickDownload().download("landscape/logo.jpg");
+
+        // アサート:S3バケットから署名付きURLにてダウンロードできること、APサーバ上のローカルファイルとBASE64データが一致することをもってダウンロード正常確認とする。
+        indexPage.getStatus().shouldHave(exactText("load complete."));
+        indexPage.getSelectedKey().shouldHave(exactText("landscape/logo.jpg"));
+        indexPage.getLocalBase64().shouldHave(exactText(indexPage.getS3Base64()
+                .getText()));
 
         // 証跡取得
         screenshot("testNormalDownload");
 
     }
 
-    /*
-     * 有効期限30秒を超えた署名つきURLを使用したとき、ダウンロードに失敗すること。 オブジェクトキーは expire/logo.jpg (既存だがダウンロード不可)
+    /**
+     * PRDI0101 002 有効期限切れの署名付きURLではダウンロードできないことを確認する。
      */
     @Test
-    public void testExpiredFileDownload() throws Exception {
-        // テスト実行
-        DownloadPage downloadPage = open(applicationContextUrl,
-                PrdiMainPage.class).clickDownload().download("expire/logo.jpg");
+    public void testExpiredFileDownload() {
 
-        // アサーション
-        $("#status").should(exactText("load failure."));
-        assertThat(downloadPage.getSelectedKey(), is("expire/logo.jpg"));
+        // テスト実行:ファイルをダウンロードする。
+        IndexPage indexPage = open(applicationContextUrl, HomePage.class)
+                .clickDownload().download("expire/logo.jpg");
+
+        // アサート:ブラウザのダウンロードに失敗すること、<img>タグのerror()イベントを捕捉することでダウンロード失敗とする。
+        indexPage.getStatus().shouldHave(exactText("load failure."));
+        indexPage.getSelectedKey().shouldHave(exactText("expire/logo.jpg"));
 
         // 証跡取得
         screenshot("testExpiredFileDownload");
     }
 
-    /*
-     * S3上に存在しないオブジェクトキーを使用してファイルダウンロードを行う。 オブジェクトキーは invalid-object-key.jpg (S3上に存在しない)
+    /**
+     * PRDI0101 003 S3バケット上に存在しないオブジェクトキーを指定して、ファイルダウンロードに失敗することを確認する。
      */
     @Test
-    public void testNotExistObjectKeyDownload() throws Exception {
-        // テスト実行
-        DownloadPage downloadPage = open(applicationContextUrl,
-                PrdiMainPage.class).clickDownload().download(
-                        "invalid-object-key.jpg");
+    public void testNotExistObjectKeyDownload() {
 
-        // アサーション
-        $("#status").should(exactText("load failure."));
-        assertThat(downloadPage.getSelectedKey(), is("invalid-object-key.jpg"));
+        // テスト実行:ファイルをダウンロードする。
+        IndexPage indexPage = open(applicationContextUrl, HomePage.class)
+                .clickDownload().download("invalid-object-key.jpg");
+
+        // アサート:ブラウザのダウンロードに失敗すること、<img>タグのerror()イベントを捕捉することでダウンロード失敗とする。
+        indexPage.getStatus().shouldHave(exactText("load failure."));
+        indexPage.getSelectedKey().shouldHave(exactText(
+                "invalid-object-key.jpg"));
 
         // 証跡取得
         screenshot("testNotExistObjectKeyDownload");

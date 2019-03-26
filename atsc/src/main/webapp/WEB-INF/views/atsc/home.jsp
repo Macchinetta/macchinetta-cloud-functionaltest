@@ -12,7 +12,7 @@
         <h1>Listen alarm notification.</h1>
         <p>
             <form:form action="${pageContext.request.contextPath}/listen">
-                <button type="submit">listen</button>
+                <button id="listen" type="submit">listen</button>
             </form:form>
         </p>
         <div>newState:<span id="newState">${notification.message.newStateValue}</span></div>

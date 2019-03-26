@@ -11,7 +11,7 @@
     <div id="wrapper">
         <p>
             <form:form action="${pageContext.request.contextPath}/logout">
-                <button type="submit">Logout</button>
+                <button id="logout" type="submit">Logout</button>
             </form:form>
         </p>
         <p>

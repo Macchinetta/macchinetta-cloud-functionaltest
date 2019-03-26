@@ -54,7 +54,7 @@ public class MailSendController {
                     mailForm.getBody());
         } else if ("mime".equals(mailForm.getKind())) {
             notification = sesMailSender.registerMime(
-                    "xxxx xxxx <xxxx@xx.xx>", mailForm
+                    "xxxx@xx.xx", mailForm
                             .getTo(), "UTF-8", "MIME Mail test", mailForm
                                     .getBody());
         } else {

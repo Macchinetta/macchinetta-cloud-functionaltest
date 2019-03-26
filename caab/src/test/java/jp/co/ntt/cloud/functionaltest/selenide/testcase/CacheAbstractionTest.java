@@ -22,7 +22,6 @@ import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,48 +51,42 @@ public class CacheAbstractionTest extends TestCase {
     @Inject
     private ObjectMapper objectMapper;
 
-    /**
-     * setUp
-     * <ul>
-     * <li>Redisデータの削除</li>
-     * </ul>
-     */
     @Before
     public void setUp() {
+
+        // Redisデータの削除
         redisTemplate.getConnectionFactory().getConnection().flushAll();
-    }
 
-    @After
-    public void tearDown() {
-
+        // サスペンド:削除確認
+        assertNull(redisTemplate.opsForValue().get(
+                "members::member/0000000001"));
     }
 
     /**
-     * testCAAB0101001
-     * <ul>
-     * <li>Redis接続の確認</li>
-     * <li>{@code @Cacheable}によるキャッシュおよび{@code @CacheEvict}によるキャッシュ削除の確認</li>
-     * </ul>
+     * CAAB0101 001 キャッシュマネージャーとしてRedisCacheManagerを使用出来ること。 <br>
+     * CAAB0201 001 「@Cacheable」アノテーションを使用したキャッシュするデータの選択が行えること<br>
+     * CAAB0301 001 「@CacheEvict」アノテーションを使用したキャッシュするデータの選択が行えること
+     * @throws JsonProcessingException
      */
     @Test
-    public void testCAAB0101001() throws JsonProcessingException {
+    public void testCAAB01to03() throws JsonProcessingException {
 
-        assertNull(redisTemplate.opsForValue().get(
-                "members::member/0000000001"));
-
-        // @formatter:off
+        // 対象試験項目:CAAB0101 001、CAAB0201 001
+        // テスト実行:@Cacheableを付与したサービスクラスのメソッドを実行する。
+        // サスペンド:指定したcustomerNoに対するデータが取得できること。
         given().contentType("application/json; charset=UTF-8").when().get(
                 applicationContextUrl + "api/v1/Member/update/0000000001")
                 .then().statusCode(200).body("kanjiFamilyName", equalTo("電電"))
                 .body("kanjiGivenName", equalTo("花子"));
-        // @formatter:on
 
+        // アサート:@Cacheableのkey属性に指定したキーでRedisからキャッシュしたオブジェクトが取得できること。実行したメソッドの戻り値のオブジェクトがRedisにキャッシュされること。
         Member member = (Member) redisTemplate.opsForValue().get(
                 "members::member/0000000001");
-
         assertThat(member.getKanjiFamilyName(), equalTo("電電"));
         assertThat(member.getKanjiGivenName(), equalTo("花子"));
 
+        // 対象試験項目:CAAB0301 001
+        // 事前準備:更新用データの作成
         MemberResource requestMember = new MemberResource();
         requestMember.setKanjiFamilyName("日電");
         requestMember.setKanjiGivenName("花子");
@@ -109,15 +102,16 @@ public class CacheAbstractionTest extends TestCase {
         requestMember.setZipCode2("111");
         requestMember.setAddress("東京都港区港南Ｘ－Ｘ－Ｘ");
 
-        // @formatter:off
+        // テスト実行:@CacheEvictアノテーションを付与したサービスクラスのメソッドを実行する。
+        // サスペンド:指定したcustomerNoに対するデータが取得できること。
         given().contentType("application/json; charset=UTF-8").body(objectMapper
                 .writeValueAsString(requestMember)).when().put(
                         applicationContextUrl
                                 + "api/v1/Member/update/0000000001").then()
                 .statusCode(200).body("kanjiFamilyName", equalTo("日電")).body(
                         "kanjiGivenName", equalTo("花子"));
-        // @formatter:on
 
+        // アサート:実行したメソッドの引数に対応するRedis上のキャッシュが削除されること。
         assertNull(redisTemplate.opsForValue().get(
                 "members::member/0000000001"));
 

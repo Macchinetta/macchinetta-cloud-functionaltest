@@ -341,15 +341,27 @@ public class DynamoDBTask extends Task {
         } finally {
             // 結果セットをクローズ
             if (rset != null) {
-                rset.close();
+                try {
+                    rset.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
             // ステートメントをクローズ
             if (stmt != null) {
-                stmt.close();
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
             // 接続をクローズ
             if (conn != null) {
-                conn.close();
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return requests;

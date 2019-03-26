@@ -16,19 +16,30 @@
  */
 package jp.co.ntt.cloud.functionaltest.selenide.page;
 
-import org.openqa.selenium.By;
-
+import static com.codeborne.selenide.Selectors.byId;
+import static com.codeborne.selenide.Selectors.byName;
 import static com.codeborne.selenide.Selenide.$;
 
+/**
+ * Loggingページのページオブジェクトクラス。
+ */
 public class LoggingPage {
 
+    /**
+     * UUIDを送信する。
+     * @param uuid
+     * @return LoggingPage
+     */
     public LoggingPage send(String uuid) {
-        $(By.name("uuid")).setValue(uuid);
-        $(By.id("command")).submit();
+        $(byName("uuid")).setValue(uuid);
+        $(byId("send")).click();
         return this;
     }
 
+    /**
+     * ログアウトする。
+     */
     public void logout() {
-        $(By.id("logout")).submit();
+        $(byId("logout")).click();
     }
 }

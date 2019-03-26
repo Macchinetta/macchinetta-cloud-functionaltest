@@ -22,6 +22,9 @@
   <input id="btn-download01" name="download01" class="mainbtn" style="width: 200px;" type="button"
     value="File download (CHECK)" />
   <br>
+  <input id="btn-check" name="check" class="mainbtn" style="width: 200px;" type="submit"
+    value="Check" />
+  <br>
   <input name="redo1" class="mainbtn" style="width: 200px;" type="submit" value="Back" />
 </form:form>
 <br>

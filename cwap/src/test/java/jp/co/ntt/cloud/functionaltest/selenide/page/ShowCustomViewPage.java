@@ -16,14 +16,30 @@
  */
 package jp.co.ntt.cloud.functionaltest.selenide.page;
 
-public class ShowCustomViewPage {
-    private String viewName;
+import static com.codeborne.selenide.Selectors.byId;
+import static com.codeborne.selenide.Selenide.$;
 
-    public ShowCustomViewPage(String viewName) {
-        this.viewName = viewName;
+import com.codeborne.selenide.SelenideElement;
+
+/**
+ * ShowCustomViewページのページオブジェクトクラス。
+ */
+public class ShowCustomViewPage {
+
+    private SelenideElement viewName;
+
+    /**
+     * ShowCustomViewPageのコンストラクタ。
+     */
+    public ShowCustomViewPage() {
+        this.viewName = $(byId("viewName"));
     }
 
-    public String getViewName() {
+    /**
+     * 名前の要素を返却する。
+     * @return SelenideElement
+     */
+    public SelenideElement getViewName() {
         return viewName;
     }
 }

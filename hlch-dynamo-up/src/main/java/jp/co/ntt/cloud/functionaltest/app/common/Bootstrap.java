@@ -17,6 +17,7 @@
 package jp.co.ntt.cloud.functionaltest.app.common;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
@@ -35,7 +36,8 @@ import org.springframework.context.annotation.ImportResource;
         "classpath*:/META-INF/spring/spring-mvc.xml" })
 @EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class,
         JmxAutoConfiguration.class, WebMvcAutoConfiguration.class,
-        SecurityAutoConfiguration.class, WebMvcMetricsAutoConfiguration.class })
+        SecurityAutoConfiguration.class, WebMvcMetricsAutoConfiguration.class,
+        ManagementWebSecurityAutoConfiguration.class })
 public class Bootstrap extends SpringBootServletInitializer {
 
     /**

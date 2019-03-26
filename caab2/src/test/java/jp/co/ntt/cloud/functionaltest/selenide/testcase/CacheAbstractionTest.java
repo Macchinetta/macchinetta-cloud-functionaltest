@@ -17,14 +17,13 @@
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,8 +42,8 @@ import jp.co.ntt.cloud.functionaltest.rest.api.member.MemberResource;
 import junit.framework.TestCase;
 
 /**
- * キャッシュとセッションの格納先Redisを別に設定する場合のテスト。 本テストはdefaultプロファイルでは実行されない。 本テストをローカルPCで実行する場合はスタンドアローンのRedisをキャッシュ用とセッション用の2つ起動させ、maven
- * profileとspring profileにmultiredisを指定する。
+ * キャッシュとセッションの格納先Redisを別に設定する場合のテスト。 本テストはdefaultプロファイルでは実行されない。 <br>
+ * 本テストをローカルPCで実行する場合はスタンドアローンのRedisをキャッシュ用とセッション用の2つ起動させ、 maven profileとspring profileにmultiredisを指定する。
  * <li>mvn integration-test -P multiredis -Dspring.profiles.active=multiredis</li>
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -68,51 +67,47 @@ public class CacheAbstractionTest extends TestCase {
     @Inject
     private ObjectMapper objectMapper;
 
-    /**
-     * setUpMultiRedis
-     * <ul>
-     * <li>Redisデータの削除</li>
-     * </ul>
-     */
     @Before
     public void setUp() {
+
+        // キャッシュ用Redis内データの全削除
         redisTemplateForCache.getConnectionFactory().getConnection().flushAll();
+
+        // セッション用Redis内データの全削除
         jedisConnectionFactoryForSession.getConnection().flushAll();
-    }
 
-    @After
-    public void tearDown() {
-
-    }
-
-    /**
-     * testCAAB0401001
-     * <ul>
-     * <li>Redis接続（独自プロパティキー）の確認</li>
-     * <li>{@code @Cacheable}によるキャッシュおよび{@code @CacheEvict}によるキャッシュ削除の確認</li>
-     * </ul>
-     */
-    @Test
-    public void testCAAB0401001() throws JsonProcessingException {
-
+        // サスペンド:削除確認
         assertNull(redisTemplateForCache.opsForValue().get(
                 "members::member/0000000001"));
         assertThat(jedisConnectionFactoryForSession.getConnection().keys(
                 "spring:session:*".getBytes()).size(), is(0));
+    }
 
-        // @formatter:off
+    /**
+     * CAAB0401 001 キャッシュマネージャーとしてRedisCacheManagerを使用出来ること。 セッションを格納するRedisを別に指定し、キャッシュとセッションを別のRedisに格納できること。
+     * @throws JsonProcessingException
+     */
+    @Test
+    public void testCAAB0401001() throws JsonProcessingException {
+
+        // テスト実行:@Cacheableを付与したサービスクラスのメソッドを実行する。
+        // サスペンド:指定したcustomerNoに対するデータが取得できること。
         given().contentType("application/json; charset=UTF-8").when().get(
                 applicationContextUrl + "api/v1/Member/update/0000000001")
                 .then().statusCode(200).body("kanjiFamilyName", equalTo("電電"))
                 .body("kanjiGivenName", equalTo("花子"));
-        // @formatter:on
 
+        // アサート:@Cacheableのkey属性に指定したキーでRedisからキャッシュしたオブジェクトが取得できること。
         Member member = (Member) redisTemplateForCache.opsForValue().get(
                 "members::member/0000000001");
-
         assertThat(member.getKanjiFamilyName(), equalTo("電電"));
         assertThat(member.getKanjiGivenName(), equalTo("花子"));
 
+        // アサート:セッション情報がキャッシュを格納したRedisとは別のRedisに格納されていること。
+        assertThat(jedisConnectionFactoryForSession.getConnection().keys(
+                "spring:session:*".getBytes()).size(), is(3));
+
+        // 事前準備:更新用データの作成
         MemberResource requestMember = new MemberResource();
         requestMember.setKanjiFamilyName("日電");
         requestMember.setKanjiGivenName("花子");
@@ -128,18 +123,16 @@ public class CacheAbstractionTest extends TestCase {
         requestMember.setZipCode2("111");
         requestMember.setAddress("東京都港区港南Ｘ－Ｘ－Ｘ");
 
-        assertThat(jedisConnectionFactoryForSession.getConnection().keys(
-                "spring:session:*".getBytes()).size(), is(3));
-
-        // @formatter:off
+        // テスト実行:@CacheEvictアノテーションを付与したサービスクラスのメソッドを実行する。
+        // サスペンド:指定したcustomerNoに対するデータが取得できること。
         given().contentType("application/json; charset=UTF-8").body(objectMapper
                 .writeValueAsString(requestMember)).when().put(
                         applicationContextUrl
                                 + "api/v1/Member/update/0000000001").then()
                 .statusCode(200).body("kanjiFamilyName", equalTo("日電")).body(
                         "kanjiGivenName", equalTo("花子"));
-        // @formatter:on
 
+        // アサート:実行したメソッドの引数に対応するRedis上のキャッシュが削除されること。
         assertNull(redisTemplateForCache.opsForValue().get(
                 "members::member/0000000001"));
 

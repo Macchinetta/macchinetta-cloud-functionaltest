@@ -7,7 +7,7 @@
     <parent>
         <groupId>jp.co.ntt.cloud.functionaltest</groupId>
         <artifactId>macchinetta-cloud-functionaltest</artifactId>
-        <version>1.1.0.RELEASE</version>
+        <version>1.1.1.RELEASE</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -117,7 +117,6 @@
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.8</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
@@ -134,7 +133,7 @@
         <config.server.password>user</config.server.password>
         <config.server.ping.test.url>http://localhost:8888/health</config.server.ping.test.url>
         <config.server.shutdown.url>http://localhost:8888/shutdown</config.server.shutdown.url>
-        <config.server.start.up.timeout>60000</config.server.start.up.timeout>
+        <config.server.start.up.timeout>120000</config.server.start.up.timeout>
     </properties>
     <profiles>
         <profile>

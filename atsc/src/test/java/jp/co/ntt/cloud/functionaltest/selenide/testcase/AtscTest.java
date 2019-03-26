@@ -16,10 +16,11 @@
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selenide.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.*;
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.or;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.screenshot;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,32 +30,21 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.WebDriverRunner;
 
-import io.github.bonigarcia.wdm.FirefoxDriverManager;
-import jp.co.ntt.cloud.functionaltest.selenide.page.AtscPage;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import jp.co.ntt.cloud.functionaltest.selenide.page.HomePage;
 
-@SuppressWarnings("unused")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
 public class AtscTest {
 
-    /*
-     * アプリケーションURL
-     */
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
 
-    /*
-     * レポートパス
-     */
     @Value("${path.report}")
     private String reportPath;
 
-    /*
-     * geckoドライバーバージョン
-     */
     @Value("${selenide.geckodriverVersion}")
     private String geckodriverVersion;
 
@@ -63,38 +53,35 @@ public class AtscTest {
 
         // geckoドライバーの設定
         if (System.getProperty("webdriver.gecko.driver") == null) {
-            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+            WebDriverManager.firefoxdriver().version(geckodriverVersion)
                     .setup();
         }
 
-        // ブラウザの設定
-        Configuration.browser = WebDriverRunner.MARIONETTE;
-
-        // タイムアウトの設定
+        // 検証メソッドタイムアウトの設定
         Configuration.timeout = 1200000;
 
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
     }
 
-    /*
-     * しきい値超えアラームの発生を待ち、通知内容を画面に表示する。
+    /**
+     * ATSC0101 001 アプリケーションのヒープ最大値送信をトリガとし、オートスケーリングの代用としてSNS通知によるシュミレートが可能であることを確認する。
      */
     @Test
-    public void testStartListen() throws InterruptedException {
+    public void testStartListen() {
 
-        // テスト実行
-        AtscPage atscPage = open(applicationContextUrl, AtscPage.class);
-        Thread.sleep(2000);
-        atscPage.submit();
+        // テスト実行:スナーからアラーム通知イベントを取得する。
+        HomePage homePage = open(applicationContextUrl, HomePage.class)
+                .clickListen();
 
-        // アサーション
-        atscPage.getNewState().should(exactText("ALARM"));
-        atscPage.getNewStateReason().should(text("Threshold Crossed"));
-        atscPage.getMetricName().should(exactText("HeapMemory.Max"));
-        atscPage.getNamespace().should(or("", exactText("local"), exactText(
+        // アサート:画面上にしきい値超えによる通知内容を確認する。
+        homePage.getNewState().shouldHave(exactText("ALARM"));
+        homePage.getNewStateReason().shouldHave(text("Threshold Crossed"));
+        homePage.getMetricName().shouldHave(exactText("HeapMemory.Max"));
+        homePage.getNamespace().shouldHave(or("", exactText("local"), exactText(
                 "ci")));
-        atscPage.getDimensions().should(text("AutoScalingGroupName:atscGroup"));
+        homePage.getDimensions().shouldHave(text(
+                "AutoScalingGroupName:atscGroup"));
 
         // 証跡取得
         screenshot("testStartListen");

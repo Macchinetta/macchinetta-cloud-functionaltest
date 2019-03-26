@@ -16,10 +16,10 @@
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.screenshot;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,12 +30,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.SelenideElement;
-import com.codeborne.selenide.WebDriverRunner;
 
-import io.github.bonigarcia.wdm.FirefoxDriverManager;
-import jp.co.ntt.cloud.functionaltest.selenide.page.HelloPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import jp.co.ntt.cloud.functionaltest.selenide.page.HomePage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.LoginPage;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -43,93 +41,44 @@ import junit.framework.TestCase;
         "classpath:META-INF/spring/selenideContext.xml" })
 public class ConfigServerGitTest extends TestCase {
 
-    /**
-     * アプリケーションURL
-     */
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
 
-    /**
-     * テストデータ保存先
-     */
     @Value("${path.report}")
     private String reportPath;
 
-    /*
-     * geckoドライバーバージョン
-     */
     @Value("${selenide.geckodriverVersion}")
     private String geckodriverVersion;
 
-    /**
-     * テスト名取得
-     */
     @Rule
     public TestName testName = new TestName();
 
-    /**
-     * ユーザID
-     */
-    private String userId;
-
-    /**
-     * パスワード
-     */
-    private String password;
-
-    @Override
     @Before
     public void setUp() {
 
         // geckoドライバーの設定
         if (System.getProperty("webdriver.gecko.driver") == null) {
-            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+            WebDriverManager.firefoxdriver().version(geckodriverVersion)
                     .setup();
         }
-
-        // ブラウザの設定
-        Configuration.browser = WebDriverRunner.MARIONETTE;
 
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
     }
 
-    @Override
-    @After
-    public void tearDown() {
-        // ログイン状態の場合ログアウトする。
-        HelloPage helloPage = open(applicationContextUrl, HelloPage.class);
-        if (helloPage.isLoggedIn()) {
-            helloPage.logout();
-        }
-    }
-
     /**
-     * EVEM0101001<br>
-     * ログインを実行しConfig Serverから取得したプロパティが表示されることを確認する。
-     * @throws InterruptedException
+     * EVEM0101 001 Git から環境依存値を取得し、画面に表示できること
      */
     @Test
-    public void getPsqlPropertiesFromConfigServerTest() throws InterruptedException {
+    public void getPsqlPropertiesFromConfigServerTest() {
 
-        // 事前準備
-        userId = "0000000002";
-        password = "aaaaa11111";
+        // テスト実行:ログインする。
+        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
+                "0000000002", "aaaaa11111");
 
-        // テスト実行
-        TopPage topPage = open(applicationContextUrl, TopPage.class);
-        Thread.sleep(2000);
-        HelloPage helloWorldPage = topPage.login(userId, password);
-
-        $("h1").shouldHave(text("Hello world!"));
-        $$("p").get(1).shouldHave(text("Taro Denden"));
-
-        SelenideElement rdbConfigTable = helloWorldPage.getRdbConfigTable();
-
-        // @formatter:off
-        rdbConfigTable.shouldHave(text("postgres"), text("postgres"), text(
-                "org.postgresql.Driver"));
-        // @formatter:on
+        // アサート:画面にConfig Serverから取得した、Postgresへの接続情報が表示されていること
+        homePage.getRdbConfigTable().shouldHave(text("postgres"), text(
+                "postgres"), text("org.postgresql.Driver"));
 
         // 証跡取得
         screenshot(testName.getMethodName());

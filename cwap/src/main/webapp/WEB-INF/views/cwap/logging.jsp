@@ -14,12 +14,12 @@
                action="${pageContext.request.contextPath}/outputLog"
                method="post">
         <input type="text" name="uuid">
-        <button type="submit">send</button>
+        <button id="send" type="submit">send</button>
     </form:form>
 </div>
 <p>
-    <form:form id="logout" action="${pageContext.request.contextPath}/logout">
-        <button type="submit">Logout</button>
+    <form:form action="${pageContext.request.contextPath}/logout">
+        <button id="logout" type="submit">Logout</button>
     </form:form>
 </p>
 </body>

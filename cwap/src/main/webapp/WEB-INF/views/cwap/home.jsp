@@ -16,9 +16,9 @@
     <div id="counter">counter:${counter}</div>
     </p>
     <p>
-        <form:form id="command"
+        <form:form
                    action="${pageContext.request.contextPath}/confirmToken">
-            <button type="submit">transaction token check</button>
+            <button id="transactionTokenCheck" type="submit">transaction token check</button>
         </form:form>
     </p>
     <p>
@@ -31,8 +31,8 @@
         <a href="${pageContext.request.contextPath}/customError" id="customError">customError</a>
     </p>
     <p>
-        <form:form id="logout" action="${pageContext.request.contextPath}/logout">
-            <button type="submit">Logout</button>
+        <form:form action="${pageContext.request.contextPath}/logout">
+            <button id="logout" type="submit">Logout</button>
         </form:form>
     </p>
 </div>

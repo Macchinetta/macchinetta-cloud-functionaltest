@@ -17,7 +17,8 @@
 
 ### private-keyの配置
   - `s3://functionaltest.private.cache.distribution/private-key.der`を`${user.home}`に配置する。
-     別の環境で動かす場合は、信頼された署名者の CloudFront キーペアを作成する必要があります。
+     本手順で用意していない新たなCloudFrontを利用して本機能の試験（CDNプライベート配信）を実施したい場合は、
+     信頼された署名者の CloudFront キーペアを作成する必要がある。
      http://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html#private-content-creating-cloudfront-key-pairs
 
 ### 自己署名証明書の例外設定
@@ -26,6 +27,7 @@ FireFoxのユーザプロパティに証明書の例外設定を行い、テス�
 
  -  「ファイル名を指定して実行」にて `firefox.exe -P` を入力しFireFoxを起動
  - 「新しいプロファイルを作成」 を選択し、新規プロファイルを作成（名称は任意）
+ - prcdの`pom.xml`が格納されているフォルダに移動
  - コマンドプロンプトにて`mvn clean package cargo:run` を実行しTomcat起動
  - FireFoxで`https://xxxxxxx.net:8082/prcd` にアクセス
  - FireFoxの「安全ではない接続」画面で「エラー内容」ボタンを選択し、「例外を追加」ボタンを選択する。セキュリティ例外の追加ダイアログにて「セキュリティ例外を承認」を選択する。
@@ -69,14 +71,13 @@ FireFoxのユーザプロパティに証明書の例外設定を行い、テス�
           domain: xxxxxxx.net
           distributionDomain: www.xxxxxxx.net
 
-####CloudFront側の設定は以下のAWSのドキュメントを参考に設定する
+#### CloudFront側の設定は以下のAWSのドキュメントを参考に設定する
 
-#####CloudFront を使用してプライベートコンテンツを供給する
+##### CloudFront を使用してプライベートコンテンツを供給する
 http://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
-#####CloudFront で HTTPS を使用する
+##### CloudFront で HTTPS を使用する
 http://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/using-https.html
-#####Amazon S3 での CloudFront の使用
+##### Amazon S3 での CloudFront の使用
 http://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/MigrateS3ToCloudFront.html
-#####代替ドメイン名と HTTPS の使用
+##### 代替ドメイン名と HTTPS の使用
 http://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/using-https-alternate-domain-names.html
-

@@ -16,9 +16,10 @@
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import static com.codeborne.selenide.Selenide.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.*;
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.screenshot;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,42 +32,32 @@ import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openqa.selenium.By;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.WebDriverRunner;
 
-import io.github.bonigarcia.wdm.FirefoxDriverManager;
-import jp.co.ntt.cloud.functionaltest.selenide.page.ConfirmTokenPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.CustomErrorPage;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import jp.co.ntt.cloud.functionaltest.selenide.page.TokenCheckPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.CwapCustomErrorPage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.LoggingPage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.LoginPage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.ShowCustomViewPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.HomePage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.TransactionTokenErrorPage;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
 public class CwapTest {
 
-    /*
-     * アプリケーションURL
-     */
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
 
-    /*
-     * アプリケーションURL
-     */
     @Value("${path.report}")
     private String reportPath;
 
-    /*
-     * geckoドライバーバージョン
-     */
     @Value("${selenide.geckodriverVersion}")
     private String geckodriverVersion;
 
@@ -75,25 +66,22 @@ public class CwapTest {
 
         // geckoドライバーの設定
         if (System.getProperty("webdriver.gecko.driver") == null) {
-            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+            WebDriverManager.firefoxdriver().version(geckodriverVersion)
                     .setup();
         }
-
-        // ブラウザの設定
-        Configuration.browser = WebDriverRunner.MARIONETTE;
 
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
     }
 
-    /*
-     * (注：回帰試験によるログファイルの堆積により、試験時間の延伸が懸念されるため、手動で実行すること） Spring
-     * Bootによるログファイルパス指定と、カスタムLogback定義ファイル(appName-logback-spring.xml)の アプリケーションログ出力の確認を行う。
+    /**
+     * CWAP0101 001 正常 Logbackの拡張ログが出力できることを確認する。 <br>
+     * (注：回帰試験によるログファイルの堆積により、試験時間の延伸が懸念されるため、手動で実行すること）
      */
     // @Test
     public void testApplicationLog() {
 
-        // 準備 ログイン
+        // 事前準備:ログイン
         LoggingPage loggingPage = open(applicationContextUrl, LoginPage.class)
                 .login().logging();
 
@@ -101,10 +89,10 @@ public class CwapTest {
 
         screenshot("manualTestApplicationLog");
 
-        // テスト実行
+        // テスト実行:UUIDを送信する。
         loggingPage = loggingPage.send(uuid);
 
-        // アサーション
+        // アサート:アプリケーションログに「outputUUID=59143879-8750-47e1-bfe1-eb7d73e44f6d」がINFOレベルで出力されていること。
         assertLog(uuid);
 
         // ログアウト
@@ -130,103 +118,109 @@ public class CwapTest {
         }
     }
 
-    /*
-     * トランザクショントークンの正常遷移確認。
+    /**
+     * CWAP0102 001 トランザクショントークンチェックが使用できることを確認する。（トークンチェック正常）
      */
     @Test
     public void testTransactionTokenCheckNormal() {
 
-        // テスト実行
-        ConfirmTokenPage confirmTokenPage = open(applicationContextUrl,
+        // テスト実行:トークン発行、トークンの一致チェックのリクエストを発行する。
+        TokenCheckPage tokenCheckPage = open(applicationContextUrl,
                 LoginPage.class).login().confirmToken();
 
-        // アサーション
-        assertThat(confirmTokenPage.getResult(), is("Token check is valid."));
+        // アサート:トークンチェックが正常と判断され、次ページへの遷移が行われていること。
+        tokenCheckPage.getResult().shouldHave(exactText(
+                "Token check is valid."));
 
         // 証跡取得
         screenshot("testTransactionTokenCheckNormal");
 
         // ログアウト
-        confirmTokenPage.logout();
+        tokenCheckPage.logout();
     }
 
-    /*
-     * トランザクショントークンチェックエラー発生を確認する。 遷移前にトークンチェックを行う画面に対し、直接GETを発行する。
+    /**
+     * CWAP0102 002 トランザクショントークンチェックが使用できることを確認する。（トークンチェック異常）
      */
     @Test
     public void testTransactionTokenCheckError() {
-        // 準備 ログイン
-        open(applicationContextUrl, LoginPage.class).login();
 
-        // テスト実行
-        open(applicationContextUrl + "confirmToken");
+        // 事前準備:ログイン
+        // サスペンド:画面遷移確認
+        open(applicationContextUrl, LoginPage.class).login().getH().shouldHave(
+                text("Hello world!"));
 
-        // アサーション
-        assertThat($(By.id("result")).text(), is("Token check is invalid."));
+        // アサート:トークンチェックが異常と判断され、エラーページへ遷移すること。
+        open(applicationContextUrl + "confirmToken",
+                TransactionTokenErrorPage.class).getResult().shouldHave(
+                        exactText("Token check is invalid."));
 
         // 証跡取得
         screenshot("testTransactionTokenCheckError");
 
         // ログアウト
-        open(applicationContextUrl, TopPage.class).logout();
+        open(applicationContextUrl, HomePage.class).logout();
     }
 
-    /*
-     * サーブレットフィルタが1リクエスト処理内で重複実行されていないこと。
+    /**
+     * CWAP0103 001 Filterの二重登録が抑止できることを確認する。
      */
     @Test
     public void testDuplicateCount() {
 
-        // テスト実行
-        TopPage topPage = open(applicationContextUrl, LoginPage.class).login();
+        // テスト実行:ログインする。
+        HomePage homePage = open(applicationContextUrl, LoginPage.class)
+                .login();
 
-        // アサーション
-        assertThat(topPage.getCounter(), is("counter:1"));
+        // アサート:サーブレットフィルタの二重実行が抑止され、COUNTER_KEYの値が1であることを確認する。
+        homePage.getCounter().shouldHave(exactText("counter:1"));
 
         // 証跡取得
         screenshot("testDuplicateCount");
 
         // ログアウト
-        topPage.logout();
+        homePage.logout();
     }
 
-    /*
-     * <mvc:view-resolver/>に<mvc:bean-name/>を追加し、カスタムビュー定義が 使用可能であることを確認する。
+    /**
+     * CWAP104 001 <mvc:view-resolvers>によるViewResolver定義が使用できることを確認する。
      */
     @Test
     public void testShowCustomView() {
-        // テスト実行
+
+        // テスト実行:カスタムViewを返却するレスポンスを返却する。
         ShowCustomViewPage showCustomViewPage = open(applicationContextUrl,
                 LoginPage.class).login().showCustomView();
 
-        // アサーション
-        assertThat(showCustomViewPage.getViewName(), is("CustomView"));
+        // アサート:レスポンスボディにCustomViewが含まれていることを確認する。
+        showCustomViewPage.getViewName().shouldHave(exactText("CustomView"));
 
         // 証跡取得
         screenshot("testShowCustomView");
 
         // ログアウト
-        open(applicationContextUrl, TopPage.class).logout();
+        open(applicationContextUrl, HomePage.class).logout();
     }
 
-    /*
-     * ErrorPageFilterとWebMvcAutoConfiguration無効化によるエラー画面表示の確認。
+    /**
+     * CWAP0105 001 システムエラー発生時に画面が白抜けせず、システムエラー画面が表示できることを確認する。
      */
     @Test
     public void testConfirmSystemError() {
-        // テスト実行
-        CustomErrorPage customErrorPage = open(applicationContextUrl,
+
+        // テスト実行:コントローラ内部でRuntimeExceptionを継承する、任意のシステムエラーを発生させる。
+        CwapCustomErrorPage cwapCustomErrorPage = open(applicationContextUrl,
                 LoginPage.class).login().customError();
 
-        // アサーション
-        assertThat(customErrorPage.getErrorMessage(), is(
+        // アサート:システムエラー画面に遷移することを確認する。
+        cwapCustomErrorPage.getErrorMessage().shouldHave(exactText(
                 "Cwap custom error message."));
 
         // 証跡取得
         screenshot("testConfirmSystemError");
 
         // ログアウト
-        open(applicationContextUrl, TopPage.class).logout();
+        open(applicationContextUrl, HomePage.class).logout();
     }
 
 }

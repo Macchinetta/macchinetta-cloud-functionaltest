@@ -16,10 +16,9 @@
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selenide.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.*;
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.screenshot;
 
 import org.junit.After;
 import org.junit.Before;
@@ -30,33 +29,23 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.WebDriverRunner;
 
-import io.github.bonigarcia.wdm.FirefoxDriverManager;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import jp.co.ntt.cloud.functionaltest.selenide.page.CaapPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.HomePage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.LoginPage;
 
-@SuppressWarnings("unused")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
 public class CaapTest {
 
-    /*
-     * アプリケーションURL
-     */
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
 
-    /*
-     * アプリケーションURL
-     */
     @Value("${path.report}")
     private String reportPath;
 
-    /*
-     * geckoドライバーバージョン
-     */
     @Value("${selenide.geckodriverVersion}")
     private String geckodriverVersion;
 
@@ -65,43 +54,43 @@ public class CaapTest {
 
         // geckoドライバーの設定
         if (System.getProperty("webdriver.gecko.driver") == null) {
-            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+            WebDriverManager.firefoxdriver().version(geckodriverVersion)
                     .setup();
         }
 
-        // ブラウザの設定
-        Configuration.browser = WebDriverRunner.MARIONETTE;
-
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
-
-        // ログイン
-        open(applicationContextUrl, TopPage.class).login("0000000002",
-                "aaaaa11111");
-
-        // ログイン遷移待ち
-        $("title").shouldHave(exactText("home"));
-
     }
 
     @After
     public void tearDown() {
+
         // ログアウト
-        open(applicationContextUrl, TopPage.class).logout();
+        open(applicationContextUrl, HomePage.class).logout();
     }
 
-    /*
-     * AWS開発プロジェクトの起動条件として、AutoConfigureが無効化されていること。 すなわち、AmazonElastiCacheがクラスパス上に存在し、DIコンテナ上に存在していないこと。
+    /**
+     * CAAP0101 001 EC2上のAP起動確認<br>
+     * CAAP0102 001 ElastiCacheAutoConfigureの無効化確認
      */
     @Test
     public void testInspect() {
-        // テスト実行
-        final CaapPage page = open(applicationContextUrl, CaapPage.class)
-                .inspect();
 
-        // アサーション
-        assertThat(page.isExistFQCNClasspath(), is(true));
-        assertThat(page.isExistInApplicationContext(), is(false));
+        // 事前準備:ログイン
+        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
+                "0000000002", "aaaaa11111");
+
+        // サスペンド:画面遷移確認
+        homePage.getH().shouldHave(exactText("Hello world!"));
+
+        // テスト実行:AmazonElastiCacheの生成を行う。
+        CaapPage caapPage = homePage.inspect();
+
+        // アサート:AutoConfigurationでBeanとして生成対象となるAmazonElastiCacheがクラスパスに存在すること。
+        caapPage.getExistFQCNClasspath().shouldHave(exactText("true"));
+
+        // アサート:ApplicationContext内にAmazonElastiCacheが登録されていないこと。
+        caapPage.getExistInApplicationContext().shouldHave(exactText("false"));
 
         // 証跡取得
         screenshot("testInspect");

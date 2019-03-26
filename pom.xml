@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>jp.co.ntt.cloud.functionaltest</groupId>
     <artifactId>macchinetta-cloud-functionaltest</artifactId>
-    <version>1.1.0.RELEASE</version>
+    <version>1.1.1.RELEASE</version>
     <packaging>pom</packaging>
     <parent>
         <groupId>org.terasoluna.gfw</groupId>
         <artifactId>terasoluna-gfw-parent</artifactId>
-        <version>5.5.0.RC7</version>
+        <version>5.5.1.RELEASE</version>
     </parent>
 
     <name>Functional test for Macchinetta cloud guideline Parent</name>
@@ -200,6 +200,16 @@
                 <artifactId>json-path</artifactId>
                 <version>${rest.assured.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>amazon-sqs-java-messaging-lib</artifactId>
+                <version>${amazon-sqs-java-messaging-lib.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${maven-antrun-plugin.version}</version>
+            </dependency>
 
             <!-- Spring -->
             <dependency>
@@ -209,11 +219,15 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
             <dependency>
-                <groupId>org.springframework.session</groupId>
-                <artifactId>spring-session-core</artifactId>
-                <version>2.1.1.RELEASE</version>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jms</artifactId>
+                <version>${spring-jms.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.derjust</groupId>
+                <artifactId>spring-data-dynamodb</artifactId>
+                <version>${spring-data-dynamodb.version}</version>
             </dependency>
 
             <!-- == Begin Database == -->
@@ -380,18 +394,23 @@
         <org.codehaus.mojo.build-helper-maven-plugin.version>1.9.1</org.codehaus.mojo.build-helper-maven-plugin.version>
         <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
         <formatter-maven-plugin.version>0.5.2</formatter-maven-plugin.version>
+        <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
         <!-- == Dependency Versions == -->
         <postgresql.version>42.2.4</postgresql.version>
-        <selenide.version>4.4.2</selenide.version>
-        <selenium.version>3.0.1</selenium.version>
-        <webdrivermanager.version>1.6.2</webdrivermanager.version>
+        <selenide.version>4.14.0</selenide.version>
+        <selenium.version>3.14.0</selenium.version>
+        <webdrivermanager.version>3.1.1</webdrivermanager.version>
+        <amazon-sqs-java-messaging-lib.version>1.0.4</amazon-sqs-java-messaging-lib.version>
         <!-- == Project Properties == -->
         <encoding>UTF-8</encoding>
         <java-version>1.8</java-version>
         <rest.assured.version>3.0.3</rest.assured.version>
-        <spring.cloud.version>Finchley.SR1</spring.cloud.version>
+        <spring.cloud.version>Greenwich.RELEASE</spring.cloud.version>
+        <spring-jms.version>4.3.21.RELEASE</spring-jms.version>
+        <spring-data-dynamodb.version>5.0.4</spring-data-dynamodb.version>
         <project.root.basedir>${project.basedir}</project.root.basedir>
         <dbunit.version>2.5.4</dbunit.version>
+        <com.google.code.maven-license-plugin.version>1.4.0</com.google.code.maven-license-plugin.version>
     </properties>
     <modules>
         <module>smpl</module>

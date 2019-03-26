@@ -17,12 +17,9 @@
 package jp.co.ntt.cloud.functionaltest.api.testcase;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 
-import java.io.IOException;
-
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,51 +37,38 @@ import junit.framework.TestCase;
         "classpath:META-INF/spring/selenideContext.xml" })
 public class HealthCheckDownDynamoDBTest extends TestCase {
 
-    /*
-     * アプリケーションURL
-     */
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
 
-    /*
-     * テスト結果の出力先
-     */
     @Value("${path.report}")
     private String reportPath;
 
-    /*
-     * テストデータ保存先
-     */
     @Value("${path.testdata}")
     private String testDataPath;
 
-    @Override
     @Before
     public void setUp() {
+
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
+
         // RestAssuredのベースURI設定
         RestAssured.baseURI = this.applicationContextUrl;
     }
 
-    @Override
-    @After
-    public void tearDown() {
-    }
-
-    /*
-     * DynamoDBに接続できないときに、DynamoDBのヘルスチェック結果が「DOWN」となること
+    /**
+     * HLCH0201 001 DynamoDBでエラーが発生したときにヘルスチェックのdynamoDBのstatusと全体のstatus「DOWN」になること
      */
     @Test
-    public void downDynamoDBHealthCheckTest() throws IOException {
+    public void downDynamoDBHealthCheckTest() {
 
-        // @formatter:off
+        // アサート:dynamoDBのstatusが「DOWN」になっていること、全体のヘルスチェック結果のstatusが「DOWN」になっていること
         given().get("/management/health").then().body("status", equalTo("DOWN"))
                 .body("details.dynamodb.status", equalTo("DOWN")).body(
                         "details.dynamodb.details", hasKey("error")).body(
                                 "details.diskSpace.status", equalTo("UP")).body(
                                         "details.db.status", equalTo("UP"))
                 .body("details.refreshScope.status", equalTo("UP"));
-        // @formatter:on
+
     }
 }
