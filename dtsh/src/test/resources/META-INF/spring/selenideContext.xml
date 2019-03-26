@@ -13,5 +13,5 @@
     <bean id="dbUtil" class="jp.co.ntt.cloud.functionaltest.db.DBUtil" />
     
     <!-- DBのテストヘルパークラス -->
-    <bean id="shardDbTestHelper" class="jp.co.ntt.cloud.functionaltest.db.ShardDBTestHelper" />
+    <bean id="shardDbTestHelper" class="jp.co.ntt.cloud.functionaltest.selenide.common.ShardDBAssertUtil" />
 </beans>

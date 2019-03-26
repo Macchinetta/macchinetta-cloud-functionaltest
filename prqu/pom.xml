@@ -6,7 +6,7 @@
     <parent>
         <groupId>jp.co.ntt.cloud.functionaltest</groupId>
         <artifactId>macchinetta-cloud-functionaltest</artifactId>
-        <version>1.1.0.RELEASE</version>
+        <version>1.1.1.RELEASE</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -66,7 +66,6 @@
         <!-- == Dependency Versions == -->
         <!-- == Project Properties == -->
         <project.root.basedir>${project.parent.basedir}</project.root.basedir>
-        <com.amazonaws.amazon-sqs-java-messaging-lib.version>1.0.1</com.amazonaws.amazon-sqs-java-messaging-lib.version>
     </properties>
     <profiles>
         <profile>
@@ -100,7 +99,6 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>amazon-sqs-java-messaging-lib</artifactId>
-            <version>${com.amazonaws.amazon-sqs-java-messaging-lib.version}</version>
         </dependency>
         <!-- == End Amazon SQS == -->
 
@@ -108,7 +106,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jms</artifactId>
-            <version>4.3.14.RELEASE</version>
         </dependency>
         <!-- == End Spring Messaging == -->
 

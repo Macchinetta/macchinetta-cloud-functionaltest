@@ -16,10 +16,12 @@
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.screenshot;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -41,11 +43,10 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.WebDriverRunner;
 
-import io.github.bonigarcia.wdm.FirefoxDriverManager;
-import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.UploadPage;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import jp.co.ntt.cloud.functionaltest.selenide.page.LoginPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.IndexPage;
 import junit.framework.TestCase;
 
 @RunWith(SpringRunner.class)
@@ -53,42 +54,17 @@ import junit.framework.TestCase;
         "classpath:META-INF/spring/selenideContext.xml" })
 public class DirectUploadTest extends TestCase {
 
-    /*
-     * アプリケーションURL
-     */
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
 
-    /*
-     * アプリケーションURL
-     */
     @Value("${path.report}")
     private String reportPath;
 
-    /*
-     * geckoドライバーバージョン
-     */
     @Value("${selenide.geckodriverVersion}")
     private String geckodriverVersion;
 
-    /*
-     * ユーザID
-     */
-    private String userId;
-
-    /*
-     * パスワード
-     */
-    private String password;
-
-    /*
-     * S3クライアント
-     */
     private AmazonS3 s3Client;
 
-    /*
-     * バケット名
-     */
     @Value("${bucketName}")
     private String bucketName;
 
@@ -97,48 +73,46 @@ public class DirectUploadTest extends TestCase {
 
         // geckoドライバーの設定
         if (System.getProperty("webdriver.gecko.driver") == null) {
-            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+            WebDriverManager.firefoxdriver().version(geckodriverVersion)
                     .setup();
         }
 
-        // ブラウザの設定
-        Configuration.browser = WebDriverRunner.MARIONETTE;
-
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
+
+        // 検証メソッドタイムアウトの設定
         Configuration.timeout = 10000;
+
+        // ポーリング間隔の設定
         Configuration.pollingInterval = 500;
     }
 
     @After
     public void tearDown() {
-        open(applicationContextUrl, UploadPage.class).logout();
+        open(applicationContextUrl, IndexPage.class).logout();
     }
 
-    /*
-     * S3にファイルがアップロードされることを確認する。
+    /**
+     * RDRP0101 001 ファイルのダイレクトアップロードが行える事を確認する
+     * @throws IOException
      */
     @Test
-    public void uploadTest01() throws Exception {
-
-        // 事前準備
-        userId = "0000000001";
-        password = "aaaaa11111";
+    public void uploadTest01() throws IOException {
 
         // バケット初期化
-        cleanBucket(userId);
+        cleanBucket("0000000001");
 
-        // テスト実行
+        // テスト実行:ログイン後ファイルをアップロードする。
         String filePath = "src/test/resources/files/Liberty.jpg";
         File uploadFile = new File(filePath);
 
-        // @formatter:off
-        open(applicationContextUrl, TopPage.class).login(userId, password)
-                .upload(uploadFile);
-        // @formatter:on
+        IndexPage indexPage = open(applicationContextUrl, LoginPage.class)
+                .login("0000000001", "aaaaa11111");
 
-        // アップロード成功確認
-        $("#message").shouldHave(text("アップロードに成功しました。"));
+        indexPage.upload(uploadFile);
+
+        // サスペンド:アップロード成功確認
+        indexPage.getMessage().shouldHave(exactText("アップロードに成功しました。"));
 
         // アップロードされたファイルを取得
         ObjectListing listObjects = s3Client.listObjects(bucketName);
@@ -165,45 +139,37 @@ public class DirectUploadTest extends TestCase {
                 break;
             }
         }
+
+        // アサート:アップロードに使用したファイルと、アップロード後にS3バケットからダウンロードしたファイルを比較し、同一であることを確認する
+        // アサート:S3にアップロードされたファイルに、APで付加したメタデータが付与されていることを確認する。
         assertTrue(existed);
 
         // 証跡取得
         screenshot("uploadTest01");
     }
 
-    private void cleanBucket(String userId) {
-        ObjectListing listObjects = s3Client.listObjects(bucketName, userId
-                + "/");
-        for (S3ObjectSummary summary : listObjects.getObjectSummaries()) {
-            String objKey = summary.getKey();
-            s3Client.deleteObject(bucketName, objKey);
-        }
-    }
-
-    /*
-     * ファイルサイズ上限にてアップロードが失敗することを確認する。
+    /**
+     * RDRP0102 001 ファイルのダイレクトアップロードが、ポリシー違反により失敗することを確認する
+     * @throws IOException
      */
     @Test
-    public void uploadTest02() throws Exception {
-
-        // 事前準備
-        userId = "0000000001";
-        password = "aaaaa11111";
+    public void uploadTest02() throws IOException {
 
         // バケット初期化
-        cleanBucket(userId);
+        cleanBucket("0000000001");
 
-        // テスト実行
+        // テスト実行:ログイン後ファイルをアップロードする。
         String filePath = "src/test/resources/files/Napoleon.jpg";
         File uploadFile = new File(filePath);
 
-        // @formatter:off
-        open(applicationContextUrl, TopPage.class).login(userId, password)
-                .upload(uploadFile);
-        // @formatter:on
+        IndexPage indexPage = open(applicationContextUrl, LoginPage.class)
+                .login("0000000001", "aaaaa11111");
 
-        // アップロード失敗確認
-        $("#message").shouldHave(text("アップロードできるファイルは819200バイトまでです。"));
+        indexPage.upload(uploadFile);
+
+        // サスペンド:アップロード失敗確認
+        indexPage.getMessage().shouldHave(exactText(
+                "アップロードできるファイルは819200バイトまでです。"));
 
         // アップロードされていないことを確認
         ObjectListing listObjects = s3Client.listObjects(bucketName);
@@ -227,36 +193,35 @@ public class DirectUploadTest extends TestCase {
                 break;
             }
         }
+
+        // アサート:アップロードが失敗し、エラーコード"EntityTooLarge"が返却されることを確認する
         assertFalse(existed);
 
         // 証跡取得
         screenshot("uploadTest02");
     }
 
-    /*
-     * ポリシー文書有効期限切れにてアップロードが失敗することを確認する。
+    /**
+     * RDRP0103 001 ファイルのダイレクトアップロードが、ポリシー有効期間切れにより失敗することを確認する
+     * @throws IOException
      */
     @Test
-    public void uploadTest03() throws Exception {
-
-        // 事前準備
-        userId = "0000000001";
-        password = "aaaaa11111";
+    public void uploadTest03() throws IOException {
 
         // バケット初期化
-        cleanBucket(userId);
+        cleanBucket("0000000001");
 
-        // テスト実行
+        // テスト実行:ログイン後ファイルをアップロードする。
         String filePath = "src/test/resources/files/Liberty.jpg";
         File uploadFile = new File(filePath);
 
-        // @formatter:off
-        open(applicationContextUrl, TopPage.class).login(userId, password)
-                .uploadWithDelay(uploadFile);
-        // @formatter:on
+        IndexPage indexPage = open(applicationContextUrl, LoginPage.class)
+                .login("0000000001", "aaaaa11111");
 
-        // アップロード失敗確認
-        $("#message").shouldHave(text("アップロードに失敗しました。"));
+        indexPage.uploadWithDelay(uploadFile);
+
+        // サスペンド:アップロード失敗確認
+        indexPage.getMessage().shouldHave(exactText("アップロードに失敗しました。"));
 
         // アップロードされていないことを確認
         ObjectListing listObjects = s3Client.listObjects(bucketName);
@@ -280,6 +245,8 @@ public class DirectUploadTest extends TestCase {
                 break;
             }
         }
+
+        // アサート:アップロードが失敗し、エラーコード"AccessDenied"が返却されることを確認する
         assertFalse(existed);
 
         // 証跡取得
@@ -289,6 +256,15 @@ public class DirectUploadTest extends TestCase {
     @PostConstruct
     private void createS3Client() {
         s3Client = AmazonS3ClientBuilder.defaultClient();
+    }
+
+    private void cleanBucket(String userId) {
+        ObjectListing listObjects = s3Client.listObjects(bucketName, userId
+                + "/");
+        for (S3ObjectSummary summary : listObjects.getObjectSummaries()) {
+            String objKey = summary.getKey();
+            s3Client.deleteObject(bucketName, objKey);
+        }
     }
 
 }

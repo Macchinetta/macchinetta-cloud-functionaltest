@@ -16,15 +16,11 @@
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selectors.*;
-import static com.codeborne.selenide.Selenide.*;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.MatcherAssert.*;
+import static com.codeborne.selenide.Condition.empty;
+import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.screenshot;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,51 +28,31 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.WebDriverRunner;
 
-import io.github.bonigarcia.wdm.FirefoxDriverManager;
-import jp.co.ntt.cloud.functionaltest.selenide.page.HelloPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import jp.co.ntt.cloud.functionaltest.selenide.page.HomePage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.LoginPage;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
 public class HelloWorldTest {
 
-    /*
-     * アプリケーションURL
-     */
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
 
-    /*
-     * アプリケーションURL
-     */
     @Value("${path.report}")
     private String reportPath;
 
-    /*
-     * geckoドライバーバージョン
-     */
     @Value("${selenide.geckodriverVersion}")
     private String geckodriverVersion;
-
-    /*
-     * ユーザID
-     */
-    private String userId;
-
-    /*
-     * パスワード
-     */
-    private String password;
 
     @Before
     public void setUp() {
 
         // geckoドライバーの設定
         if (System.getProperty("webdriver.gecko.driver") == null) {
-            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+            WebDriverManager.firefoxdriver().version(geckodriverVersion)
                     .setup();
         }
 
@@ -87,45 +63,25 @@ public class HelloWorldTest {
         Configuration.reportsFolder = reportPath;
     }
 
-    @After
-    public void tearDown() {
-        // ログイン状態の場合ログアウトする。
-        HelloPage helloPage = open(applicationContextUrl, HelloPage.class);
-        if (helloPage.isLoggedIn()) {
-            helloPage.logout();
-        }
-    }
-
-    /*
-     * PRCD20101_001 署名付きCookieを利用して、アクセス制限が設定されているCloudFront上のファイルにIP制限に因ってアクセスできないことを確認する
+    /**
+     * PRCD20101 001 署名付きCookieを利用して、アクセス制限が設定されているCloudFront上のファイルにIP制限に因ってアクセスできないことを確認する
      */
     @Test
-    public void testPRCD20101_001() throws InterruptedException {
+    public void testPRCD20101_001() {
 
-        // 事前準備
-        userId = "0000000002";
-        password = "aaaaa11111";
+        // テスト実行:有償会員でログインする。
+        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
+                "0000000002", "aaaaa11111");
 
-        // テスト実行
-        TopPage topPage = open(applicationContextUrl, TopPage.class);
+        // 再取得クリック後、判定用のコンテンツ値表示
+        homePage.reload().loadVerificationContent();
 
-        HelloPage helloWorldPage = topPage.login(userId, password);
-
-        // アサーション
-        $("h1").shouldHave(text("Hello world!"));
-        $$("p").get(1).shouldHave(text("Taro Denden"));
-
-        // コンテンツの閲覧期限に達したので閲覧可能だがIP制限で閲覧不可
-        Thread.sleep(5000);
-        helloWorldPage.loadVerificationContent();
-        Thread.sleep(10000);
-
-        String cloudfrontVal = $(byId("cloudFrontResult")).val();
-        assertThat(cloudfrontVal, isEmptyOrNullString());
+        // アサート:CloudFront上のファイルにアクセスできないこと
+        homePage.getAppResult().shouldNotHave(empty);
+        homePage.getCloudFrontResult().shouldHave(empty);
 
         // 証跡取得
         screenshot("PRCD20101_001");
-
     }
 
 }

@@ -1,6 +1,8 @@
 # 環境依存しないフレームワークの設定値
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   application:
     name: hlch-dynamo-up
 
@@ -24,4 +26,4 @@ cloud:
 
 amazon:
   dynamodb:
-    endpoint: https://dynamodb.ap-northeast-1.amazonaws.com
+    region: ap-northeast-1

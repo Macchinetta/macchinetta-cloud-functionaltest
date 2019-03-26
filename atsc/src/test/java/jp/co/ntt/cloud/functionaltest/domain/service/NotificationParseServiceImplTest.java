@@ -16,12 +16,14 @@
  */
 package jp.co.ntt.cloud.functionaltest.domain.service;
 
-import org.junit.Test;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class NotificationParseServiceImplTest {
 

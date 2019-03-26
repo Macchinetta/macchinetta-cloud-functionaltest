@@ -16,15 +16,18 @@
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.screenshot;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -36,17 +39,15 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
-import org.openqa.selenium.By;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.WebDriverRunner;
 
-import io.github.bonigarcia.wdm.FirefoxDriverManager;
-import jp.co.ntt.cloud.functionaltest.selenide.page.HelloPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import jp.co.ntt.cloud.functionaltest.selenide.page.HomePage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.LoginPage;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -54,114 +55,76 @@ import junit.framework.TestCase;
         "classpath:META-INF/spring/selenideContext.xml" })
 public class StaticContentsTest extends TestCase {
 
-    /*
-     * 画像ファイルを一時保存するフォルダ作成と削除を実行するルール
-     */
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    /*
-     * テスト名取得
-     */
-    @Rule
-    public TestName testName = new TestName();
-
-    /*
-     * アプリケーションURL
-     */
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
 
-    /*
-     * アプリケーションURL
-     */
     @Value("${path.report}")
     private String reportPath;
 
-    /*
-     * テストデータ保存先
-     */
     @Value("${path.testdata}")
     private String testDataPath;
 
-    /*
-     * geckoドライバーバージョン
-     */
     @Value("${selenide.geckodriverVersion}")
     private String geckodriverVersion;
 
-    /*
-     * ユーザID
-     */
-    private String userId;
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    /*
-     * パスワード
-     */
-    private String password;
+    @Rule
+    public TestName testName = new TestName();
 
-    @Override
     @Before
     public void setUp() {
 
         // geckoドライバーの設定
         if (System.getProperty("webdriver.gecko.driver") == null) {
-            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+            WebDriverManager.firefoxdriver().version(geckodriverVersion)
                     .setup();
         }
-
-        // ブラウザの設定
-        Configuration.browser = WebDriverRunner.MARIONETTE;
 
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
     }
 
-    @Override
     @After
     public void tearDown() {
+
         // ログイン状態の場合ログアウトする。
-        HelloPage helloPage = open(applicationContextUrl, HelloPage.class);
-        if (helloPage.isLoggedIn()) {
-            helloPage.logout();
+        HomePage homePage = open(applicationContextUrl, HomePage.class);
+        if (homePage.isLoggedIn()) {
+            homePage.logout();
         }
     }
 
-    /*
-     * 画像の読み込みが完了していること
+    /**
+     * STCN0101 001 CloudFrontから画像を取得し、JSPで表示できること
      */
     @Test
     public void imgLoadCompleteTest() {
-        // 事前準備
-        userId = "0000000002";
-        password = "aaaaa11111";
 
-        // テスト実行
-        HelloPage helloWorldPage = open(applicationContextUrl, TopPage.class)
-                .login(userId, password);
+        // テスト実行:ログインして静的コンテンツを取得する
+        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
+                "0000000002", "aaaaa11111");
 
-        // 画像の読み込みが完了した場合に js でページ内の要素を"Image loading is complete"に書き換えているのでチェックする
-        helloWorldPage.getImgLoadState().shouldHave(text(
+        // アサート:画像が表示されていることを確認する。
+        homePage.getImgLoadState().shouldHave(exactText(
                 "Image loading is complete"));
     }
 
-    /*
-     * CloudFrontから取得した画像とローカルで保持している画像が一致すること
+    /**
+     * STCN0101 002 CloudFrontから取得した画像が、想定している画像と一致すること
+     * @throws IOException
+     * @throws MalformedURLException
      */
     @Test
-    public void sameImgCheckTest() throws IOException {
+    public void sameImgCheckTest() throws MalformedURLException, IOException {
 
-        // 事前準備
-        userId = "0000000002";
-        password = "aaaaa11111";
-
-        // テスト実行
-        HelloPage helloWorldPage = open(applicationContextUrl, TopPage.class)
-                .login(userId, password);
+        // テスト実行:ログインして静的コンテンツを取得する
+        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
+                "0000000002", "aaaaa11111");
 
         // 画像のURL取得
-        String imgSrc = helloWorldPage.getImagFromCloudFront().getAttribute(
-                "src");
+        String imgSrc = homePage.getImagFromCloudFront().getAttribute("src");
 
         // CloudFrontから取得した画像の保存先
         String tempImgPath = temporaryFolder.getRoot() + "ochiboHiroi_temp.jpg";
@@ -172,7 +135,7 @@ public class StaticContentsTest extends TestCase {
         File imgFromLocal = new File(testDataPath + "image/ochiboHiroi.jpg");
         File imgFromCloudFront = new File(tempImgPath);
 
-        // アサーション
+        // アサート:CloudFrontから配信された画像が想定している画像と一致していることを確認する。
         assertEquals(FileUtils.checksumCRC32(imgFromLocal), FileUtils
                 .checksumCRC32(imgFromCloudFront));
 
@@ -180,23 +143,20 @@ public class StaticContentsTest extends TestCase {
         screenshot(testName.getMethodName());
     }
 
-    /*
-     * 画像をCloudFrontのキャッシュから取得していること
+    /**
+     * STCN0102 001 CloudFrontのキャッシュから画像を取得していること
+     * @throws IOException
+     * @throws ClientProtocolException
      */
     @Test
-    public void xCacheTest() throws IOException {
+    public void xCacheTest() throws ClientProtocolException, IOException {
 
-        // 事前準備
-        userId = "0000000002";
-        password = "aaaaa11111";
-
-        // テスト実行
-        HelloPage helloWorldPage = open(applicationContextUrl, TopPage.class)
-                .login(userId, password);
+        // テスト実行:ログインして静的コンテンツを取得する
+        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
+                "0000000002", "aaaaa11111");
 
         // 画像のURL取得
-        String imgSrc = helloWorldPage.getImagFromCloudFront().getAttribute(
-                "src");
+        String imgSrc = homePage.getImagFromCloudFront().getAttribute("src");
 
         CloseableHttpClient client = HttpClients.createDefault();
 
@@ -208,10 +168,13 @@ public class StaticContentsTest extends TestCase {
         // CloudFrontのキャッシュから画像を取得
         try (CloseableHttpResponse response = client.execute(
                 new HttpGet(imgSrc))) {
+
             // X-Cache の値を取得
             String xCacheResult = response.getFirstHeader("X-Cache").getValue();
 
             if (StringUtils.isNotBlank(xCacheResult)) {
+
+                // アサート:レスポンスヘッダの「X-Cache」が「Hit from CloudFront」になっていることを確認する。
                 assertEquals("Hit from cloudfront", xCacheResult);
             } else {
                 fail();

@@ -16,8 +16,9 @@
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.screenshot;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,64 +30,36 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.StringUtils;
 
 import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.WebDriverRunner;
 
-import io.github.bonigarcia.wdm.FirefoxDriverManager;
-import jp.co.ntt.cloud.functionaltest.selenide.page.PriorityQueuePage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import jp.co.ntt.cloud.functionaltest.selenide.page.LoginPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.HomePage;
 import junit.framework.TestCase;
 
-/**
- * 優先度キューのテストクラス。
- * @author NTT 電電太郎
- */
-@SuppressWarnings("unused")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
 public class PriorityQueueTest extends TestCase {
 
-    /*
-     * アプリケーションURL
-     */
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
 
-    /*
-     * アプリケーションURL
-     */
     @Value("${path.report}")
     private String reportPath;
 
-    /*
-     * geckoドライバーバージョン
-     */
     @Value("${selenide.geckodriverVersion}")
     private String geckodriverVersion;
-
-    /*
-     * ユーザID
-     */
-    private String userId;
-
-    /*
-     * パスワード
-     */
-    private String password;
 
     @Before
     public void setUp() {
 
         // geckoドライバーの設定
         if (System.getProperty("webdriver.gecko.driver") == null) {
-            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+            WebDriverManager.firefoxdriver().version(geckodriverVersion)
                     .setup();
         }
 
-        // ブラウザの設定
-        Configuration.browser = WebDriverRunner.MARIONETTE;
-
-        // タイムアウトの設定
+        // 検証メソッドタイムアウトの設定
         Configuration.timeout = 1200000;
 
         // テスト結果の出力先の設定
@@ -95,32 +68,29 @@ public class PriorityQueueTest extends TestCase {
 
     @After
     public void tearDown() {
+
         // ログイン状態の場合ログアウトする。
-        PriorityQueuePage helloPage = open(applicationContextUrl,
-                PriorityQueuePage.class);
-        if (helloPage.isLoggedIn()) {
-            helloPage.logout();
+        HomePage homePage = open(applicationContextUrl, HomePage.class);
+        if (homePage.isLoggedIn()) {
+            homePage.logout();
         }
     }
 
     /**
-     * ログインを実行しプレミアム会員でメッセージ送信を行い結果を取得して10秒以内に処理されることを確認する。
+     * PRQU0101 001 プレミアムユーザでログインすることで、優先度高のキューにメッセージ送信して、優先度高のキューのより受信を行い遅延なく処理されることを確認する。
      */
     @Test
     public void highPriorityQueueTest() {
 
-        // 事前準備
-        userId = "0000000001";
-        password = "aaaaa11111";
+        // テスト実行:プレミアム会員でログインする。
+        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
+                "0000000001", "aaaaa11111");
 
-        // テスト実行
-        PriorityQueuePage priorityQueuePage = open(applicationContextUrl,
-                TopPage.class).login(userId, password);
+        // サスペンド:画面遷移確認
+        homePage.getAccountName().shouldHave(text("Hanako Denden"));
 
-        // アサーション
-        $$("p").get(1).shouldHave(text("Hanako Denden"));
-        String val = $("#processtime").getValue();
-
+        // アサート:メッセージの処理時間は、優先度低の遅延キューに設定した10秒未満で終わることを確認する。
+        String val = homePage.getProcesstime().getValue();
         assertTrue("プレミアム会員のため、メッセージを遅延なく処理される。", Long.valueOf(val) < 10);
 
         // 証跡取得
@@ -128,22 +98,20 @@ public class PriorityQueueTest extends TestCase {
     }
 
     /**
-     * ログインを実行し通常会員でメッセージ送信を行い結果を取得して10秒後に処理されることを確認する。
+     * PRQU0101 002 通常ユーザでログインすることで、優先度低のキューにメッセージ送信して、優先度高のキューのより受信を行い遅延なく処理されることを確認する。
      */
     @Test
     public void lowPriorityQueueTest() {
 
-        // 事前準備
-        userId = "0000000002";
-        password = "aaaaa11111";
+        // テスト実行:通常会員でログインする。
+        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
+                "0000000002", "aaaaa11111");
 
-        // テスト実行
-        PriorityQueuePage priorityQueuePage = open(applicationContextUrl,
-                TopPage.class).login(userId, password);
+        // サスペンド:画面遷移確認
+        homePage.getAccountName().shouldHave(text("Taro Denden"));
 
-        // アサーション
-        $$("p").get(1).shouldHave(text("Taro Denden"));
-        String val = $("#processtime").getValue();
+        // アサート:メッセージの処理時間は、優先度低の遅延キューに設定した10秒以上で終わることを確認する。
+        String val = homePage.getProcesstime().getValue();
         if (StringUtils.isEmpty(val)) {
             fail("規定の時間を越えたため処理時間が取得できませんでした。");
         } else {

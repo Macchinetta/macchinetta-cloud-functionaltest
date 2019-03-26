@@ -24,11 +24,11 @@ database:
       name: default
   data-sources:
     - schema: default
-      url: jdbc:postgresql://ci-functionaltest.XXXX.ap-northeast-1.rds.amazonaws.com:5432/functionaltest
+      url: jdbc:postgresql://ci-functionaltest-1-1-x.XXXX.ap-northeast-1.rds.amazonaws.com:5432/functionaltest
     - schema: shard1
-      url: jdbc:postgresql://ci-functionaltest.XXXX.ap-northeast-1.rds.amazonaws.com:5432/functionaltest_shard1
+      url: jdbc:postgresql://ci-functionaltest-1-1-x.XXXX.ap-northeast-1.rds.amazonaws.com:5432/functionaltest_shard1
     - schema: shard2
-      url: jdbc:postgresql://ci-functionaltest.XXXX.ap-northeast-1.rds.amazonaws.com:5432/functionaltest_shard2
+      url: jdbc:postgresql://ci-functionaltest-1-1-x.XXXX.ap-northeast-1.rds.amazonaws.com:5432/functionaltest_shard2
       maxActive: 30
 
 # Logging

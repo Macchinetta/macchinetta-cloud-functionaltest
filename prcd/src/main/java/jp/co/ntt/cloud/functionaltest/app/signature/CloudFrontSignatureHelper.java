@@ -22,8 +22,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 
-import org.hibernate.validator.constraints.NotEmpty;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.boot.context.properties.ConfigurationProperties;

@@ -16,7 +16,7 @@
         <p>Welcome ${f:h(account.firstName)} ${f:h(account.lastName)} !!</p>
         <p>
             <form:form action="${pageContext.request.contextPath}/logout">
-                <button type="submit">Logout</button>
+                <button id="logout" type="submit">Logout</button>
             </form:form>
         </p>
         <div>

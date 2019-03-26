@@ -17,10 +17,8 @@
 package jp.co.ntt.cloud.functionaltest.api.testcase;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
-
-import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,46 +37,38 @@ import junit.framework.TestCase;
         "classpath:META-INF/spring/selenideContext.xml" })
 public class HealthCheckTest extends TestCase {
 
-    /*
-     * アプリケーションURL
-     */
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
 
-    /*
-     * テスト結果の出力先
-     */
     @Value("${path.report}")
     private String reportPath;
 
-    /*
-     * テストデータ保存先
-     */
     @Value("${path.testdata}")
     private String testDataPath;
 
-    @Override
     @Before
     public void setUp() {
+
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
+
         // RestAssuredのベースURI設定
         RestAssured.baseURI = this.applicationContextUrl;
     }
 
-    /*
-     * ヘルスチェックを実行できること。 DynamoDBのヘルスチェック結果が「UP」となること。
+    /**
+     * HLCH0102 001 DynamoDBが正常のときにヘルスチェックのdynamoDBのstatusが「UP」になること
      */
     @Test
-    public void upDynamoDBhealthCheckTest() throws IOException {
+    public void upDynamoDBhealthCheckTest() {
 
-        // @formatter:off
+        // アサート:DynamoDBのヘルスチェック結果のstatusが「UP」になっていること、DynamoDBのヘルスチェック結果のキーにamazonDynamoDBがあること
         given().get("/management/health").then().assertThat().body("status",
                 equalTo("UP")).body("details.dynamodb.status", equalTo("UP"))
                 .body("details.dynamodb.details", hasKey("amazonDynamoDB"))
                 .body("details.diskSpace.status", equalTo("UP")).body(
                         "details.db.status", equalTo("UP")).body(
                                 "details.refreshScope.status", equalTo("UP"));
-        // @formatter:on
+
     }
 }

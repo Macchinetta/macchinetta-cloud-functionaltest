@@ -13,8 +13,8 @@
 <body>
 <div id="result">Token check is valid.</div>
 <p>
-    <form:form id="logout" action="${pageContext.request.contextPath}/logout">
-        <button type="submit">Logout</button>
+    <form:form action="${pageContext.request.contextPath}/logout">
+        <button id="logout" type="submit">Logout</button>
     </form:form>
 </p>
 </body>

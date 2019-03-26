@@ -16,19 +16,22 @@
  */
 package jp.co.ntt.cloud.functionaltest.selenide.page;
 
-import org.openqa.selenium.By;
-
+import static com.codeborne.selenide.Selectors.byName;
 import static com.codeborne.selenide.Selenide.$;
 
+/**
+ * Loginページのページオブジェクトクラス。
+ */
 public class LoginPage {
 
-    public TopPage login() {
-
-        $(By.name("username")).setValue("0000000001");
-        $(By.name("password")).setValue("aaaaa11111");
-        $(By.name("submit")).click();
-
-        return new TopPage($(By.id("counter")).text(), $(By.name("_csrf"))
-                .text(), $(By.name("_TRANSACTION_TOKEN")).text());
+    /**
+     * ログインする。
+     * @return HomePage
+     */
+    public HomePage login() {
+        $(byName("username")).setValue("0000000001");
+        $(byName("password")).setValue("aaaaa11111");
+        $(byName("submit")).click();
+        return new HomePage();
     }
 }

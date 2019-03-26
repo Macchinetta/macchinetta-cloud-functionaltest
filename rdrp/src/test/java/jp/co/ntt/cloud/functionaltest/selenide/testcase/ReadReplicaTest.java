@@ -16,11 +16,10 @@
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selectors.*;
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.screenshot;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,10 +28,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.WebDriverRunner;
 
-import io.github.bonigarcia.wdm.FirefoxDriverManager;
-import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import jp.co.ntt.cloud.functionaltest.selenide.page.UserManagementPage;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -40,32 +38,19 @@ import junit.framework.TestCase;
         "classpath:META-INF/spring/selenideContext.xml" })
 public class ReadReplicaTest extends TestCase {
 
-    /*
-     * アプリケーションURL
-     */
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
 
-    /*
-     * アプリケーションURL
-     */
     @Value("${path.report}")
     private String reportPath;
 
-    /*
-     * geckoドライバーバージョン
-     */
     @Value("${selenide.geckodriverVersion}")
     private String geckodriverVersion;
 
-    /*
-     * 顧客名：姓
-     */
+    // 顧客名：姓
     private String lastName;
 
-    /*
-     * 顧客名：名
-     */
+    // 顧客名：名
     private String firstName;
 
     @Before
@@ -73,79 +58,57 @@ public class ReadReplicaTest extends TestCase {
 
         // geckoドライバーの設定
         if (System.getProperty("webdriver.gecko.driver") == null) {
-            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+            WebDriverManager.firefoxdriver().version(geckodriverVersion)
                     .setup();
         }
-
-        // ブラウザの設定
-        Configuration.browser = WebDriverRunner.MARIONETTE;
 
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
     }
 
-    @After
-    public void tearDown() {
-    }
-
     /**
-     * <ul>
-     * <li>レプリカデータベースからデータを取得できることを確認する。</li>
-     * </ul>
+     * RDRP0101 001 レプリカデータベースからデータを取得できること
      */
     @Test
     public void testRDRP0101001() {
 
-        // 事前準備
-        lastName = "0000000002";
-        firstName = "aaaaa11111";
+        // テスト実行:参照系トランザクションの処理を行う
+        UserManagementPage userManagementPage = open(applicationContextUrl,
+                UserManagementPage.class);
 
-        // テスト実行
-        open(applicationContextUrl, TopPage.class);
-
-        // アサーション
-
-        // 顧客テーブルに初期投入データが表示されていることを確認する。
-        $(byId("userListTable")).$("tr", 1).$(".lastName").shouldBe(text(
-                "Denden"));
-        $(byId("userListTable")).$("tr", 1).$(".firstName").shouldBe(text(
+        // アサート:顧客テーブルに初期投入データが表示されていることを確認する。
+        userManagementPage.getLastNameColumn(1).shouldHave(exactText("Denden"));
+        userManagementPage.getFirstNameColumn(1).shouldHave(exactText(
                 "Hanako"));
-        $(byId("userListTable")).$("tr", 2).$(".lastName").shouldBe(text(
-                "Denden"));
-        $(byId("userListTable")).$("tr", 2).$(".firstName").shouldBe(text(
-                "Taro"));
+        userManagementPage.getLastNameColumn(2).shouldHave(exactText("Denden"));
+        userManagementPage.getFirstNameColumn(2).shouldHave(exactText("Taro"));
 
         // 証跡取得
         screenshot("testRDRP0101001");
     }
 
     /**
-     * <ul>
-     * <li>マスタデータベースにデータを更新できることを確認する。</li>
-     * </ul>
-     * @throws InterruptedException
+     * RDRP0101 002 マスタデータベースにデータを更新できること
      */
     @Test
-    public void testRDRP0101002() throws InterruptedException {
+    public void testRDRP0101002() {
 
         // 事前準備
         lastName = "Toyosu";
         firstName = "Yoshiko";
 
-        // テスト実行
-        open(applicationContextUrl, TopPage.class).register(lastName, firstName)
-                .reload();
+        // テスト実行:更新系トランザクションの処理を行う
+        UserManagementPage userManagementPage = open(applicationContextUrl,
+                UserManagementPage.class).register(lastName, firstName)
+                        .reload();
 
-        // アサーション
-        // 顧客テーブルに顧客情報が登録されていることを確認する。
-
+        // アサート:顧客テーブルに顧客情報が登録されていることを確認する。
         // テーブルの行数を取得し最後のデータを確認する。
-        int totalNumberOfRow = $(byId("userListTable")).$$("tr").size();
-        int maxNumberOfRow = totalNumberOfRow - 1;
-        $(byId("userListTable")).$("tr", maxNumberOfRow).$(".lastName")
-                .shouldBe(text(lastName));
-        $(byId("userListTable")).$("tr", maxNumberOfRow).$(".firstName")
-                .shouldBe(text(firstName));
+        int maxNumberOfRow = userManagementPage.getRows().size() - 1;
+        userManagementPage.getLastNameColumn(maxNumberOfRow).shouldHave(
+                exactText(lastName));
+        userManagementPage.getFirstNameColumn(maxNumberOfRow).shouldHave(
+                exactText(firstName));
 
         // 証跡取得
         screenshot("testRDRP0101002");

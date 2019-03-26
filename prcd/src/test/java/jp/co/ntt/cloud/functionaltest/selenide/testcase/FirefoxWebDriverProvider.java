@@ -22,6 +22,7 @@ import java.util.Properties;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -43,8 +44,11 @@ public class FirefoxWebDriverProvider implements WebDriverProvider {
         // Create object for FirefoxProfile
         FirefoxProfile profile = new FirefoxProfile(new File(userProfilePath));
 
+        // Create object for FirefoxOptions
+        FirefoxOptions options = new FirefoxOptions().setProfile(profile);
+
         // Initialize Firefox driver
-        return new FirefoxDriver(profile);
+        return new FirefoxDriver(options);
 
     }
 

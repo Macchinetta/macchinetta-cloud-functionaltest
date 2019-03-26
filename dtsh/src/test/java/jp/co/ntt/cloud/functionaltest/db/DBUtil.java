@@ -23,43 +23,25 @@ import java.sql.SQLException;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
- * @author NTT 電電太郎
+ * DBコネクトヘルパークラス。
  */
 public class DBUtil {
 
-    /**
-     * DB ドライバークラス
-     */
     @Value("${database.common.data-source.driverClassName}")
     private String driverClassName;
 
-    /**
-     * デフォルトDBのURL
-     */
     @Value("${database.data-sources.default.url}")
     private String urlDefault;
 
-    /**
-     * シャード1のURL
-     */
     @Value("${database.data-sources.shard1.url}")
     private String urlShard1;
 
-    /**
-     * シャード2のURL
-     */
     @Value("${database.data-sources.shard2.url}")
     private String urlShard2;
 
-    /**
-     * DBのuser
-     */
     @Value("${database.common.data-source.username}")
     private String user;
 
-    /**
-     * DBのpassword
-     */
     @Value("${database.common.data-source.password}")
     private String password;
 

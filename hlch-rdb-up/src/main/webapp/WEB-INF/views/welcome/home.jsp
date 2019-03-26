@@ -12,7 +12,7 @@
         <p>The time on the server is ${serverTime}.</p>
         <p>
             <form:form action="${pageContext.request.contextPath}/logout">
-                <button type="submit">Logout</button>
+                <button id="logout" type="submit">Logout</button>
             </form:form>
         </p>
     </div>

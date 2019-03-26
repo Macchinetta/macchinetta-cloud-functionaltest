@@ -17,9 +17,7 @@
 package jp.co.ntt.cloud.functionaltest.api.testcase;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.equalTo;
-
-import java.io.IOException;
+import static org.hamcrest.Matchers.equalTo;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -38,44 +36,36 @@ import junit.framework.TestCase;
         "classpath:META-INF/spring/selenideContext.xml" })
 public class HealthCheckUPRDBTest extends TestCase {
 
-    /*
-     * アプリケーションURL
-     */
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
 
-    /*
-     * テスト結果の出力先
-     */
     @Value("${path.report}")
     private String reportPath;
 
-    /*
-     * テストデータ保存先
-     */
     @Value("${path.testdata}")
     private String testDataPath;
 
-    @Override
     @Before
     public void setUp() {
+
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
+
         // RestAssuredのベースURI設定
         RestAssured.baseURI = this.applicationContextUrl;
     }
 
-    /*
-     * ヘルスチェックを実行できること。RDBのヘルスチェック結果が「UP」となること。
+    /**
+     * HLCH0104 001 Spring Boot Actuator を依存関係に追加しただけで有効になるRDBのヘルスチェックのstatusが「UP」になること
      */
     @Test
-    public void upRDBhealthCheckTest() throws IOException {
+    public void upRDBhealthCheckTest() {
 
-        // @formatter:off
+        // アサート:dbのstatusが「UP」になっていること
         given().get("/management/health").then().assertThat().body("status",
                 equalTo("UP")).body("details.diskSpace.status", equalTo("UP"))
                 .body("details.db.status", equalTo("UP")).body(
                         "details.refreshScope.status", equalTo("UP"));
-        // @formatter:on
+
     }
 }

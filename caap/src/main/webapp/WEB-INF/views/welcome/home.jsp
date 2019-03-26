@@ -15,7 +15,7 @@
         <p><a id="inspect" href="${pageContext.request.contextPath}/inspect">inspect</a></p>
         <p>
             <form:form action="${pageContext.request.contextPath}/logout">
-                <button type="submit">Logout</button>
+                <button id="logout" type="submit">Logout</button>
             </form:form>
         </p>
     </div>

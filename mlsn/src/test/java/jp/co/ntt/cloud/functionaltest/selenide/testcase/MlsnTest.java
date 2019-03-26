@@ -16,10 +16,10 @@
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selenide.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.*;
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.screenshot;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,152 +29,136 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.WebDriverRunner;
 
-import io.github.bonigarcia.wdm.FirefoxDriverManager;
-import jp.co.ntt.cloud.functionaltest.selenide.page.MlsnPage;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import jp.co.ntt.cloud.functionaltest.selenide.page.HomePage;
 
-/**
- * メール送信機能確認テストケース。
- * @author NTT 電電太郎
- */
-@SuppressWarnings("unused")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
 public class MlsnTest {
 
-    /*
-     * 正常送信確認用アドレス
-     */
-    private static final String ADDRESS_DELIVERY = "success@simulator.amazonses.com";
-
-    /*
-     * バウンスメール確認用アドレス
-     */
-    private static final String ADDRESS_BOUNCE = "bounce@simulator.amazonses.com";
-
-    /*
-     * SimpleMailMessageを使用する。
-     */
-    private static final String KIND_SIMPLE = "simple";
-
-    /*
-     * MimeMessageHelperを使用する。
-     */
-    private static final String KIND_MIME = "mime";
-
-    /*
-     * アプリケーションURL
-     */
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
 
-    /*
-     * レポート出力パス
-     */
     @Value("${path.report}")
     private String reportPath;
 
-    /*
-     * geckoドライバーバージョン
-     */
     @Value("${selenide.geckodriverVersion}")
     private String geckodriverVersion;
+
+    // 正常送信確認用アドレス
+    private static final String ADDRESS_DELIVERY = "success@simulator.amazonses.com";
+
+    // バウンスメール確認用アドレス
+    private static final String ADDRESS_BOUNCE = "bounce@simulator.amazonses.com";
+
+    // SimpleMailMessageを使用する。
+    private static final String KIND_SIMPLE = "simple";
+
+    // MimeMessageHelperを使用する。
+    private static final String KIND_MIME = "mime";
 
     @Before
     public void setUp() {
 
         // geckoドライバーの設定
         if (System.getProperty("webdriver.gecko.driver") == null) {
-            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+            WebDriverManager.firefoxdriver().version(geckodriverVersion)
                     .setup();
         }
-
-        // ブラウザの設定
-        Configuration.browser = WebDriverRunner.MARIONETTE;
 
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
     }
 
-    /*
-     * SimpleMailMessageを使用し、通常送信が通知されること。
+    /**
+     * MLSN0101 001 正常メッセージの送信確認
      */
     @Test
     public void testSimpleDelivery() {
 
-        // テスト実行
-        MlsnPage send = open(applicationContextUrl, MlsnPage.class).send(
+        // テスト実行:メールを送信する。
+        HomePage homePage = open(applicationContextUrl, HomePage.class).send(
                 ADDRESS_DELIVERY, KIND_SIMPLE, "simple message");
 
-        // 検証
-        $("#notificationType").should(exactText("Delivery"));
-        assertThat(send.headers(), is(containsString(
-                "To:success@simulator.amazonses.com")));
-        assertThat(send.headers(), is(containsString("Subject:testmail")));
+        // アサート:以下情報を含む通知が返却されること。
+        // NotificationType:Delivery
+        // To:success@simulator.amazonses.com
+        // Subject:testmail
+        homePage.getNotificationType().shouldHave(exactText("Delivery"));
+        homePage.getHeaders().shouldHave(text(
+                "To:success@simulator.amazonses.com"));
+        homePage.getHeaders().shouldHave(text("Subject:testmail"));
 
         // 証跡取得
         screenshot("testSimpleDelivery");
     }
 
-    /*
-     * SimpleMailMessageを使用し、バウンスメールが通知されること。
+    /**
+     * MLSN0101 002 バウンスメールの通知確認
      */
     @Test
     public void testSimpleBounce() {
 
-        // テスト実行
-        MlsnPage send = open(applicationContextUrl, MlsnPage.class).send(
+        // テスト実行:メールを送信する。
+        HomePage homePage = open(applicationContextUrl, HomePage.class).send(
                 ADDRESS_BOUNCE, KIND_SIMPLE, "simple message");
 
-        // 検証
-        $("#notificationType").should(exactText("Bounce"));
-        assertThat(send.headers(), is(containsString(
-                "To:bounce@simulator.amazonses.com")));
-        assertThat(send.headers(), is(containsString("Subject:testmail")));
+        // アサート:以下情報を含む通知が返却されること。
+        // NotificationType:Bounce
+        // To:bounce@simulator.amazonses.com
+        // Subject:testmail
+        homePage.getNotificationType().shouldHave(exactText("Bounce"));
+        homePage.getHeaders().shouldHave(text(
+                "To:bounce@simulator.amazonses.com"));
+        homePage.getHeaders().shouldHave(text("Subject:testmail"));
 
         // 証跡取得
         screenshot("testSimpleBounce");
     }
 
-    /*
-     * MimeMessageHelperを使用し、通常送信が通知されること。
+    /**
+     * MLSN0201 001 正常メッセージの送信確認
      */
     @Test
     public void testMimeDelivery() {
 
-        // テスト実行
-        MlsnPage send = open(applicationContextUrl, MlsnPage.class).send(
+        // テスト実行:メールを送信する。
+        HomePage homePage = open(applicationContextUrl, HomePage.class).send(
                 ADDRESS_DELIVERY, KIND_MIME, "MIME Message.");
 
-        // 検証
-        $("#notificationType").should(exactText("Delivery"));
-        assertThat(send.headers(), is(containsString(
-                "To:success@simulator.amazonses.com")));
-        assertThat(send.headers(), is(containsString(
-                "Subject:MIME Mail test")));
+        // アサート:以下情報を含む通知が返却されること。
+        // NotificationType:Delivery
+        // To:success@simulator.amazonses.com
+        // Subject:MIME Mail test
+        homePage.getNotificationType().shouldHave(exactText("Delivery"));
+        homePage.getHeaders().shouldHave(text(
+                "To:success@simulator.amazonses.com"));
+        homePage.getHeaders().shouldHave(text("Subject:MIME Mail test"));
 
         // 証跡取得
         screenshot("testMimeDelivery");
     }
 
-    /*
-     * MimeMessageHelperを使用し、バウンスメールが通知されること。
+    /**
+     * MLSN0201 002 バウンスメールの通知確認
      */
     @Test
     public void testMimeBounce() {
 
-        // テスト実行
-        MlsnPage send = open(applicationContextUrl, MlsnPage.class).send(
+        // テスト実行:メールを送信する。
+        HomePage homePage = open(applicationContextUrl, HomePage.class).send(
                 ADDRESS_BOUNCE, KIND_MIME, "MIME Message.");
 
-        // 検証
-        $("#notificationType").should(exactText("Bounce"));
-        assertThat(send.headers(), is(containsString(
-                "To:bounce@simulator.amazonses.com")));
-        assertThat(send.headers(), is(containsString(
-                "Subject:MIME Mail test")));
+        // アサート:以下情報を含む通知が返却されること。
+        // NotificationType:Bounce
+        // To:bounce@simulator.amazonses.com
+        // Subject:MIME Mail test
+        homePage.getNotificationType().shouldHave(exactText("Bounce"));
+        homePage.getHeaders().shouldHave(text(
+                "To:bounce@simulator.amazonses.com"));
+        homePage.getHeaders().shouldHave(text("Subject:MIME Mail test"));
 
         // 証跡取得
         screenshot("testMimeBounce");

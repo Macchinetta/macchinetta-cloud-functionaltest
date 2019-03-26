@@ -18,29 +18,39 @@ package jp.co.ntt.cloud.functionaltest.selenide.page;
 
 import static com.codeborne.selenide.Selectors.byId;
 import static com.codeborne.selenide.Selenide.$;
-import static java.lang.Boolean.valueOf;
 
+import com.codeborne.selenide.SelenideElement;
+
+/**
+ * Caap Homeページのページオブジェクトクラス。
+ */
 public class CaapPage {
 
-    private boolean existFQCNClasspath;
+    private SelenideElement existFQCNClasspath;
 
-    private boolean existInApplicationContext;
+    private SelenideElement existInApplicationContext;
 
-    public CaapPage inspect() {
-
-        $(byId("inspect")).click();
-
-        this.existFQCNClasspath = valueOf($(byId("existFQCNClasspath")).text());
-        this.existInApplicationContext = valueOf($(byId(
-                "existInApplicationContext")).text());
-        return this;
+    /**
+     * CaapHomeページのコンストラクタ。
+     */
+    public CaapPage() {
+        this.existFQCNClasspath = $(byId("existFQCNClasspath"));
+        this.existInApplicationContext = $(byId("existInApplicationContext"));
     }
 
-    public boolean isExistFQCNClasspath() {
+    /**
+     * クラスパスの要素を返却する。
+     * @return existFQCNClasspath
+     */
+    public SelenideElement getExistFQCNClasspath() {
         return existFQCNClasspath;
     }
 
-    public boolean isExistInApplicationContext() {
+    /**
+     * ApplicationContextの要素を返却する。
+     * @return existInApplicationContext
+     */
+    public SelenideElement getExistInApplicationContext() {
         return existInApplicationContext;
     }
 }

@@ -16,11 +16,10 @@
  */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
-import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selenide.*;
-import static org.junit.Assert.*;
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.screenshot;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
@@ -34,40 +33,26 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.WebDriverRunner;
 
-import io.github.bonigarcia.wdm.FirefoxDriverManager;
-import jp.co.ntt.cloud.functionaltest.selenide.page.HelloPage;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import jp.co.ntt.cloud.functionaltest.selenide.page.HomePage;
 import junit.framework.TestCase;
 
-@SuppressWarnings("unused")
 @RunWith(SpringJUnit4ClassRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
 public class CacheAbstractTest extends TestCase {
 
-    /*
-     * アプリケーションURL
-     */
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
 
-    /*
-     * テストデータ保存先
-     */
     @Value("${path.report}")
     private String reportPath;
 
-    /*
-     * geckoドライバーバージョン
-     */
     @Value("${selenide.geckodriverVersion}")
     private String geckodriverVersion;
 
-    /*
-     * テストメソッド取得用
-     */
     @Rule
     public TestName testName = new TestName();
 
@@ -77,122 +62,100 @@ public class CacheAbstractTest extends TestCase {
 
         // geckoドライバーの設定
         if (System.getProperty("webdriver.gecko.driver") == null) {
-            FirefoxDriverManager.getInstance().version(geckodriverVersion)
+            WebDriverManager.firefoxdriver().version(geckodriverVersion)
                     .setup();
         }
-
-        // ブラウザの設定
-        Configuration.browser = WebDriverRunner.MARIONETTE;
 
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
     }
 
-    @Override
-    @After
-    public void tearDown() {
-    }
-
     /**
-     * ヒープでキャッシュできていることを確認する。
+     * CCAB0101 001 1回目のメソッド呼び出し時に戻り値をヒープにキャッシュし、2回目以降のメソッドの呼び出しに対しては、戻り値をキャッシュから取得していること
      */
     @Test
     public void h1HeapCachingTest() {
 
-        open(applicationContextUrl + "heap");
-        HelloPage helloPage = new HelloPage();
+        HomePage homePage = open(applicationContextUrl + "heap",
+                HomePage.class);
 
-        // アサーション
-        $("h1").shouldHave(text("Hello world!"));
-
-        String firstRandomNo = helloPage.getMemberRandomNo().getText();
+        String firstRandomNo = homePage.getMemberRandomNo().getText();
         screenshot(testName.getMethodName() + "-access-1");
 
         Selenide.refresh();
 
-        String secondRandomNo = helloPage.getMemberRandomNo().getText();
+        // アサート:1回目と2回目のメソッド呼び出し時の戻り値が同じになること。
+        homePage.getMemberRandomNo().shouldHave(exactText(firstRandomNo));
         screenshot(testName.getMethodName() + "-access-2");
-
-        assertEquals(firstRandomNo, secondRandomNo);
     }
 
     /**
-     * ヒープのキャッシュが削除できていることを確認する。
+     * CCAB0102 001 メソッドの戻り値のキャッシュが削除されて、更新後メソッドの戻り値が取得できること
      */
     @Test
     public void h2EvictHeapCacheTest() {
 
-        open(applicationContextUrl + "heap");
-        HelloPage helloPage = new HelloPage();
+        HomePage homePage = open(applicationContextUrl + "heap",
+                HomePage.class);
 
-        // アサーション
-        $("h1").shouldHave(text("Hello world!"));
-
-        String firstRandomNo = helloPage.getMemberRandomNo().getText();
+        String firstRandomNo = homePage.getMemberRandomNo().getText();
         screenshot(testName.getMethodName() + "-access-1");
 
         Selenide.refresh();
 
-        String secondRandomNo = helloPage.getMemberRandomNo().getText();
+        // アサート:1回目と2回目のメソッド呼び出し時の戻り値が同じになること。
+        homePage.getMemberRandomNo().shouldHave(exactText(firstRandomNo));
         screenshot(testName.getMethodName() + "-access-2");
-        assertEquals(firstRandomNo, secondRandomNo);
 
         open(applicationContextUrl + "heap/deleteCache?update");
 
-        String thirdRandomNo = helloPage.getMemberRandomNo().getText();
+        // アサート:3回目のメソッド呼び出し時の戻り値と、1回めのメソッド呼び出し時の戻り値が異なること。
+        homePage.getMemberRandomNo().shouldNotHave(exactText(firstRandomNo));
         screenshot(testName.getMethodName() + "-access-3");
-        assertNotEquals(firstRandomNo, thirdRandomNo);
     }
 
     /**
-     * Redisでキャッシュできていることを確認する。
+     * CCAB0101 002 1回目のメソッド呼び出し時に戻り値をRedisにキャッシュし、2回目以降のメソッドの呼び出しに対しては、戻り値をキャッシュから取得していること
      */
     @Test
     public void h2RedisCachingTest() {
 
-        open(applicationContextUrl + "redis");
-        HelloPage helloPage = new HelloPage();
+        HomePage homePage = open(applicationContextUrl + "redis",
+                HomePage.class);
 
-        // アサーション
-        $("h1").shouldHave(text("Hello world!"));
-
-        String firstRandomNo = helloPage.getMemberRandomNo().getText();
+        String firstRandomNo = homePage.getMemberRandomNo().getText();
         screenshot("cachingTest-access-1");
 
         Selenide.refresh();
 
-        String secondRandomNo = helloPage.getMemberRandomNo().getText();
+        // アサート:1回目と2回目のメソッド呼び出し時の戻り値が同じになること。
+        homePage.getMemberRandomNo().shouldHave(exactText(firstRandomNo));
         screenshot("cachingTest-access-2");
-
-        assertEquals(firstRandomNo, secondRandomNo);
     }
 
     /**
-     * Redisのキャッシュが削除できていることを確認する。
+     * CCAB0102 002 メソッドの戻り値のキャッシュが削除されて、更新後メソッドの戻り値が取得できること
      */
     @Test
     public void h4RedisHeapCacheTest() {
 
-        open(applicationContextUrl + "redis");
-        HelloPage helloPage = new HelloPage();
+        HomePage homePage = open(applicationContextUrl + "redis",
+                HomePage.class);
 
-        // アサーション
-        $("h1").shouldHave(text("Hello world!"));
-
-        String firstRandomNo = helloPage.getMemberRandomNo().getText();
+        String firstRandomNo = homePage.getMemberRandomNo().getText();
         screenshot("evictCacheTest-access-1");
 
         Selenide.refresh();
 
-        String secondRandomNo = helloPage.getMemberRandomNo().getText();
+        // アサート:1回目と2回目のメソッド呼び出し時の戻り値が同じになること。
+        homePage.getMemberRandomNo().shouldHave(exactText(firstRandomNo));
         screenshot("evictCacheTest-access-2");
-        assertEquals(firstRandomNo, secondRandomNo);
 
         open(applicationContextUrl + "redis/deleteCache?update");
 
-        String thirdRandomNo = helloPage.getMemberRandomNo().getText();
+        // アサート:3回目のメソッド呼び出し時の戻り値と、1回めのメソッド呼び出し時の戻り値が異なること。
+        homePage.getMemberRandomNo().shouldNotHave(exactText(firstRandomNo));
         screenshot("evictCacheTest-access-3");
-        assertNotEquals(firstRandomNo, thirdRandomNo);
     }
 
 }
