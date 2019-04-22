@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,9 @@ import static com.codeborne.selenide.Selenide.$;
 public class TopPage {
 
     private String counter;
+
     private String csrf;
+
     private String transactionToken;
 
     public TopPage(String counter, String csrf, String transactionToken) {
@@ -31,7 +33,8 @@ public class TopPage {
         this.transactionToken = transactionToken;
     }
 
-    public TopPage() {}
+    public TopPage() {
+    }
 
     public void logout() {
         $(By.id("logout")).submit();

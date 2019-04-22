@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,7 @@ public class StaticContentsTest extends TestCase {
     public void setUp() {
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
-     }
+    }
 
     @Override
     @After
@@ -119,10 +119,11 @@ public class StaticContentsTest extends TestCase {
 
         // テスト実行
         HelloPage helloWorldPage = open(applicationContextUrl, TopPage.class)
-        .login(userId, password);
+                .login(userId, password);
 
         // 画像の読み込みが完了した場合に js でページ内の要素を"Image loading is complete"に書き換えているのでチェックする
-        helloWorldPage.getImgLoadState().shouldHave(text("Image loading is complete"));
+        helloWorldPage.getImgLoadState().shouldHave(text(
+                "Image loading is complete"));
     }
 
     /*
@@ -137,23 +138,24 @@ public class StaticContentsTest extends TestCase {
 
         // テスト実行
         HelloPage helloWorldPage = open(applicationContextUrl, TopPage.class)
-        .login(userId, password);
+                .login(userId, password);
 
         // 画像のURL取得
-        String imgSrc = helloWorldPage.getImagFromCloudFront().getAttribute("src");
+        String imgSrc = helloWorldPage.getImagFromCloudFront().getAttribute(
+                "src");
 
         // CloudFrontから取得した画像の保存先
         String tempImgPath = temporaryFolder.getRoot() + "ochiboHiroi_temp.jpg";
 
         // CloudFrontから画像ダウンロード
-        FileUtils.copyURLToFile(new URL(imgSrc),
-                new File(tempImgPath));
+        FileUtils.copyURLToFile(new URL(imgSrc), new File(tempImgPath));
 
         File imgFromLocal = new File(testDataPath + "image/ochiboHiroi.jpg");
         File imgFromCloudFront = new File(tempImgPath);
 
         // アサーション
-        assertEquals(FileUtils.checksumCRC32(imgFromLocal), FileUtils.checksumCRC32(imgFromCloudFront));
+        assertEquals(FileUtils.checksumCRC32(imgFromLocal), FileUtils
+                .checksumCRC32(imgFromCloudFront));
 
         // 証跡取得
         screenshot(testName.getMethodName());
@@ -170,19 +172,23 @@ public class StaticContentsTest extends TestCase {
         password = "aaaaa11111";
 
         // テスト実行
-        HelloPage helloWorldPage = open(applicationContextUrl, TopPage.class).login(userId, password);
+        HelloPage helloWorldPage = open(applicationContextUrl, TopPage.class)
+                .login(userId, password);
 
         // 画像のURL取得
-        String imgSrc = helloWorldPage.getImagFromCloudFront().getAttribute("src");
+        String imgSrc = helloWorldPage.getImagFromCloudFront().getAttribute(
+                "src");
 
         CloseableHttpClient client = HttpClients.createDefault();
 
         // CloudFrontに画像をキャッシュさせるためにアクセス
-        try (CloseableHttpResponse response = client.execute(new HttpGet(imgSrc))) {
+        try (CloseableHttpResponse response = client.execute(
+                new HttpGet(imgSrc))) {
         }
 
         // CloudFrontのキャッシュから画像を取得
-        try (CloseableHttpResponse response = client.execute(new HttpGet(imgSrc))) {
+        try (CloseableHttpResponse response = client.execute(
+                new HttpGet(imgSrc))) {
             // X-Cache の値を取得
             String xCacheResult = response.getFirstHeader("X-Cache").getValue();
 

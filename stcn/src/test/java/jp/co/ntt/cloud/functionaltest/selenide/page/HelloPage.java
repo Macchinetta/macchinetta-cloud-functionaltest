@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.io.FileNotFoundException;
 
 import com.codeborne.selenide.SelenideElement;
 
-
 /*
  * Helloページのページオブジェクトクラス。
  */
@@ -33,7 +32,7 @@ public class HelloPage {
      * ログアウトする。
      * @return TopPage トップページ
      */
-    public TopPage logout(){
+    public TopPage logout() {
         $("button").click();
         return new TopPage();
     }
@@ -60,7 +59,6 @@ public class HelloPage {
 
     /**
      * 画像読み込み状態を取得する。
-     *
      * @return 画像読み込み状態
      */
     public SelenideElement getImgLoadState() {

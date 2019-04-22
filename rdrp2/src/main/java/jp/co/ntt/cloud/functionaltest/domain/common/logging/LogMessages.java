@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,12 +61,14 @@ public enum LogMessages {
     /**
      * 指定されたデータベースのインスタンスが存在しない事を通知するログメッセージ。
      */
-    E_AR_A0_L9009("e.ar.a0.L9009", "指定されたデータベースのインスタンスが存在しません。Database ID= {0}"),
+    E_AR_A0_L9009("e.ar.a0.L9009",
+            "指定されたデータベースのインスタンスが存在しません。Database ID= {0}"),
 
     /**
      * 指定されたプロパティキーが不正である事を通知するログメッセージ。
      */
-    E_AR_A0_L9010("e.ar.a0.L9010", "指定されたプロパティキー[{0}]を指定する場合は、データソースファクトリを拡張して下さい。"),
+    E_AR_A0_L9010("e.ar.a0.L9010",
+            "指定されたプロパティキー[{0}]を指定する場合は、データソースファクトリを拡張して下さい。"),
 
     /**
      * 2重受信が発生した事を通知するログメッセージ。

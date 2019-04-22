@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import static org.junit.Assert.assertThat;
  * メール送信機能確認テストケース。
  * @author NTT 電電太郎
  */
-@SuppressWarnings("unused")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
@@ -43,14 +42,12 @@ public class MlsnTest {
     /*
      * 正常送信確認用アドレス
      */
-    private static final String ADDRESS_DELIVERY =
-            "success@simulator.amazonses.com";
+    private static final String ADDRESS_DELIVERY = "success@simulator.amazonses.com";
 
     /*
      * バウンスメール確認用アドレス
      */
-    private static final String ADDRESS_BOUNCE =
-            "bounce@simulator.amazonses.com";
+    private static final String ADDRESS_BOUNCE = "bounce@simulator.amazonses.com";
 
     /*
      * SimpleMailMessageを使用する。
@@ -87,12 +84,13 @@ public class MlsnTest {
     public void testSimpleDelivery() {
 
         // テスト実行
-        MlsnPage send = open(applicationContextUrl, MlsnPage.class)
-                .send(ADDRESS_DELIVERY, KIND_SIMPLE, "simple message");
+        MlsnPage send = open(applicationContextUrl, MlsnPage.class).send(
+                ADDRESS_DELIVERY, KIND_SIMPLE, "simple message");
 
         // 検証
         assertThat(send.notificationType(), is("Delivery"));
-        assertThat(send.headers(), is(containsString("To:success@simulator.amazonses.com")));
+        assertThat(send.headers(), is(containsString(
+                "To:success@simulator.amazonses.com")));
         assertThat(send.headers(), is(containsString("Subject:testmail")));
 
         // 証跡取得
@@ -106,12 +104,13 @@ public class MlsnTest {
     public void testSimpleBounce() {
 
         // テスト実行
-        MlsnPage send = open(applicationContextUrl, MlsnPage.class)
-                .send(ADDRESS_BOUNCE, KIND_SIMPLE, "simple message");
+        MlsnPage send = open(applicationContextUrl, MlsnPage.class).send(
+                ADDRESS_BOUNCE, KIND_SIMPLE, "simple message");
 
         // 検証
         assertThat(send.notificationType(), is("Bounce"));
-        assertThat(send.headers(), is(containsString("To:bounce@simulator.amazonses.com")));
+        assertThat(send.headers(), is(containsString(
+                "To:bounce@simulator.amazonses.com")));
         assertThat(send.headers(), is(containsString("Subject:testmail")));
 
         // 証跡取得
@@ -125,17 +124,19 @@ public class MlsnTest {
     public void testMimeDelivery() {
 
         // テスト実行
-        MlsnPage send = open(applicationContextUrl, MlsnPage.class)
-                   .send(ADDRESS_DELIVERY, KIND_MIME, "MIME Message.");
+        MlsnPage send = open(applicationContextUrl, MlsnPage.class).send(
+                ADDRESS_DELIVERY, KIND_MIME, "MIME Message.");
 
         // 検証
         assertThat(send.notificationType(), is("Delivery"));
-        assertThat(send.headers(), is(containsString("To:success@simulator.amazonses.com")));
-        assertThat(send.headers(), is(containsString("Subject:MIME Mail test")));
+        assertThat(send.headers(), is(containsString(
+                "To:success@simulator.amazonses.com")));
+        assertThat(send.headers(), is(containsString(
+                "Subject:MIME Mail test")));
 
         // 証跡取得
         screenshot("testMimeDelivery");
-   }
+    }
 
     /*
      * MimeMessageHelperを使用し、バウンスメールが通知されること。
@@ -144,16 +145,17 @@ public class MlsnTest {
     public void testMimeBounce() {
 
         // テスト実行
-        MlsnPage send = open(applicationContextUrl, MlsnPage.class)
-                .send(ADDRESS_BOUNCE, KIND_MIME, "MIME Message.");
+        MlsnPage send = open(applicationContextUrl, MlsnPage.class).send(
+                ADDRESS_BOUNCE, KIND_MIME, "MIME Message.");
 
         // 検証
         assertThat(send.notificationType(), is("Bounce"));
-        assertThat(send.headers(), is(containsString("To:bounce@simulator.amazonses.com")));
-        assertThat(send.headers(), is(containsString("Subject:MIME Mail test")));
+        assertThat(send.headers(), is(containsString(
+                "To:bounce@simulator.amazonses.com")));
+        assertThat(send.headers(), is(containsString(
+                "Subject:MIME Mail test")));
 
         // 証跡取得
         screenshot("testMimeBounce");
     }
 }
-

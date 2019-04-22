@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,14 +45,14 @@ public class AtscController {
         return "atsc/home";
     }
 
-    @RequestMapping(value= "/listen", method = RequestMethod.POST)
+    @RequestMapping(value = "/listen", method = RequestMethod.POST)
     public String listen(Model model) throws InterruptedException {
         String notification = messageQueue.poll(3L, TimeUnit.MINUTES);
         if (notification == null) {
             throw new IllegalStateException("Timeout: notification is empty.");
         }
-        model.addAttribute("notification",
-                notificationParseService.parseNotification(notification));
+        model.addAttribute("notification", notificationParseService
+                .parseNotification(notification));
         return "atsc/home";
     }
 }

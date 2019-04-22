@@ -7,7 +7,7 @@
     <parent>
         <groupId>jp.co.ntt.cloud.functionaltest</groupId>
         <artifactId>macchinetta-cloud-functionaltest</artifactId>
-        <version>1.0.1.RELEASE</version>
+        <version>1.0.2.RELEASE</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -33,7 +33,6 @@
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.8</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
@@ -163,10 +162,10 @@
                 <cargo.rmi.port>58095</cargo.rmi.port>
                 <cargo.tomcat.ajp.port>58096</cargo.tomcat.ajp.port>
                 <cargo.jvmargs>-Dspring.profiles.active=ci</cargo.jvmargs>
-                <db.url.default>jdbc:postgresql://ci-functionaltest.XXXX.ap-northeast-1.rds.amazonaws.com:5432/functionaltest</db.url.default>
+                <db.url.default>jdbc:postgresql://ci-functionaltest-1-0-x.xxxxxx.ap-northeast-1.rds.amazonaws.com:5432/functionaltest</db.url.default>
                 <redis.host></redis.host>
                 <redis.port></redis.port>
-                <redis.cluster.endpoint>functionaltest-0001-001.xxxx.0001.apne1.cache.amazonaws.com:6379</redis.cluster.endpoint>
+                <redis.cluster.endpoint>functionaltest-0001-001.xxxxxx.0001.apne1.cache.amazonaws.com:6379</redis.cluster.endpoint>
             </properties>
         </profile>
     </profiles>

@@ -39,7 +39,7 @@
     </beans>
 
     <beans profile="ci">
-        <jdbc:data-source db-instance-identifier="ci-functionaltest"
+        <jdbc:data-source db-instance-identifier="ci-functionaltest-1-0-x"
             password="postgres" read-replica-support="true">
             <jdbc:pool-attributes initialSize="1" maxActive="200" minIdle="10"
                     testOnBorrow="true" validationQuery="SELECT 1" />

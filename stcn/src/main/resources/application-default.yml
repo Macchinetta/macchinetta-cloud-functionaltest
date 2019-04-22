@@ -36,4 +36,4 @@ logging:
   
 # CloudFront URL
 content:
-  url: https://XXXX.cloudfront.net
+  url: https://d2cy5g84ppo7tb.cloudfront.net

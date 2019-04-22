@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,11 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 
 public class DefaultFiltersBeanFactoryPostProcessor implements
-                                                   BeanFactoryPostProcessor {
+                                                    BeanFactoryPostProcessor {
 
     @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory bf) throws BeansException {
+    public void postProcessBeanFactory(
+            ConfigurableListableBeanFactory bf) throws BeansException {
         DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) bf;
 
         String[] beanNames = beanFactory.getBeanNamesForType(Filter.class);

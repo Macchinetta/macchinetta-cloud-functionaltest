@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,60 +37,61 @@ import jp.co.ntt.cloud.functionaltest.domain.model.FileMetaData;
 @Service
 public class MaintenanceServiceImpl implements MaintenanceService {
 
-	@Inject
-	DynamoDBMapper dbMapper;
-	
-	@Inject
-	SearchSharedService searchSharedService;
+    @Inject
+    DynamoDBMapper dbMapper;
 
-	@Inject
-	AmazonS3 s3client;
-	
-	/**
-	 * S3へのファイルアップロードを実行する。
-	 * 
-	 * @param uploadUser アップロードユーザ（ファイル命名用）
-	 * @param bucketName バケット名
-	 * @param uploadFile アップロードファイル
-	 */
-	public void doUpload(String uploadUser, String bucketName, MultipartFile uploadFile) {
-		try {
-			// アップロードファイルからファイル名フルパスを取得し，ファイル名部分のみを取り出す
-			String fileName = uploadFile.getOriginalFilename();
-			fileName = fileName.substring(fileName.lastIndexOf("\\")+1);
+    @Inject
+    SearchSharedService searchSharedService;
 
-			ObjectMetadata metadata = new ObjectMetadata();
-			metadata.setContentLength(uploadFile.getBytes().length);
+    @Inject
+    AmazonS3 s3client;
 
-			s3client.putObject(new PutObjectRequest(
-					bucketName, 
-					uploadUser +"-"+ fileName, 
-					uploadFile.getInputStream(), metadata));
+    /**
+     * S3へのファイルアップロードを実行する。
+     * @param uploadUser アップロードユーザ（ファイル命名用）
+     * @param bucketName バケット名
+     * @param uploadFile アップロードファイル
+     */
+    public void doUpload(String uploadUser, String bucketName,
+            MultipartFile uploadFile) {
+        try {
+            // アップロードファイルからファイル名フルパスを取得し，ファイル名部分のみを取り出す
+            String fileName = uploadFile.getOriginalFilename();
+            fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-	}
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(uploadFile.getBytes().length);
 
-	/**
-	 * S3からのファイル削除を実行する。
-	 * 
-	 * @param bucketName バケット名
-	 * @param objectKey オブジェクトキー
-	 * @param uploadUser アップロードユーザ
-	 */
-	public void doDelete(String bucketName, String objectKey, String uploadUser) {
-		// バケット名とオブジェクトキーが指定された場合は単一ファイルを削除する。
-		if (bucketName.length()>0 && objectKey.length()>0) {
-			s3client.deleteObject(new DeleteObjectRequest(bucketName, objectKey));
-			
-		// ユーザIDが指定された場合は複数ファイルを削除する。
-		} else if (uploadUser.length()>0) {
-			List<FileMetaData> tgtList = searchSharedService.doUserIdIndexSearch(uploadUser, "");
-			for (FileMetaData tgt : tgtList) {
-				s3client.deleteObject(new DeleteObjectRequest(tgt.getBucketName(), tgt.getObjectKey()));
-			}
-		}
-	}
+            s3client.putObject(new PutObjectRequest(bucketName, uploadUser + "-"
+                    + fileName, uploadFile.getInputStream(), metadata));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * S3からのファイル削除を実行する。
+     * @param bucketName バケット名
+     * @param objectKey オブジェクトキー
+     * @param uploadUser アップロードユーザ
+     */
+    public void doDelete(String bucketName, String objectKey,
+            String uploadUser) {
+        // バケット名とオブジェクトキーが指定された場合は単一ファイルを削除する。
+        if (bucketName.length() > 0 && objectKey.length() > 0) {
+            s3client.deleteObject(
+                    new DeleteObjectRequest(bucketName, objectKey));
+
+            // ユーザIDが指定された場合は複数ファイルを削除する。
+        } else if (uploadUser.length() > 0) {
+            List<FileMetaData> tgtList = searchSharedService
+                    .doUserIdIndexSearch(uploadUser, "");
+            for (FileMetaData tgt : tgtList) {
+                s3client.deleteObject(new DeleteObjectRequest(tgt
+                        .getBucketName(), tgt.getObjectKey()));
+            }
+        }
+    }
 }

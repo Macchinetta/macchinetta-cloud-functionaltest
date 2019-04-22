@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,7 @@ package jp.co.ntt.cloud.functionaltest.domain.common.shard.datasource;
 
 /**
  * データソースとシャードキーのマッピングを保持するクラス。
- *
  * @author NTT 電電太郎
- *
  */
 public class RoutingDataSourceLookUpKeyHolder {
 
@@ -30,9 +28,7 @@ public class RoutingDataSourceLookUpKeyHolder {
 
     /**
      * データソースキーを設定する。
-     *
-     * @param dataSourceKey
-     *            データソースキー
+     * @param dataSourceKey データソースキー
      */
     public void set(String dataSourceKey) {
         contextHolder.set(dataSourceKey);
@@ -40,7 +36,6 @@ public class RoutingDataSourceLookUpKeyHolder {
 
     /**
      * データソースキーを取得する。
-     *
      * @return データソースキー
      */
     public String get() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import static org.hamcrest.CoreMatchers.either;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@SuppressWarnings("unused")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
@@ -58,17 +57,20 @@ public class AtscTest {
      * しきい値超えアラームの発生を待ち、通知内容を画面に表示する。
      */
     @Test
-    public void testStartListen(){
+    public void testStartListen() {
 
         // テスト実行
-        AtscPage atscPage = open(applicationContextUrl, AtscPage.class).submit();
+        AtscPage atscPage = open(applicationContextUrl, AtscPage.class)
+                .submit();
 
         // アサーション
         assertThat(atscPage.getNewState(), is("ALARM"));
-        assertThat(atscPage.getNewStateReason(), containsString("Threshold Crossed"));
+        assertThat(atscPage.getNewStateReason(), containsString(
+                "Threshold Crossed"));
         assertThat(atscPage.getNamespace(), either(is("local")).or(is("ci")));
         assertThat(atscPage.getMetricName(), is("HeapMemory.Max"));
-        assertThat(atscPage.getDimensions(), containsString("AutoScalingGroupName:atscGroup"));
+        assertThat(atscPage.getDimensions(), containsString(
+                "AutoScalingGroupName:atscGroup"));
 
         // 証跡取得
         screenshot("testStartListen");

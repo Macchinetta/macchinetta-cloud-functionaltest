@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,14 +80,10 @@ public class CacheAbstractionTest extends TestCase {
         assertNull(redisTemplate.opsForValue().get("member/0000000001"));
 
         // @formatter:off
-        given()
-            .contentType("application/json; charset=UTF-8")
-        .when()
-            .get(applicationContextUrl + "api/v1/Member/update/0000000001")
-        .then()
-            .statusCode(200)
-            .body("kanjiFamilyName", equalTo("電電"))
-            .body("kanjiGivenName", equalTo("花子"));
+        given().contentType("application/json; charset=UTF-8").when().get(
+                applicationContextUrl + "api/v1/Member/update/0000000001")
+                .then().statusCode(200).body("kanjiFamilyName", equalTo("電電"))
+                .body("kanjiGivenName", equalTo("花子"));
         // @formatter:on
 
         Member member = (Member) redisTemplate.opsForValue().get(
@@ -112,15 +108,12 @@ public class CacheAbstractionTest extends TestCase {
         requestMember.setAddress("東京都港区港南Ｘ－Ｘ－Ｘ");
 
         // @formatter:off
-        given()
-            .contentType("application/json; charset=UTF-8")
-            .body(objectMapper.writeValueAsString(requestMember))
-        .when()
-            .put(applicationContextUrl + "api/v1/Member/update/0000000001")
-        .then()
-            .statusCode(200)
-            .body("kanjiFamilyName", equalTo("日電"))
-            .body("kanjiGivenName", equalTo("花子"));
+        given().contentType("application/json; charset=UTF-8").body(objectMapper
+                .writeValueAsString(requestMember)).when().put(
+                        applicationContextUrl
+                                + "api/v1/Member/update/0000000001").then()
+                .statusCode(200).body("kanjiFamilyName", equalTo("日電")).body(
+                        "kanjiGivenName", equalTo("花子"));
         // @formatter:on
 
         assertNull(redisTemplate.opsForValue().get("member/0000000001"));

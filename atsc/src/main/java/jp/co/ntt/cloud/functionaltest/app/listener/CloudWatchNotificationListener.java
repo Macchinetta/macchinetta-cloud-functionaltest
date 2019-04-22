@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,8 @@ public class CloudWatchNotificationListener {
     private final Set<String> messageIdSet = new HashSet<>();
 
     @JmsListener(destination = "TESTAutoScaleNotification", concurrency = "5-10")
-    public void receive(String message, @Header(JmsHeaders.MESSAGE_ID) String messageId) {
+    public void receive(String message,
+            @Header(JmsHeaders.MESSAGE_ID) String messageId) {
         synchronized (messageIdSet) {
             if (messageIdSet.contains(messageId)) {
                 return;
@@ -50,7 +51,7 @@ public class CloudWatchNotificationListener {
         try {
             messageBlockingQueue.put(message);
         } catch (InterruptedException e) {
-            // do nothing.
+            Thread.currentThread().interrupt();
         }
     }
 }

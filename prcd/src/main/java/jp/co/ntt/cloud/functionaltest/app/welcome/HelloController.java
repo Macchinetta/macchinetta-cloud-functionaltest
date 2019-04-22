@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,12 +41,11 @@ public class HelloController {
     /**
      * ロガー。
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(HelloController.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            HelloController.class);
 
     @Inject
     PresignedCookieCleaner presignedCookieCleaner;
-
 
     /**
      * Hello画面を表示する。

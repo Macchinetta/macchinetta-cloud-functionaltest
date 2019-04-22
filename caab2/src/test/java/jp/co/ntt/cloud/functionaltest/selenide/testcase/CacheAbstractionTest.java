@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,15 +42,15 @@ import jp.co.ntt.cloud.functionaltest.rest.api.member.MemberResource;
 import junit.framework.TestCase;
 
 /**
- * キャッシュとセッションの格納先Redisを別に設定する場合のテスト。
- * 本テストはdefaultプロファイルでは実行されない。
- * 本テストをローカルPCで実行する場合はスタンドアローンのRedisをキャッシュ用とセッション用の2つ起動させ、maven profileとspring profileにmultiredisを指定する。
+ * キャッシュとセッションの格納先Redisを別に設定する場合のテスト。 本テストはdefaultプロファイルでは実行されない。 本テストをローカルPCで実行する場合はスタンドアローンのRedisをキャッシュ用とセッション用の2つ起動させ、maven
+ * profileとspring profileにmultiredisを指定する。
  * <li>mvn integration-test -P multiredis -Dspring.profiles.active=multiredis</li>
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
-@IfProfileValue(name="spring.profiles.active", values={"multiredis","ci"})
+@IfProfileValue(name = "spring.profiles.active", values = { "multiredis",
+        "ci" })
 public class CacheAbstractionTest extends TestCase {
 
     @Value("${target.applicationContextUrl}")
@@ -78,7 +78,7 @@ public class CacheAbstractionTest extends TestCase {
         redisTemplateForCache.getConnectionFactory().getConnection().flushAll();
         jedisConnectionFactoryForSession.getConnection().flushAll();
     }
-    
+
     @After
     public void tearDown() {
 
@@ -94,23 +94,21 @@ public class CacheAbstractionTest extends TestCase {
     @Test
     public void testCAAB0401001() throws JsonProcessingException {
 
-        assertNull(redisTemplateForCache.opsForValue().get("member/0000000001"));
-        assertThat(jedisConnectionFactoryForSession.getConnection().keys("spring:session:*".getBytes()).size(),is(0));
+        assertNull(redisTemplateForCache.opsForValue().get(
+                "member/0000000001"));
+        assertThat(jedisConnectionFactoryForSession.getConnection().keys(
+                "spring:session:*".getBytes()).size(), is(0));
 
         // @formatter:off
-        given()
-            .contentType("application/json; charset=UTF-8")
-        .when()
-            .get(applicationContextUrl + "api/v1/Member/update/0000000001")
-        .then()
-            .statusCode(200)
-            .body("kanjiFamilyName", equalTo("電電"))
-            .body("kanjiGivenName", equalTo("花子"));
+        given().contentType("application/json; charset=UTF-8").when().get(
+                applicationContextUrl + "api/v1/Member/update/0000000001")
+                .then().statusCode(200).body("kanjiFamilyName", equalTo("電電"))
+                .body("kanjiGivenName", equalTo("花子"));
         // @formatter:on
 
         Member member = (Member) redisTemplateForCache.opsForValue().get(
                 "member/0000000001");
-        
+
         assertThat(member.getKanjiFamilyName(), equalTo("電電"));
         assertThat(member.getKanjiGivenName(), equalTo("花子"));
 
@@ -129,21 +127,20 @@ public class CacheAbstractionTest extends TestCase {
         requestMember.setZipCode2("111");
         requestMember.setAddress("東京都港区港南Ｘ－Ｘ－Ｘ");
 
-        assertThat(jedisConnectionFactoryForSession.getConnection().keys("spring:session:*".getBytes()).size(),is(3));
+        assertThat(jedisConnectionFactoryForSession.getConnection().keys(
+                "spring:session:*".getBytes()).size(), is(3));
 
         // @formatter:off
-        given()
-            .contentType("application/json; charset=UTF-8")
-            .body(objectMapper.writeValueAsString(requestMember))
-        .when()
-            .put(applicationContextUrl + "api/v1/Member/update/0000000001")
-        .then()
-            .statusCode(200)
-            .body("kanjiFamilyName", equalTo("日電"))
-            .body("kanjiGivenName", equalTo("花子"));
+        given().contentType("application/json; charset=UTF-8").body(objectMapper
+                .writeValueAsString(requestMember)).when().put(
+                        applicationContextUrl
+                                + "api/v1/Member/update/0000000001").then()
+                .statusCode(200).body("kanjiFamilyName", equalTo("日電")).body(
+                        "kanjiGivenName", equalTo("花子"));
         // @formatter:on
 
-        assertNull(redisTemplateForCache.opsForValue().get("member/0000000001"));
+        assertNull(redisTemplateForCache.opsForValue().get(
+                "member/0000000001"));
 
     }
 

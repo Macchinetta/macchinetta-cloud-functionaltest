@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,10 +50,10 @@ public class MemberUpdateRestController {
     @RequestMapping(method = RequestMethod.GET, value = "{customerNo}")
     @ResponseStatus(HttpStatus.OK)
     public MemberResource findMember(
-            @PathVariable("customerNo") String customerNo,HttpServletRequest request,
-            HttpServletResponse response) {
-    	
-    	request.getSession();
+            @PathVariable("customerNo") String customerNo,
+            HttpServletRequest request, HttpServletResponse response) {
+
+        request.getSession();
 
         Member member = memberUpdateService.findMember(customerNo);
         if (null == member) {

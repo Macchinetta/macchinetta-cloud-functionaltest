@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,12 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface MessageIdRepository {
 
-
     /**
      * メッセージIDをメッセージIDテーブルに登録する。
      * @param queueName キュー名
      * @param id メッセージID
      * @return 登録件数
      */
-    int register(@Param("queueName") String queueName,
-            @Param("id") String id);
+    int register(@Param("queueName") String queueName, @Param("id") String id);
 
 }

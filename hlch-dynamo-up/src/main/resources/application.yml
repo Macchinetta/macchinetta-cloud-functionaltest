@@ -27,4 +27,4 @@ cloud:
 
 amazon:
   dynamodb:
-    endpoint: https://dynamodb.ap-northeast-1.amazonaws.com
+    region: ap-northeast-1

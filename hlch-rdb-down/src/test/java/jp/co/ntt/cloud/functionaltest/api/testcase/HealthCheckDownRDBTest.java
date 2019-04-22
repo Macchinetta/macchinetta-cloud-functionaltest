@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,8 @@ import io.restassured.RestAssured;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:META-INF/spring/selenideContext.xml" })
+@ContextConfiguration(locations = {
+        "classpath:META-INF/spring/selenideContext.xml" })
 public class HealthCheckDownRDBTest extends TestCase {
 
     /*
@@ -76,11 +77,10 @@ public class HealthCheckDownRDBTest extends TestCase {
     public void downRDBHealthCheckTest() throws IOException {
 
         // @formatter:off
-        given().get("/management/health").then()
-                .body("status", equalTo("DOWN"))
-                .body("diskSpace.status", equalTo("UP"))
-                .body("db.status", equalTo("DOWN"))
-                .body("refreshScope.status", equalTo("UP"));
+        given().get("/management/health").then().body("status", equalTo("DOWN"))
+                .body("diskSpace.status", equalTo("UP")).body("db.status",
+                        equalTo("DOWN")).body("refreshScope.status", equalTo(
+                                "UP"));
         // @formatter:on
     }
 }

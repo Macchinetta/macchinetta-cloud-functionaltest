@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,6 @@ public class Member implements Serializable {
 
     /**
      * 名前を取得する。
-     *
      * @return 名前
      */
     public String getName() {
@@ -78,9 +77,7 @@ public class Member implements Serializable {
 
     /**
      * 名前を設定する。
-     *
-     * @param name
-     *            名前
+     * @param name 名前
      */
     public void setName(String name) {
         this.name = name;
@@ -88,7 +85,6 @@ public class Member implements Serializable {
 
     /**
      * フリガナ名を取得する。
-     *
      * @return フリガナ名。
      */
     public String getFuriName() {
@@ -97,9 +93,7 @@ public class Member implements Serializable {
 
     /**
      * フリガナ名を設定する。
-     *
-     * @param kanaName
-     *            フリガナ名
+     * @param kanaName フリガナ名
      */
     public void setFuriName(String furiName) {
         this.furiName = furiName;
@@ -107,7 +101,6 @@ public class Member implements Serializable {
 
     /**
      * ランダムな数字を取得する。
-     *
      * @return ランダムな数字。
      */
     public Integer getRandomNo() {
@@ -116,9 +109,7 @@ public class Member implements Serializable {
 
     /**
      * ランダムな数字を設定する。
-     *
-     * @param randomNo
-     *            ランダムな数字
+     * @param randomNo ランダムな数字
      */
     public void setRandomNo(Integer randomNo) {
         this.randomNo = randomNo;

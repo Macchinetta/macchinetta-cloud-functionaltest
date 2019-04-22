@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.springframework.context.annotation.ImportResource;
         "classpath*:/META-INF/spring/spring-mvc.xml" })
 @EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class,
         JmxAutoConfiguration.class, WebMvcAutoConfiguration.class,
-        ElastiCacheAutoConfiguration.class})
+        ElastiCacheAutoConfiguration.class })
 public class Bootstrap extends SpringBootServletInitializer {
 
     /**

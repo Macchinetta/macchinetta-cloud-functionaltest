@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
 import com.codeborne.selenide.Configuration;
 import jp.co.ntt.cloud.functionaltest.selenide.page.CaapPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.HelloPage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
 import org.junit.After;
 import org.junit.Before;
@@ -32,7 +31,6 @@ import static com.codeborne.selenide.Selenide.screenshot;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-@SuppressWarnings("unused")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
@@ -56,8 +54,8 @@ public class CaapTest {
         Configuration.reportsFolder = reportPath;
 
         // ログイン
-        open(applicationContextUrl, TopPage.class)
-                .login("0000000002", "aaaaa11111");
+        open(applicationContextUrl, TopPage.class).login("0000000002",
+                "aaaaa11111");
     }
 
     @After
@@ -67,13 +65,13 @@ public class CaapTest {
     }
 
     /*
-     * AWS開発プロジェクトの起動条件として、AutoConfigureが無効化されていること。
-     * すなわち、AmazonElastiCacheがクラスパス上に存在し、DIコンテナ上に存在していないこと。
+     * AWS開発プロジェクトの起動条件として、AutoConfigureが無効化されていること。 すなわち、AmazonElastiCacheがクラスパス上に存在し、DIコンテナ上に存在していないこと。
      */
     @Test
     public void testInspect() {
         // テスト実行
-        final CaapPage page = open(applicationContextUrl, CaapPage.class).inspect();
+        final CaapPage page = open(applicationContextUrl, CaapPage.class)
+                .inspect();
 
         // アサーション
         assertThat(page.isExistFQCNClasspath(), is(true));

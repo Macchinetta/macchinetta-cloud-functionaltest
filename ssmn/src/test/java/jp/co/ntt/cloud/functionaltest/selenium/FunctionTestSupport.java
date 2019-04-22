@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -161,7 +161,7 @@ public class FunctionTestSupport extends ApplicationObjectSupport {
         webDrivers.remove(webDriver);
     }
 
-    protected void bootDefaultWebDriver() {
+    protected synchronized void bootDefaultWebDriver() {
         if (driver == null) {
             driver = newWebDriver();
         }
@@ -180,7 +180,7 @@ public class FunctionTestSupport extends ApplicationObjectSupport {
         return webDriver;
     }
 
-    protected void quitDefaultWebDriver() {
+    protected synchronized void quitDefaultWebDriver() {
         if (driver != null) {
             try {
                 driver.quit();

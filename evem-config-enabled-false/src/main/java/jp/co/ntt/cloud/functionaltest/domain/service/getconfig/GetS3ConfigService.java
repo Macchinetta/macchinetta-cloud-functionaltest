@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import jp.co.ntt.cloud.functionaltest.domain.model.S3ConfigValueDto;
 
 /**
  * S3のバケット名、ファイル一時保存ディレクトリ、ファイル保存ディレクトリを取得するサービスクラス
- *
  * @author NTT 電電太郎
  */
 @Service
@@ -38,7 +37,6 @@ public class GetS3ConfigService {
 
     /**
      * プロパティファイルから{@link @ConfigurationProperties}で取得したS3関連の情報を保持するDtoクラスを取得する。
-     *
      * @return プロパティファイルから取得したS3関連の情報(@ConfigurationPropertiesバージョン)
      */
     public S3ConfigConfigurationPropertiesDto getConfigurationPropertiesDto() {
@@ -47,7 +45,6 @@ public class GetS3ConfigService {
 
     /**
      * プロパティファイルから{@link @Value}で取得したS3関連の情報を保持するDtoクラスを取得する。
-     *
      * @return プロパティファイルから取得したS3関連の情報(@Valueバージョン)
      */
     public S3ConfigValueDto getConfigValueDto() {

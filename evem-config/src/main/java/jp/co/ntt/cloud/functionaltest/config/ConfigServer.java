@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,7 @@ import org.springframework.cloud.config.server.EnableConfigServer;
 
 /**
  * Config Server メインクラス
- *
  * @author NTT 電電太郎
- *
  */
 @SpringBootApplication
 @EnableConfigServer
@@ -34,9 +32,7 @@ public class ConfigServer {
 
     /**
      * メインメソッド
-     * 
-     * @param args
-     *            コマンド引数
+     * @param args コマンド引数
      */
     public static void main(String[] args) {
         SpringApplication.run(ConfigServer.class, args);

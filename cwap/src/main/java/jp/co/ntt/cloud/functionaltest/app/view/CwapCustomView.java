@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import java.util.Map;
 
 /**
  * Bean定義ファイル内のViewResolverの有効化確認用カスタムView。
- *
  * @author NTT 電電太郎
  */
 public class CwapCustomView implements View {
@@ -38,16 +37,13 @@ public class CwapCustomView implements View {
     public void render(Map<String, ?> model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         response.setContentType(getContentType());
-        response.getWriter()
-                .append("<!DOCTYPE html>\n" + "<html>\n" + "<head>\n"
-                        + "<meta charset=\"utf-8\">\n"
-                        + "<title>Custom View</title>\n"
-                        + "<link rel=\"stylesheet\"\n"
-                        + "    href=\"/cwap/resources/app/css/styles.css\">\n"
-                        + "</head>\n" + "\n" + "<body>\n"
-                        + "    <div id=\"wrapper\">\n"
-                        + "        <h1>Custom View</h1>\n" + "\n"
-                        + "        <p><div id=\"viewName\">CustomView</div></p>\n"
-                        + "    </div>\n" + "</body>\n" + "</html>\n");
+        response.getWriter().append("<!DOCTYPE html>\n" + "<html>\n"
+                + "<head>\n" + "<meta charset=\"utf-8\">\n"
+                + "<title>Custom View</title>\n" + "<link rel=\"stylesheet\"\n"
+                + "    href=\"/cwap/resources/app/css/styles.css\">\n"
+                + "</head>\n" + "\n" + "<body>\n" + "    <div id=\"wrapper\">\n"
+                + "        <h1>Custom View</h1>\n" + "\n"
+                + "        <p><div id=\"viewName\">CustomView</div></p>\n"
+                + "    </div>\n" + "</body>\n" + "</html>\n");
     }
 }

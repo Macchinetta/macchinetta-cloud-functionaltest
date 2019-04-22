@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ public class ProductService {
 
     /**
      * 全商品を取得する。
-     *
      * @param categoryId
      * @param pageable
      * @return
@@ -48,11 +47,10 @@ public class ProductService {
 
     /**
      * 指定した商品を取得し、CartItemにして返す。
-     *
      * @param productId
      * @return
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Product findOne(String productId) {
         Product product = productRepository.findOne(productId);
 

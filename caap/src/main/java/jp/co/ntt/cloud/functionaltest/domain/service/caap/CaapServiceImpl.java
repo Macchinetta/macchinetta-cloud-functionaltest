@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,8 @@ import javax.inject.Inject;
 @Service
 public class CaapServiceImpl implements CaapService {
 
-    private static final Logger logger = LoggerFactory.getLogger(CaapServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            CaapServiceImpl.class);
 
     @Inject
     ApplicationContext applicationContext;
@@ -37,10 +38,11 @@ public class CaapServiceImpl implements CaapService {
         final CaapProjectInfo caapProjectInfo = new CaapProjectInfo();
 
         final Class<AmazonElastiCache> elastiCacheClass = AmazonElastiCache.class;
-        caapProjectInfo.setExistFQCNClasspath(
-                isLoadableClass(elastiCacheClass.getCanonicalName()));
+        caapProjectInfo.setExistFQCNClasspath(isLoadableClass(elastiCacheClass
+                .getCanonicalName()));
 
-        caapProjectInfo.setExistInApplicationContext(containsInApplicationContext(elastiCacheClass));
+        caapProjectInfo.setExistInApplicationContext(
+                containsInApplicationContext(elastiCacheClass));
 
         return caapProjectInfo;
     }

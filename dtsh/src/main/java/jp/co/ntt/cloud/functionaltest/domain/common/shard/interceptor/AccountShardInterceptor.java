@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,10 @@ import jp.co.ntt.cloud.functionaltest.domain.common.shard.repository.AccountShar
 
 /**
  * シャーディングのインタセプタ。
- *
  * @author NTT 電電太郎
- *
  */
-public class AccountShardInterceptor implements MethodInterceptor, InitializingBean {
+public class AccountShardInterceptor implements MethodInterceptor,
+                                     InitializingBean {
 
     /**
      * シャードアカウントのリポジトリー。
@@ -43,8 +42,10 @@ public class AccountShardInterceptor implements MethodInterceptor, InitializingB
 
     private RoutingDataSourceLookUpKeyHolder dataSourceLookupKeyHolder;
 
-    public AccountShardInterceptor(AccountShardKeyRepository accountShardKeyRepository,
-            ShardAccountHelper shardAccountHelper, RoutingDataSourceLookUpKeyHolder dataSourceLookupKeyHolder) {
+    public AccountShardInterceptor(
+            AccountShardKeyRepository accountShardKeyRepository,
+            ShardAccountHelper shardAccountHelper,
+            RoutingDataSourceLookUpKeyHolder dataSourceLookupKeyHolder) {
         this.accountShardKeyRepository = accountShardKeyRepository;
         this.shardAccountHelper = shardAccountHelper;
         this.dataSourceLookupKeyHolder = dataSourceLookupKeyHolder;
@@ -52,7 +53,6 @@ public class AccountShardInterceptor implements MethodInterceptor, InitializingB
 
     @Override
     public void afterPropertiesSet() throws Exception {
-
 
     }
 
@@ -66,7 +66,8 @@ public class AccountShardInterceptor implements MethodInterceptor, InitializingB
         String acccount = shardAccountHelper.getAccountValue(invocation);
         if (Objects.nonNull(acccount)) {
             // リポジトリに問い合わせ
-            ShardingAccount shardingAccount = accountShardKeyRepository.findOne(acccount);
+            ShardingAccount shardingAccount = accountShardKeyRepository.findOne(
+                    acccount);
             if (Objects.nonNull(shardingAccount)) {
                 dataSourceKey = shardingAccount.getDataSourceKey();
             }

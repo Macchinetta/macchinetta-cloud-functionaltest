@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,10 +32,9 @@ import org.terasoluna.gfw.web.token.transaction.TransactionTokenRequestDataValue
 /**
  * トランザクショントークンチェック有効化用PostProcessor
  * @author NTT 電電太郎
- *
  */
 public class RequestDataValueProcessorPostProcessor implements
-                                                   BeanDefinitionRegistryPostProcessor {
+                                                    BeanDefinitionRegistryPostProcessor {
 
     /**
      * {@inheritDoc}

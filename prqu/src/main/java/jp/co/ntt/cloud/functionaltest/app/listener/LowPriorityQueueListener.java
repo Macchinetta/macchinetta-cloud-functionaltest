@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,13 +52,11 @@ public class LowPriorityQueueListener {
     @Inject
     MessageService messageService;
 
-
     /**
      * キュー名。
      */
     @Value("${app.priority.queue.low.name}")
     String queueName;
-
 
     /**
      * キューからメッセージを受信し、フロントとの非同期処理を行う
@@ -73,8 +71,7 @@ public class LowPriorityQueueListener {
             // メッセージ処理を実施
             LOGGER.info(LogMessages.I_FT_PQ_L0001.getMessage(queueName,
                     messageId));
-            messageService.processMessage(ftMessage, messageId,
-                    queueName);
+            messageService.processMessage(ftMessage, messageId, queueName);
         } catch (DuplicateReceivingException e) {
             // 2重受信の場合は処理をスキップする。
             return;

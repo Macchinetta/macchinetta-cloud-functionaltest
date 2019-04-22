@@ -29,16 +29,6 @@
     <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
   <filter>
-    <filter-name>sessionEnforcerFilter</filter-name>
-    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>sessionEnforcerFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-    <dispatcher>REQUEST</dispatcher>
-    <dispatcher>ERROR</dispatcher>
-  </filter-mapping>
-  <filter>
     <filter-name>XTrackMDCPutFilter</filter-name>
     <filter-class>org.terasoluna.gfw.web.logging.mdc.XTrackMDCPutFilter</filter-class>
   </filter>

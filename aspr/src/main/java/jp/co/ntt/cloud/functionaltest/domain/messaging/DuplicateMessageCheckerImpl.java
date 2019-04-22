@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,8 @@ import javax.inject.Inject;
 @Component
 public class DuplicateMessageCheckerImpl implements DuplicateMessageChecker {
 
-    private static final Logger logger = LoggerFactory.getLogger(DuplicateMessageCheckerImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            DuplicateMessageCheckerImpl.class);
 
     @Inject
     MessageIdRepository repository;

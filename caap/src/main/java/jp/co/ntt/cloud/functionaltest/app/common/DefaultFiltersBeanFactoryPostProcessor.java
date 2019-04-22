@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,18 +27,18 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 
 /**
- * Bean登録(フィルター)クラス。
- * 本APではフィルターをweb.xmlを使用して登録しており、フィルターの２重登録を防止する為の暫定対応。
+ * Bean登録(フィルター)クラス。 本APではフィルターをweb.xmlを使用して登録しており、フィルターの２重登録を防止する為の暫定対応。
  * @author NTT 電電太郎
  */
 public class DefaultFiltersBeanFactoryPostProcessor implements
-                                                   BeanFactoryPostProcessor {
+                                                    BeanFactoryPostProcessor {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory bf) throws BeansException {
+    public void postProcessBeanFactory(
+            ConfigurableListableBeanFactory bf) throws BeansException {
         DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) bf;
 
         String[] beanNames = beanFactory.getBeanNamesForType(Filter.class);

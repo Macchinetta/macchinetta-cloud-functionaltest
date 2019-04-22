@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * 環境リポジトリ登録クラス
- *
  * @author NTT 電電太郎
- *
  */
 @Configuration
 @EnableConfigurationProperties(ConfigServerProperties.class)
@@ -37,9 +35,7 @@ public class CustomEnvironmentRepositoryConfiguration {
 
     /**
      * spring profile が s3 のときに設定する環境レポジトリ
-     *
      * @author NTT 電電太郎
-     *
      */
     @Configuration
     @Profile("s3")
@@ -50,7 +46,6 @@ public class CustomEnvironmentRepositoryConfiguration {
 
         /**
          * 環境レポジトリをBean登録する。
-         *
          * @return S3 環境レポジトリ
          */
         @Bean

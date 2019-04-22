@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,8 @@ public class ReservationMessageListener {
     private final Set<String> eliminateDuplicationSet = new HashSet<>();
 
     @JmsListener(destination = "TEST_SQS_DELIVERIES", concurrency = "5-10")
-    public void receive(String message, @Header(JmsHeaders.MESSAGE_ID) String messageId) {
+    public void receive(String message,
+            @Header(JmsHeaders.MESSAGE_ID) String messageId) {
         synchronized (eliminateDuplicationSet) {
             if (eliminateDuplicationSet.contains(messageId)) {
                 // duplicated.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,9 +32,11 @@ public class NotificationParseServiceImpl implements NotificationParseService {
         ObjectMapper mapper = new ObjectMapper();
         Notification notification;
         try {
-            notification = mapper.readValue(notificationStr, Notification.class);
+            notification = mapper.readValue(notificationStr,
+                    Notification.class);
             String messageStr = notification.getMessageStr();
-            Notification.Message message = mapper.readValue(messageStr, Notification.Message.class);
+            Notification.Message message = mapper.readValue(messageStr,
+                    Notification.Message.class);
             notification.setMessage(message);
         } catch (IOException e) {
             throw new IllegalArgumentException("JSON mapping failed.", e);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ import static org.hamcrest.Matchers.emptyArray;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(locations = {
-        "classpath:META-INF/spring/selenideContext.xml"  })
+        "classpath:META-INF/spring/selenideContext.xml" })
 public class UploadFileTest extends TestCase {
 
     @Value("${target.applicationContextUrl}")
@@ -66,12 +66,10 @@ public class UploadFileTest extends TestCase {
 
         File uploadFile = new File("src/test/resources/files/Liberty.jpg");
 
-        //@formatter:off
-        String response = given()
-            .multiPart("file", uploadFile)
-        .when()
-            .post(applicationContextUrl + "api/").asString();
-        //@formatter:on
+        // @formatter:off
+        String response = given().multiPart("file", uploadFile).when().post(
+                applicationContextUrl + "api/").asString();
+        // @formatter:on
 
         // ファイルがアップロードされたことの確認
         // 引用符を削除
@@ -104,9 +102,9 @@ public class UploadFileTest extends TestCase {
 
         assertTrue(s3Client.doesObjectExist(bucketName, objectKey));
 
-        //@formatter:off
+        // @formatter:off
         given().delete(applicationContextUrl + "api?objectkey=" + objectKey);
-        //@formatter:on
+        // @formatter:on
 
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey));
     }
@@ -126,9 +124,10 @@ public class UploadFileTest extends TestCase {
         assertTrue(s3Client.doesObjectExist(bucketName, objectKey1));
         assertTrue(s3Client.doesObjectExist(bucketName, objectKey2));
 
-        //@formatter:off
-        given().delete(applicationContextUrl + "api?objectkeys=" + objectKey1 + "&objectkeys=" + objectKey2);
-        //@formatter:on
+        // @formatter:off
+        given().delete(applicationContextUrl + "api?objectkeys=" + objectKey1
+                + "&objectkeys=" + objectKey2);
+        // @formatter:on
 
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey1));
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey2));
@@ -150,9 +149,10 @@ public class UploadFileTest extends TestCase {
         assertTrue(s3Client.doesObjectExist(bucketName, objectKey2));
 
         String pattern = "temp/searchTestFile*";
-        //@formatter:off
-        String[] searchResult = given().get(applicationContextUrl + "api?pattern=" + pattern).as(String[].class);
-        //@formatter:on
+        // @formatter:off
+        String[] searchResult = given().get(applicationContextUrl
+                + "api?pattern=" + pattern).as(String[].class);
+        // @formatter:on
 
         String[] expectedArray = { objectKey1, objectKey2 };
 
@@ -167,7 +167,8 @@ public class UploadFileTest extends TestCase {
         String objectKey1 = "temp/searchTestFile_" + UUID.randomUUID();
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey1));
 
-        int status = given().delete(applicationContextUrl + "api?objectkey=" + objectKey1).getStatusCode();
+        int status = given().delete(applicationContextUrl + "api?objectkey="
+                + objectKey1).getStatusCode();
         assertThat(status, is(200));
     }
 
@@ -179,9 +180,8 @@ public class UploadFileTest extends TestCase {
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey1));
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey2));
 
-        int status = given()
-                .delete(applicationContextUrl + "api?objectkeys=" + objectKey1 + "&objectkeys=" + objectKey2)
-                .getStatusCode();
+        int status = given().delete(applicationContextUrl + "api?objectkeys="
+                + objectKey1 + "&objectkeys=" + objectKey2).getStatusCode();
 
         assertThat(status, is(200));
     }
@@ -200,9 +200,8 @@ public class UploadFileTest extends TestCase {
         assertTrue(s3Client.doesObjectExist(bucketName, objectKey1));
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey2));
 
-        int status = given()
-                .delete(applicationContextUrl + "api?objectkeys=" + objectKey1 + "&objectkeys=" + objectKey2)
-                .getStatusCode();
+        int status = given().delete(applicationContextUrl + "api?objectkeys="
+                + objectKey1 + "&objectkeys=" + objectKey2).getStatusCode();
 
         assertThat(status, is(200));
 
@@ -220,9 +219,10 @@ public class UploadFileTest extends TestCase {
 
         String pattern = "temp/searchTestFile*";
 
-        //@formatter:off
-        String[] searchResult = given().get(applicationContextUrl + "api?pattern=" + pattern).as(String[].class);
-        //@formatter:on
+        // @formatter:off
+        String[] searchResult = given().get(applicationContextUrl
+                + "api?pattern=" + pattern).as(String[].class);
+        // @formatter:on
 
         assertThat(searchResult, is(emptyArray()));
     }

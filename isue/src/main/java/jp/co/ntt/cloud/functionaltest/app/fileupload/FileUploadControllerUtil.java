@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,19 +21,18 @@ import java.util.Map;
 public class FileUploadControllerUtil {
 
     /** 使用バケット名リスト */
-    private static final String[] BUCKET_NAME_ARR = new String[]{
-    		"functionaltest.fileupload.a",
-    		"functionaltest.fileupload.b"
-    };
+    private static final String[] BUCKET_NAME_ARR = new String[] {
+            "functionaltest.fileupload.a", "functionaltest.fileupload.b" };
 
     /**
      * アップロード先バケット名のマップを返却する。
      * @return バケット名マップ
      */
-    public static Map<String,String> createBucketPulldown(boolean enableBlank) {
-        Map<String,String> buckets = new LinkedHashMap<>();
+    public static Map<String, String> createBucketPulldown(
+            boolean enableBlank) {
+        Map<String, String> buckets = new LinkedHashMap<>();
         if (enableBlank) {
-        	buckets.put("", "");
+            buckets.put("", "");
         }
         for (String bucketName : BUCKET_NAME_ARR) {
             buckets.put(bucketName, bucketName);

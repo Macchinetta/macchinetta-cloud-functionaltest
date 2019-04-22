@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,12 +30,10 @@ import jp.co.ntt.cloud.functionaltest.domain.repository.member.MemberRepository;
 
 /**
  * 会員情報サービスクラス。
- *
  * @author NTT 電電太郎
- *
  */
 @Service
-@CacheConfig(cacheNames="members")
+@CacheConfig(cacheNames = "members")
 public class MemberUpdateServiceImpl implements MemberUpdateService {
 
     @Inject
@@ -43,10 +41,7 @@ public class MemberUpdateServiceImpl implements MemberUpdateService {
 
     /*
      * (non-Javadoc)
-     *
-     * @see
-     * jp.co.ntt.cloud.functionaltest.domain.service.member.MemberUpdateService#
-     * findMemberWithHeapCache(java.lang.String)
+     * @see jp.co.ntt.cloud.functionaltest.domain.service.member.MemberUpdateService# findMemberWithHeapCache(java.lang.String)
      */
     @Override
     @Transactional(readOnly = true)
@@ -57,11 +52,8 @@ public class MemberUpdateServiceImpl implements MemberUpdateService {
 
     /*
      * (non-Javadoc)
-     *
-     * @see
-     * jp.co.ntt.cloud.functionaltest.domain.service.member.MemberUpdateService#
-     * updateMemberWithHeapCacheCache(jp.co.ntt.cloud.functionaltest.domain.model.
-     * Member)
+     * @see jp.co.ntt.cloud.functionaltest.domain.service.member.MemberUpdateService#
+     * updateMemberWithHeapCacheCache(jp.co.ntt.cloud.functionaltest.domain.model. Member)
      */
     @Override
     @Transactional
@@ -72,11 +64,8 @@ public class MemberUpdateServiceImpl implements MemberUpdateService {
 
     /*
      * (non-Javadoc)
-     *
-     * @see
-     * jp.co.ntt.cloud.functionaltest.domain.service.member.MemberUpdateService#
-     * findMemberWithRedisCacheCache(jp.co.ntt.cloud.functionaltest.domain.model.
-     * Member)
+     * @see jp.co.ntt.cloud.functionaltest.domain.service.member.MemberUpdateService#
+     * findMemberWithRedisCacheCache(jp.co.ntt.cloud.functionaltest.domain.model. Member)
      */
     @Override
     @Transactional(readOnly = true)
@@ -87,11 +76,8 @@ public class MemberUpdateServiceImpl implements MemberUpdateService {
 
     /*
      * (non-Javadoc)
-     *
-     * @see
-     * jp.co.ntt.cloud.functionaltest.domain.service.member.MemberUpdateService#
-     * updateMemberWithRedisCacheCache(jp.co.ntt.cloud.functionaltest.domain.model.
-     * Member)
+     * @see jp.co.ntt.cloud.functionaltest.domain.service.member.MemberUpdateService#
+     * updateMemberWithRedisCacheCache(jp.co.ntt.cloud.functionaltest.domain.model. Member)
      */
     @Override
     @Transactional
@@ -102,9 +88,7 @@ public class MemberUpdateServiceImpl implements MemberUpdateService {
 
     /**
      * メンバー情報を取得する。
-     *
-     * @param customerNo
-     *            会員番号
+     * @param customerNo 会員番号
      * @return メンバー情報
      */
     private Member findMember(String customerNo) {

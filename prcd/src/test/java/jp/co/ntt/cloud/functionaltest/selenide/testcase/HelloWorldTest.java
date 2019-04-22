@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,6 +63,9 @@ public class HelloWorldTest {
 
     @Before
     public void setUp() {
+        // ブラウザの設定
+        Configuration.browser = "jp.co.ntt.cloud.functionaltest.selenide.testcase.FirefoxWebDriverProvider";
+
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
     }
@@ -77,13 +80,10 @@ public class HelloWorldTest {
     }
 
     /*
-     * PRCD0101_001
-     * 無償会員でログインしてコンテンツが参照できないことを確認する。
-     * またPre-Signed Cookieは発行していないが、リソースパス外のコンテンツも
-     * 参照できないこともあわせて確認する。
+     * PRCD0101_001 無償会員でログインしてコンテンツが参照できないことを確認する。 またPre-Signed Cookieは発行していないが、リソースパス外のコンテンツも 参照できないこともあわせて確認する。
      */
     @Test
-    public void testPRCD0101UPAY() {
+    public void testPRCD0101UPAY() throws InterruptedException {
 
         // 事前準備
         userId = "0000000001";
@@ -98,27 +98,14 @@ public class HelloWorldTest {
         $("h1").shouldHave(text("Hello world!"));
         $$("p").get(1).shouldHave(text("Hanako Denden"));
 
-        try {
-            Thread.sleep(60000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(60000);
+
         // コンテンツの閲覧期限に達したので閲覧可能
         helloWorldPage.reload();
-
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(5000);
 
         helloWorldPage.loadVerificationContent();
-
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(10000);
 
         String cloudfrontVal = $(byId("cloudFrontResult")).val();
         assertThat(cloudfrontVal, isEmptyOrNullString());
@@ -131,13 +118,11 @@ public class HelloWorldTest {
     }
 
     /*
-     * PRCD0101_002and003and004and005
-     * 有償会員でログインして有償コンテンツが参照できることを確認する。
-     * その他に、Pre-Signed Cookieの有効期限きれにより、参照できなくなることと、
+     * PRCD0101_002and003and004and005 有償会員でログインして有償コンテンツが参照できることを確認する。 その他に、Pre-Signed Cookieの有効期限きれにより、参照できなくなることと、
      * リソースパス外のコンテンツは参照できないこともあわせて確認する。
      */
     @Test
-    public void testPRCD0101_PAID() {
+    public void testPRCD0101_PAID() throws InterruptedException {
 
         // 事前準備
         userId = "0000000002";
@@ -152,40 +137,27 @@ public class HelloWorldTest {
         $("h1").shouldHave(text("Hello world!"));
         $$("p").get(1).shouldHave(text("Taro Denden"));
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(5000);
+
         // コンテンツの閲覧期限になっていないので取得できない。
         helloWorldPage.loadVerificationContent();
 
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(10000);
+
         String cloudfrontVal = $(byId("cloudFrontResult")).val();
         assertThat(cloudfrontVal, isEmptyOrNullString());
 
         // 証跡取得
         screenshot("PRCD0101_002");
 
-        try {
-            Thread.sleep(60000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(60000);
+
         // コンテンツの閲覧期限に達したので閲覧可能
         helloWorldPage.reload();
 
         helloWorldPage.loadVerificationContent();
 
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(10000);
 
         cloudfrontVal = $(byId("cloudFrontResult")).val();
         String appVal = $(byId("appResult")).val();
@@ -196,21 +168,14 @@ public class HelloWorldTest {
         // 証跡取得
         screenshot("PRCD0101_003and005");
 
-        try {
-            Thread.sleep(60000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(60000);
 
         // コンテンツの閲覧期限を過ぎたので閲覧不可
         helloWorldPage.reload();
         helloWorldPage.loadVerificationContent();
 
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(10000);
+
         cloudfrontVal = $(byId("cloudFrontResult")).val();
         assertThat(cloudfrontVal, isEmptyOrNullString());
 
@@ -220,11 +185,10 @@ public class HelloWorldTest {
     }
 
     /*
-     * PRCD0101_006
-     * 有償会員でログインしてログアウト後に無償会員でログインした場合にクッキーが消えて コンテンツが参照できないことを確認する。
+     * PRCD0101_006 有償会員でログインしてログアウト後に無償会員でログインした場合にクッキーが消えて コンテンツが参照できないことを確認する。
      */
     @Test
-    public void testPRCD0101LogoutAndLogin() {
+    public void testPRCD0101LogoutAndLogin() throws InterruptedException {
 
         // 事前準備
         userId = "0000000002";
@@ -235,27 +199,16 @@ public class HelloWorldTest {
 
         HelloPage helloWorldPage = topPage.login(userId, password);
 
-        try {
-            Thread.sleep(60000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(60000);
+
         // コンテンツの閲覧期限に達したので閲覧可能
         helloWorldPage.reload();
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(5000);
 
         helloWorldPage.loadVerificationContent();
 
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(10000);
 
         String cloudfrontVal = $(byId("cloudFrontResult")).val();
         String appVal = $(byId("appResult")).val();
@@ -272,27 +225,16 @@ public class HelloWorldTest {
         password = "aaaaa11111";
         topPage = open(applicationContextUrl + "login.jsp", TopPage.class);
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(5000);
 
         helloWorldPage = topPage.login(userId, password);
 
-        try {
-            Thread.sleep(60000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(60000);
+
         // コンテンツの閲覧期限に達したので閲覧可能
         helloWorldPage.reload();
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(5000);
 
         helloWorldPage.loadVerificationContent();
 
@@ -305,11 +247,10 @@ public class HelloWorldTest {
     }
 
     /*
-     * PRCD0101_007
-     * 有償会員でログインしてログアウトせずに無償会員でログインした場合にクッキーが消えて コンテンツが参照できないことを確認する。
+     * PRCD0101_007 有償会員でログインしてログアウトせずに無償会員でログインした場合にクッキーが消えて コンテンツが参照できないことを確認する。
      */
     @Test
-    public void testPRCD0101NotLogoutAndLogin() {
+    public void testPRCD0101NotLogoutAndLogin() throws InterruptedException {
 
         // 事前準備
         userId = "0000000002";
@@ -320,27 +261,16 @@ public class HelloWorldTest {
 
         HelloPage helloWorldPage = topPage.login(userId, password);
 
-        try {
-            Thread.sleep(60000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(60000);
+
         // コンテンツの閲覧期限に達したので閲覧可能
         helloWorldPage.reload();
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(5000);
 
         helloWorldPage.loadVerificationContent();
 
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(10000);
 
         String cloudfrontVal = $(byId("cloudFrontResult")).val();
         String appVal = $(byId("appResult")).val();
@@ -353,27 +283,16 @@ public class HelloWorldTest {
         password = "aaaaa11111";
         topPage = open(applicationContextUrl + "login", TopPage.class);
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(5000);
 
         helloWorldPage = topPage.login(userId, password);
 
-        try {
-            Thread.sleep(60000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(60000);
+
         // コンテンツの閲覧期限に達したので閲覧可能
         helloWorldPage.reload();
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(5000);
 
         helloWorldPage.loadVerificationContent();
 
@@ -386,11 +305,10 @@ public class HelloWorldTest {
     }
 
     /*
-     * PRCD0101_008
-     * 有料会員でログインしてCookieを発行しないコントローラにアクセスしてコンテンツが参照できないことを確認する。
+     * PRCD0101_008 有料会員でログインしてCookieを発行しないコントローラにアクセスしてコンテンツが参照できないことを確認する。
      */
     @Test
-    public void testPRCD0101_008() {
+    public void testPRCD0101_008() throws InterruptedException {
 
         // 事前準備
         userId = "0000000002";
@@ -401,36 +319,21 @@ public class HelloWorldTest {
 
         HelloPage helloWorldPage = topPage.login(userId, password);
 
-        try {
-            Thread.sleep(120000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(120000);
 
         // Cookie発行なし
         helloWorldPage.disableCookie();
 
-        try {
-            Thread.sleep(60000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(60000);
+
         // コンテンツの閲覧期限に達したので閲覧可能
         helloWorldPage.reload();
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(5000);
 
         helloWorldPage.loadVerificationContent();
 
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(10000);
 
         String cloudfrontVal = $(byId("cloudFrontResult")).val();
         assertThat(cloudfrontVal, isEmptyOrNullString());

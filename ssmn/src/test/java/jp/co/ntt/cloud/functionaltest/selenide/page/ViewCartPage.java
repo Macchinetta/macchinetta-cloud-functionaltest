@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,11 +56,8 @@ public class ViewCartPage {
 
     /**
      * 注文の個数を変更する
-     *
-     * @param index
-     *            カートに表示されているアイテムのインデックス(0からスタートする)。
-     * @param quantity
-     *            個数
+     * @param index カートに表示されているアイテムのインデックス(0からスタートする)。
+     * @param quantity 個数
      */
     public void changeQuantity(Integer index, Integer quantity) {
         $(byId("itemQuantity" + index)).setValue(quantity.toString());

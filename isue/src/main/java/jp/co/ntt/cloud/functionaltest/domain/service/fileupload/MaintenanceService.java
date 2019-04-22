@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,22 +23,22 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface MaintenanceService {
 
-	/**
-	 * S3へのファイルアップロードを実行する。
-	 * 
-	 * @param uploadUser アップロードユーザ（ファイル命名用）
-	 * @param bucketName バケット名
-	 * @param uploadFile アップロードファイル
-	 */
-	public void doUpload(String uploadUser, String bucketName, MultipartFile uploadFile);
+    /**
+     * S3へのファイルアップロードを実行する。
+     * @param uploadUser アップロードユーザ（ファイル命名用）
+     * @param bucketName バケット名
+     * @param uploadFile アップロードファイル
+     */
+    public void doUpload(String uploadUser, String bucketName,
+            MultipartFile uploadFile);
 
-	/**
-	 * S3からのファイル削除を実行する。
-	 * 
-	 * @param bucketName バケット名
-	 * @param objectKey オブジェクトキー
-	 * @param uploadUser アップロードユーザ
-	 */
-	public void doDelete(String bucketName, String objectKey, String uploadUser);
+    /**
+     * S3からのファイル削除を実行する。
+     * @param bucketName バケット名
+     * @param objectKey オブジェクトキー
+     * @param uploadUser アップロードユーザ
+     */
+    public void doDelete(String bucketName, String objectKey,
+            String uploadUser);
 
 }

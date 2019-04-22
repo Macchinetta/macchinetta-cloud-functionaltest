@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,20 +133,19 @@ public class DirectUploadHelper implements InitializingBean {
         String iso8601dateTime = nowUTC.toString("yyyyMMdd'T'HHmmss'Z'");
 
         // POSTポリシーの作成
-        // @formatter:off 
+        // @formatter:off
         PostPolicy postPolicy = new PostPolicy();
-        postPolicy.setExpiration(nowUTC.plusSeconds(durationSeconds).toString());
-        postPolicy.setConditions(new String[][]{
-            { "eq", "$bucket", bucketName },
-            { "eq", "$key", objectKey },
-            { "eq", "$acl", acl },
-            { "eq", "$x-amz-meta-filename", fileName },
-            { "eq", "$x-amz-credential", credentialString },
-            { "eq", "$x-amz-security-token", securityToken },
-            { "eq", "$x-amz-algorithm", algorithm },
-            { "eq", "$x-amz-date", iso8601dateTime },
-            { "content-length-range", "0", fileSizeLimit }
-        });
+        postPolicy.setExpiration(nowUTC.plusSeconds(durationSeconds)
+                .toString());
+        postPolicy.setConditions(new String[][] { { "eq", "$bucket",
+                bucketName }, { "eq", "$key", objectKey }, { "eq", "$acl",
+                        acl }, { "eq", "$x-amz-meta-filename", fileName }, {
+                                "eq", "$x-amz-credential", credentialString }, {
+                                        "eq", "$x-amz-security-token",
+                                        securityToken }, { "eq",
+                                                "$x-amz-algorithm", algorithm },
+                { "eq", "$x-amz-date", iso8601dateTime }, {
+                        "content-length-range", "0", fileSizeLimit } });
         // @formatter:on
 
         // JavaオブジェクトからJSONドキュメントへ変換する
@@ -199,9 +198,8 @@ public class DirectUploadHelper implements InitializingBean {
         // 一時的セキュリティ認証情報に適用するIAMポリシーを指定する。
         // アップロード対象のオブジェクトにのみPutObjectリクエストが可能なユーザとなる。
         // @formatter:off
-        Statement statement = new Statement(Statement.Effect.Allow)
-                .withActions(S3Actions.PutObject)
-                .withResources(new Resource(resourceArn));
+        Statement statement = new Statement(Statement.Effect.Allow).withActions(
+                S3Actions.PutObject).withResources(new Resource(resourceArn));
         // @formatter:on
 
         String iamPolicy = new Policy().withStatements(statement).toJson();
@@ -212,10 +210,8 @@ public class DirectUploadHelper implements InitializingBean {
         // STSに対してAssumeRoleリクエストを発行し、一時的セキュリティ認証情報を取得する
         // @formatter:off
         AssumeRoleRequest assumeRoleRequest = new AssumeRoleRequest()
-                .withRoleArn(roleArn)
-                .withDurationSeconds(minDurationSeconds)
-                .withRoleSessionName(roleSessionName)
-                .withPolicy(iamPolicy);
+                .withRoleArn(roleArn).withDurationSeconds(minDurationSeconds)
+                .withRoleSessionName(roleSessionName).withPolicy(iamPolicy);
         // @formatter:on
 
         return AWSSecurityTokenServiceClientBuilder.defaultClient().assumeRole(

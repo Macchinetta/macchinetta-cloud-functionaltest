@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,7 @@ import jp.co.ntt.cloud.functionaltest.domain.model.Reservation;
 
 /**
  * 問い合わせ用の{@link Reservation}を作成するファクトリ
- * 
  * @author NTT 電電太郎
- *
  */
 public class ReservationFactory {
     public static Reservation create(ReservationForm reservationForm) {

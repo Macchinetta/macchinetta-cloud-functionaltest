@@ -11,7 +11,7 @@ cloud:
 
 # RDB(ローカルPC上のPostgreSQLを使用)
 rds:
-  dbInstanceIdentifier: ci-functionaltest
+  dbInstanceIdentifier: ci-functionaltest-1-0-x
 
 # connection pool for RDB
 cp:

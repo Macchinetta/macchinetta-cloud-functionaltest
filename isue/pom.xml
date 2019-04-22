@@ -6,7 +6,7 @@
     <parent>
         <groupId>jp.co.ntt.cloud.functionaltest</groupId>
         <artifactId>macchinetta-cloud-functionaltest</artifactId>
-        <version>1.0.1.RELEASE</version>
+        <version>1.0.2.RELEASE</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -116,7 +116,6 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>amazon-sqs-java-messaging-lib</artifactId>
-            <version>1.0.1</version>
         </dependency>
         
 		<dependency>

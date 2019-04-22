@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import jp.co.ntt.cloud.functionaltest.domain.model.RdbConfigDto;
 
 /**
  * RDB関連の情報を取得するサービスクラス
- *
  * @author NTT 電電太郎
  */
 @Service
@@ -34,7 +33,6 @@ public class GetRdbConfigService {
 
     /**
      * RDB関連の情報を取得する。
-     * 
      * @return RDB関連の情報
      */
     public RdbConfigDto getConfig() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,10 @@ import java.util.List;
 
 public interface ReservationService {
     void sendMessage(Reservation reservation);
+
     Reservation receiveMessageSync();
+
     List<String> browseMessageIds(final String queueName, boolean delete);
+
     void deleteAllMessages(String queueName);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,19 +49,24 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public Reservation receiveMessageSync() {
-        return jmsMessagingTemplate.receiveAndConvert("reservation-queue", Reservation.class);
+        return jmsMessagingTemplate.receiveAndConvert("reservation-queue",
+                Reservation.class);
     }
 
     @Override
-    public List<String> browseMessageIds(final String queueName, boolean delete) {
+    public List<String> browseMessageIds(final String queueName,
+            boolean delete) {
         final AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
         final List<String> messages = new ArrayList<>();
-        final ReceiveMessageResult receiveMessageResult = sqs.receiveMessage(queueName);
+        final ReceiveMessageResult receiveMessageResult = sqs.receiveMessage(
+                queueName);
         final String queueUrl = sqs.getQueueUrl(queueName).getQueueUrl();
-        for (com.amazonaws.services.sqs.model.Message message : receiveMessageResult.getMessages()) {
+        for (com.amazonaws.services.sqs.model.Message message : receiveMessageResult
+                .getMessages()) {
             messages.add(message.getMessageId());
             if (delete) {
-                sqs.deleteMessage(new DeleteMessageRequest(queueUrl, message.getReceiptHandle()));
+                sqs.deleteMessage(new DeleteMessageRequest(queueUrl, message
+                        .getReceiptHandle()));
             }
         }
         if (!delete) {
@@ -71,7 +76,7 @@ public class ReservationServiceImpl implements ReservationService {
             try {
                 TimeUnit.MILLISECONDS.sleep(visibilityTimeout);
             } catch (InterruptedException e) {
-                // do nothing.
+                Thread.currentThread().interrupt();
             }
         }
         return messages;
@@ -85,4 +90,3 @@ public class ReservationServiceImpl implements ReservationService {
         } while (!messages.isEmpty());
     }
 }
-

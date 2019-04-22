@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,35 +21,32 @@ import jp.co.ntt.cloud.functionaltest.domain.model.FileMetaData;
 
 /**
  * ファイルアップロードサービスインタフェース。
- * 
  * @author NTT 電電太郎
  */
 public interface SearchSharedService {
 
-	/**
-	 * 全ファイル検索を実行する。
-	 */
-	public List<FileMetaData> doSearch();
+    /**
+     * 全ファイル検索を実行する。
+     */
+    public List<FileMetaData> doSearch();
 
-	/**
-	 * PKによるファイル検索を実行する。
-	 * 
-	 * @param objectKey オブジェクトキー
-	 */
-	public FileMetaData doPkSearch(String objectKey);
+    /**
+     * PKによるファイル検索を実行する。
+     * @param objectKey オブジェクトキー
+     */
+    public FileMetaData doPkSearch(String objectKey);
 
-	/**
-	 * グローバルセカンダリインデックス（アップロードユーザ,アップロード日付指定）によるファイル検索を実行する。
-	 * 
-	 * @param uploadUser アップロードユーザ
-	 * @param uploadDate アップロード日付
-	 */
-	public List<FileMetaData> doUserIdIndexSearch(String uploadUser, String uploadDate);
+    /**
+     * グローバルセカンダリインデックス（アップロードユーザ,アップロード日付指定）によるファイル検索を実行する。
+     * @param uploadUser アップロードユーザ
+     * @param uploadDate アップロード日付
+     */
+    public List<FileMetaData> doUserIdIndexSearch(String uploadUser,
+            String uploadDate);
 
-	/**
-	 * グローバルセカンダリインデックス（バケット名指定）によるファイル検索を実行する。
-	 * 
-	 * @param bucketName バケット名
-	 */
-	public List<FileMetaData> doBucketNameIndexSearch(String bucketName);
+    /**
+     * グローバルセカンダリインデックス（バケット名指定）によるファイル検索を実行する。
+     * @param bucketName バケット名
+     */
+    public List<FileMetaData> doBucketNameIndexSearch(String bucketName);
 }

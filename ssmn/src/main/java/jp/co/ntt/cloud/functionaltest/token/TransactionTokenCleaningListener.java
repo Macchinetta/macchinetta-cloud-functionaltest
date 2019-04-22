@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,8 @@ import jp.co.ntt.cloud.functionaltest.domain.repository.token.StoredTransactionT
 
 public class TransactionTokenCleaningListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(TransactionTokenCleaningListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            TransactionTokenCleaningListener.class);
 
     @Inject
     StoredTransactionTokenRepository tokenRepository;
@@ -39,9 +40,13 @@ public class TransactionTokenCleaningListener {
         String sessionId = event.getSession().getId();
         try {
             tokenRepository.deleteBySessionId(sessionId);
-            logger.info("Transaction tokens created by sessionId={} have been cleaned.", sessionId);
+            logger.info(
+                    "Transaction tokens created by sessionId={} have been cleaned.",
+                    sessionId);
         } catch (DataAccessException e) {
-            logger.warn("Failed to clean abandoned transaction tokens created by sessionId={}.", sessionId, e);
+            logger.warn(
+                    "Failed to clean abandoned transaction tokens created by sessionId={}.",
+                    sessionId, e);
         }
     }
 }

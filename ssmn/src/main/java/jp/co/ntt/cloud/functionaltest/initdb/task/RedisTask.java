@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,9 +115,8 @@ public class RedisTask extends Task {
                 && StringUtils.isEmpty(redisClusterNodes)) {
             sb.append("Redisホストと").append(" Redisポート").append(" または、").append(
                     " RedisClusterNodes");
-        } else if (!StringUtils.isEmpty(redisHost)
-                && StringUtils.isEmpty(redisPort)
-                && StringUtils.isEmpty(redisClusterNodes)) {
+        } else if (!StringUtils.isEmpty(redisHost) && StringUtils.isEmpty(
+                redisPort) && StringUtils.isEmpty(redisClusterNodes)) {
             sb.append(" Redisポート");
         }
         if (sb.length() > 0) {

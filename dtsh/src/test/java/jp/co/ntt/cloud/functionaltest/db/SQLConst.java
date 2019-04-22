@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,7 @@ package jp.co.ntt.cloud.functionaltest.db;
 
 /**
  * テスト用SQL文
- *
  * @author NTT 電電太郎
- *
  */
 public class SQLConst {
 
@@ -28,7 +26,9 @@ public class SQLConst {
      */
     public static class MEMBER {
         public static final String TRUNCATE = "TRUNCATE TABLE member";
+
         public static final String SELECT_ALL = "SELECT customer_no, name, furi_name FROM member ORDER BY customer_no ASC";
+
         public static final String SELECT_FIND_ONE = "SELECT customer_no, name, furi_name FROM member WHERE customer_no=?";
     }
 
@@ -37,7 +37,9 @@ public class SQLConst {
      */
     public static class RESERVATION {
         public static final String TRUNCATE = "TRUNCATE TABLE reservation";
+
         public static final String SELECT_ALL = "SELECT reserve_no, reserve_date, total_fare, rep_customer_no, rep_name, rep_furi_name FROM reservation ORDER BY reserve_no ASC";
+
         public static final String SELECT_FIND_ONE = "SELECT reserve_no, reserve_date, total_fare, rep_customer_no, rep_name, rep_furi_name FROM reservation WHERE reserve_no = ?";
     }
 }
