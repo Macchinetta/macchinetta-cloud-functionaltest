@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.joda.time.DateTime;
 
 /**
  * Joda-Time用のTypeHandlerの実装
- * 
  * @author NTT 電電太郎
  */
 public class DateTimeTypeHandler extends BaseTypeHandler<DateTime> {
@@ -37,8 +36,8 @@ public class DateTimeTypeHandler extends BaseTypeHandler<DateTime> {
      * DateTimeをTimestampに変換し、PreparedStatementに設定する処理
      */
     @Override
-    public void setNonNullParameter(PreparedStatement ps, int i, DateTime parameter, JdbcType jdbcType)
-            throws SQLException {
+    public void setNonNullParameter(PreparedStatement ps, int i,
+            DateTime parameter, JdbcType jdbcType) throws SQLException {
         ps.setTimestamp(i, new Timestamp(parameter.getMillis()));
     }
 
@@ -46,7 +45,8 @@ public class DateTimeTypeHandler extends BaseTypeHandler<DateTime> {
      * ResultSet又はCallableStatementから取得したTimestampをDateTimeに変換し、返り値として返却する。
      */
     @Override
-    public DateTime getNullableResult(ResultSet rs, String columnName) throws SQLException {
+    public DateTime getNullableResult(ResultSet rs,
+            String columnName) throws SQLException {
         return toDateTime(rs.getTimestamp(columnName));
     }
 
@@ -54,7 +54,8 @@ public class DateTimeTypeHandler extends BaseTypeHandler<DateTime> {
      * ResultSet又はCallableStatementから取得したTimestampをDateTimeに変換し、返り値として返却する。
      */
     @Override
-    public DateTime getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
+    public DateTime getNullableResult(ResultSet rs,
+            int columnIndex) throws SQLException {
         return toDateTime(rs.getTimestamp(columnIndex));
     }
 
@@ -62,13 +63,13 @@ public class DateTimeTypeHandler extends BaseTypeHandler<DateTime> {
      * ResultSet又はCallableStatementから取得したTimestampをDateTimeに変換し、返り値として返却する。
      */
     @Override
-    public DateTime getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
+    public DateTime getNullableResult(CallableStatement cs,
+            int columnIndex) throws SQLException {
         return toDateTime(cs.getTimestamp(columnIndex));
     }
 
     /**
      * nullを許可するカラムの場合、Timestampがnullになる可能性があるため、 nullチェックを行ってからDateTimeに変換するメソッド。
-     *
      * @param timestamp
      * @return
      */

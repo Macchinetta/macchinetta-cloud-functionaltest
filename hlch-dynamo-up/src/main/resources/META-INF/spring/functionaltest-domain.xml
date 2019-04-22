@@ -29,7 +29,7 @@
     
     <!-- DynamoDB 作成 -->
     <bean id="amazonDynamoDB" class="jp.co.ntt.cloud.functionaltest.app.common.DynamoDBClientFactory" factory-method="create">
-        <constructor-arg index="0" value="${amazon.dynamodb.endpoint}"/>
+        <constructor-arg index="0" value="${amazon.dynamodb.region}"/>
     </bean>
 
 </beans>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,16 +29,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Spring BootとBean定義ファイル内の多重定義抑止確認用のサーブレットフィルタ。
- *
  * @author NTT 電電太郎
  */
 public class DuplicateCheckFilter implements Filter {
 
-    public static final String COUNTER_KEY =
-            DuplicateCheckFilter.class.getName() + ".COUNTER_KEY";
+    public static final String COUNTER_KEY = DuplicateCheckFilter.class
+            .getName() + ".COUNTER_KEY";
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(DuplicateCheckFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            DuplicateCheckFilter.class);
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -48,8 +47,8 @@ public class DuplicateCheckFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
-        AtomicInteger counter = (AtomicInteger) request
-                .getAttribute(COUNTER_KEY);
+        AtomicInteger counter = (AtomicInteger) request.getAttribute(
+                COUNTER_KEY);
         if (counter == null) {
             counter = new AtomicInteger(0);
             request.setAttribute(COUNTER_KEY, counter);

@@ -19,7 +19,7 @@
 
 ### S3の`evem`フォルダ直下に`applocation.yml`、`applocation-default.yml`、`applocation-ci.yml`ファイルの内容
 
-`applocation-default.yml`
+- `applocation-default.yml`
 ```
 # 環境依存しないフレームワークの設定値
 
@@ -33,7 +33,7 @@ cloud:
       auto: false
 ```
 
-`applocation-default.yml`
+- `applocation-default.yml`
 ```
 # for development environment on local PC
 cloud:
@@ -79,7 +79,7 @@ logging:
 ```
 
 
-`applocation-ci.yml`
+- `applocation-ci.yml`
 ```
 # for CI environment on EC2
     # AWS common
@@ -90,7 +90,7 @@ cloud:
 
 # RDB(RDSを使用)
 database:
-  url: jdbc:postgresql://ci-functionaltest.xxxx.ap-northeast-1.rds.amazonaws.com:5432/functionaltest
+  url: jdbc:postgresql://ci-functionaltest-1-0-x.xxxxxx.ap-northeast-1.rds.amazonaws.com:5432/functionaltest
   username: postgres
   password: postgres
   driverClassName: org.postgresql.Driver

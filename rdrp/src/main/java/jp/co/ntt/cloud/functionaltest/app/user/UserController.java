@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import jp.co.ntt.cloud.functionaltest.domain.model.UserInfo;
 import jp.co.ntt.cloud.functionaltest.domain.service.userregister.UserRegisterService;
 import jp.co.ntt.cloud.functionaltest.domain.service.usersearch.UserSearchService;
 
-
 @Controller
 public class UserController {
 
@@ -48,7 +47,7 @@ public class UserController {
 
     @RequestMapping(value = "/")
     public String userlist(Model model) {
-        
+
         List<User> userList = userSearchService.userSearchAll();
 
         List<UserInfo> userInfoList = new ArrayList<UserInfo>();
@@ -63,7 +62,7 @@ public class UserController {
 
         return "user/userManagement";
     }
-    
+
     @RequestMapping(value = "register")
     public String userRegister(UserForm form) {
         UserInfo userInfo = new UserInfo();

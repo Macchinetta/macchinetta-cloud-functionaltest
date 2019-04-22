@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuc
  * @author NTT 電電太郎
  */
 public class PresignedCookieClearingLogoutSuccessHandler extends
-                                          SimpleUrlLogoutSuccessHandler {
+                                                         SimpleUrlLogoutSuccessHandler {
 
     @Inject
     PresignedCookieCleaner presignedCookieCleaner;
@@ -45,7 +45,5 @@ public class PresignedCookieClearingLogoutSuccessHandler extends
         super.onLogoutSuccess(request, response, authentication);
 
     }
-
-
 
 }

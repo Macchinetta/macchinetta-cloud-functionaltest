@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,15 +26,25 @@ import java.util.Date;
 public class Notification {
 
     private String type;
+
     private String messageId;
+
     private String topicArn;
+
     private String subject;
+
     private String messageStr;
+
     private Message message;
+
     private Date timestamp;
+
     private long signatureVersion;
+
     private String signature;
+
     private String signingCertURL;
+
     private String unsubscribeURL;
 
     @JsonProperty("Type")
@@ -137,13 +147,21 @@ public class Notification {
 
     public static class Message {
         private String alarmName;
+
         private String alarmDescription;
+
         private String awsAccountId;
+
         private String newStateValue;
+
         private String newStateReason;
+
         private Date stateChangeTime;
+
         private String region;
+
         private String oldStateValue;
+
         private Trigger trigger;
 
         @JsonProperty("AlarmName")
@@ -230,16 +248,27 @@ public class Notification {
         public static class Trigger {
 
             private String metricName;
+
             private String namespace;
+
             private String statisticType;
+
             private String statistic;
+
             private String unit;
+
             private Dimension[] dimensions;
+
             private int period;
+
             private int evaluationPeriods;
+
             private String ComparisonOperator;
+
             private double threshold;
+
             private String treatMissingData;
+
             private String evaluateLowSampleCountPercentile;
 
             @JsonProperty("MetricName")
@@ -354,6 +383,7 @@ public class Notification {
             public static class Dimension {
 
                 private String name;
+
                 private String value;
 
                 @Override
@@ -368,6 +398,9 @@ public class Notification {
 
                 @Override
                 public boolean equals(Object obj) {
+                    if (obj == null) {
+                        return false;
+                    }
                     return this.hashCode() == obj.hashCode();
                 }
 
@@ -388,11 +421,15 @@ public class Notification {
                 }
 
                 public static class DimensionBuilder {
-                    private DimensionBuilder() {}
+                    private DimensionBuilder() {
+                    }
+
                     private final Dimension dimension = new Dimension();
+
                     public static DimensionBuilder builder() {
                         return new DimensionBuilder();
                     }
+
                     public DimensionBuilder name(String name) {
                         dimension.name = name;
                         return this;

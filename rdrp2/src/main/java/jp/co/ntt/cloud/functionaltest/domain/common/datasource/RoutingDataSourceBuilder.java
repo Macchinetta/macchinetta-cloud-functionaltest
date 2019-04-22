@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,8 +90,8 @@ public class RoutingDataSourceBuilder implements InitializingBean {
             CommonDatabaseProperties commonDatabaseProperties,
             DataSourceFactory dataSourceFactory) {
         if (databaseProperties.getDataSources().isEmpty()) {
-            throw new SystemException(LogMessages.E_AR_A0_L9005.getCode(), LogMessages.E_AR_A0_L9005
-                    .getMessage());
+            throw new SystemException(LogMessages.E_AR_A0_L9005
+                    .getCode(), LogMessages.E_AR_A0_L9005.getMessage());
         }
         this.databaseProperties = databaseProperties;
         this.commonDatabaseProperties = commonDatabaseProperties;
@@ -109,8 +109,8 @@ public class RoutingDataSourceBuilder implements InitializingBean {
         boolean defaultTargetDataSourceFlg = false;
         for (Map<String, String> dataSourceProperties : dataSources) {
             // データソースキー
-            String sourceKey = dataSourceProperties
-                    .get(ShardKeyResolver.SCHEMA_KEY_NAME);
+            String sourceKey = dataSourceProperties.get(
+                    ShardKeyResolver.SCHEMA_KEY_NAME);
             try {
                 // データソースを作成
                 javax.sql.DataSource source = dataSourceFactory.create(
@@ -119,23 +119,24 @@ public class RoutingDataSourceBuilder implements InitializingBean {
                 factory.registerSingleton(sourceKey, source);
             } catch (IllegalStateException e) {
                 // データソースキーの重複
-                throw new SystemException(LogMessages.E_AR_A0_L9007.getCode(), LogMessages.E_AR_A0_L9007
-                        .getMessage(sourceKey), e);
+                throw new SystemException(LogMessages.E_AR_A0_L9007
+                        .getCode(), LogMessages.E_AR_A0_L9007.getMessage(
+                                sourceKey), e);
             } catch (Exception e) {
                 // 予期せぬ例外
-                throw new SystemException(LogMessages.E_AR_A0_L9008.getCode(), LogMessages.E_AR_A0_L9008
-                        .getMessage(), e);
+                throw new SystemException(LogMessages.E_AR_A0_L9008
+                        .getCode(), LogMessages.E_AR_A0_L9008.getMessage(), e);
             }
 
             if (databaseDefaultSchemaName.equals(sourceKey)) {
                 // 非シャードのデータソース
-                this.defaultTargetDataSource = applicationContext
-                        .getBean(sourceKey);
+                this.defaultTargetDataSource = applicationContext.getBean(
+                        sourceKey);
                 defaultTargetDataSourceFlg = true;
             } else {
                 // シャードのデータソース
-                targetDataSources.put(sourceKey, applicationContext
-                        .getBean(sourceKey));
+                targetDataSources.put(sourceKey, applicationContext.getBean(
+                        sourceKey));
             }
             this.targetDataSources = targetDataSources;
         }

@@ -62,17 +62,6 @@
         class="org.terasoluna.gfw.web.exception.ExceptionLoggingFilter" >
         <property name="exceptionLogger" ref="exceptionLogger" />
     </bean>
-    
-   <!-- FIXME tilesのincludeを使用した際にセッションがうまくセットできない問題への暫定対処( issue : https://github.com/spring-projects/spring-session/issues/571 ) -->
-    <bean id="sessionEnforcerFilter" class="jp.co.ntt.cloud.functionaltest.app.common.session.SessionEnforcerFilter">
-        <property name="excludeRequestMatcher" ref="excludeEnforceSessionRequestMatcher"/>
-    </bean>
-    
-     <!-- SessionEnforcerFilter を適用しないパス設定 -->
-    <bean id="excludeEnforceSessionRequestMatcher"
-        class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
-        <constructor-arg value="/management/**"/>
-    </bean>
 
     <!-- Listener. -->
     <bean id="transactionTokenCleaningListener" class="jp.co.ntt.cloud.functionaltest.token.TransactionTokenCleaningListener" />

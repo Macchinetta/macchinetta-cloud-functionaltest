@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,6 @@ public class Reservation implements Serializable {
      */
     private Member repMember;
 
-
     /**
      * 予約番号を取得する。
      * @return 予約番号
@@ -79,9 +78,7 @@ public class Reservation implements Serializable {
 
     /**
      * 予約日付を設定する。
-     *
-     * @param dateTime
-     *            予約日付
+     * @param dateTime 予約日付
      */
     public void setReserveDate(DateTime dateTime) {
         this.reserveDate = dateTime;
@@ -105,7 +102,6 @@ public class Reservation implements Serializable {
 
     /**
      * 予約代表者の会員情報を取得する。
-     *
      * @return 予約代表者の会員情報
      */
     public Member getRepMember() {
@@ -114,9 +110,7 @@ public class Reservation implements Serializable {
 
     /**
      * 予約代表者の会員情報を設定する。
-     *
-     * @param repMember
-     *            予約代表者の会員情報
+     * @param repMember 予約代表者の会員情報
      */
     public void setRepMember(Member repMember) {
         this.repMember = repMember;

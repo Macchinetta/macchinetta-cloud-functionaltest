@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import jp.co.ntt.cloud.functionaltest.domain.service.reservation.Reservation2Arg
 
 /**
  * 予約情報コントローラ。
- *
  * @author NTT 電電太郎
  */
 @Controller
@@ -48,14 +47,12 @@ public class Reservation2ArgController {
 
     /**
      * 会員登録を実施し、Hello画面を表示する。
-     *
-     * @param locale
-     *            地域情報を保持するクラス
-     * @param model
-     *            出力情報を保持するクラス
+     * @param locale 地域情報を保持するクラス
+     * @param model 出力情報を保持するクラス
      * @return View論理名
      */
-    @RequestMapping(value = "register", method = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "register", method = { RequestMethod.GET,
+            RequestMethod.POST })
     public String register() {
         new Member();
         Reservation reservation = new Reservation();
@@ -64,43 +61,47 @@ public class Reservation2ArgController {
         reservation.setReserveNo("9999999990");
         reservation.setTotalFare(10000);
         reservation.setRepMember(memberService.findOne("0000000000"));
-        reservation2ArgService.register(reservation.getRepMember().getCustomerNo(), reservation);
+        reservation2ArgService.register(reservation.getRepMember()
+                .getCustomerNo(), reservation);
 
         reservation.setReserveDate(new DateTime(2010, 1, 1, 12, 0));
         reservation.setReserveNo("9999999991");
         reservation.setTotalFare(20000);
         reservation.setRepMember(memberService.findOne("0000000001"));
-        reservation2ArgService.register(reservation.getRepMember().getCustomerNo(), reservation);
+        reservation2ArgService.register(reservation.getRepMember()
+                .getCustomerNo(), reservation);
 
         reservation.setReserveDate(new DateTime(2020, 1, 1, 12, 0));
         reservation.setReserveNo("9999999992");
         reservation.setTotalFare(30000);
         reservation.setRepMember(memberService.findOne("0000000002"));
-        reservation2ArgService.register(reservation.getRepMember().getCustomerNo(), reservation);
+        reservation2ArgService.register(reservation.getRepMember()
+                .getCustomerNo(), reservation);
 
         reservation.setReserveDate(new DateTime(2030, 1, 1, 12, 0));
         reservation.setReserveNo("9999999993");
         reservation.setTotalFare(40000);
         reservation.setRepMember(memberService.findOne("0000000003"));
-        reservation2ArgService.register(reservation.getRepMember().getCustomerNo(), reservation);
+        reservation2ArgService.register(reservation.getRepMember()
+                .getCustomerNo(), reservation);
 
         return "redirect:/hello";
     }
 
     /**
      * 予約情報1件読み込み
-     *
      * @return
      */
-    @RequestMapping(value = "get", method = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "get", method = { RequestMethod.GET,
+            RequestMethod.POST })
     public String read(Model model, RedirectAttributes redirectAttrs,
             @Valid ReservationForm reservationForm, BindingResult result) {
         if (result.hasErrors()) {
             return "redirect:/";
         }
 
-        Reservation reservation = reservation2ArgService.findOne(reservationForm.getCustomerNo(),
-                reservationForm.getReserveNo());
+        Reservation reservation = reservation2ArgService.findOne(reservationForm
+                .getCustomerNo(), reservationForm.getReserveNo());
 
         redirectAttrs.addFlashAttribute("reservation", reservation);
 
@@ -110,17 +111,19 @@ public class Reservation2ArgController {
     /**
      * 予約情報更新。旅行代金を0にする。
      */
-    @RequestMapping(value = "update", method = { RequestMethod.GET, RequestMethod.POST })
-    public String update(RedirectAttributes redirectAttrs, @Valid ReservationForm reservationForm,
-            BindingResult result) {
-        Reservation reservation = reservation2ArgService.findOne(reservationForm.getCustomerNo(),
-                reservationForm.getReserveNo());
+    @RequestMapping(value = "update", method = { RequestMethod.GET,
+            RequestMethod.POST })
+    public String update(RedirectAttributes redirectAttrs,
+            @Valid ReservationForm reservationForm, BindingResult result) {
+        Reservation reservation = reservation2ArgService.findOne(reservationForm
+                .getCustomerNo(), reservationForm.getReserveNo());
         if (result.hasErrors()) {
             return "redirect:/hello";
         }
 
         reservation.setTotalFare(0);
-        reservation2ArgService.update(reservation.getRepMember().getCustomerNo(), reservation);
+        reservation2ArgService.update(reservation.getRepMember()
+                .getCustomerNo(), reservation);
 
         return "redirect:/hello";
     }
@@ -128,14 +131,16 @@ public class Reservation2ArgController {
     /**
      * 予約情報削除
      */
-    @RequestMapping(value = "delete", method = { RequestMethod.GET, RequestMethod.POST })
-    public String delete(RedirectAttributes redirectAttrs, @Valid ReservationForm reservationForm,
-            BindingResult result) {
+    @RequestMapping(value = "delete", method = { RequestMethod.GET,
+            RequestMethod.POST })
+    public String delete(RedirectAttributes redirectAttrs,
+            @Valid ReservationForm reservationForm, BindingResult result) {
         if (result.hasErrors()) {
             return "redirect:/hello";
         }
 
-        reservation2ArgService.delete(reservationForm.getCustomerNo(), reservationForm.getReserveNo());
+        reservation2ArgService.delete(reservationForm.getCustomerNo(),
+                reservationForm.getReserveNo());
         return "redirect:/hello";
     }
 }

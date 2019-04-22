@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import jp.co.ntt.cloud.functionaltest.domain.model.Member;
 
 /**
  * 会員情報テーブルにアクセスするリポジトリインターフェース。
- *
  * @author NTT 電電太郎
  */
 public interface MemberRepository {
@@ -36,33 +35,26 @@ public interface MemberRepository {
 
     /**
      * 会員情報を1件取得する。
-     *
-     * @param customerNo
-     *            会員番号
+     * @param customerNo 会員番号
      * @return 会員情報
      */
     Member findOne(String customerNo);
 
     /**
      * 会員情報を削除する。
-     *
-     * @param customerNo
-     *            会員番号
+     * @param customerNo 会員番号
      * @return 会員情報
      */
     int delete(String customerNo);
 
     /**
      * 会員情報を更新する
-     *
-     * @param customerNo
-     *            会員番号
+     * @param customerNo 会員番号
      */
     int update(Member member);
 
     /**
      * 会員情報を全件削除する。
-     *
      */
     void deleteAll();
 

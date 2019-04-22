@@ -28,15 +28,14 @@ public class HelloController {
     /**
      * ロガー。
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(HelloController.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            HelloController.class);
 
     @Inject
     GetS3ConfigService getS3ConfigService;
 
     /**
      * Hello画面を表示する。
-     *
      * @param locale 地域情報を保持するクラス
      * @param model 出力情報を保持するクラス
      * @return View論理名
@@ -54,8 +53,10 @@ public class HelloController {
 
         model.addAttribute("serverTime", formattedDate);
 
-        model.addAttribute("s3ConfigConfigurationPropertiesDto", getS3ConfigService.getConfigurationPropertiesDto());
-        model.addAttribute("s3ConfigConfigValueDto", getS3ConfigService.getConfigurationPropertiesDto());
+        model.addAttribute("s3ConfigConfigurationPropertiesDto",
+                getS3ConfigService.getConfigurationPropertiesDto());
+        model.addAttribute("s3ConfigConfigValueDto", getS3ConfigService
+                .getConfigurationPropertiesDto());
 
         return "welcome/home";
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,6 @@ import jp.co.ntt.cloud.functionaltest.selenide.page.HelloPage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
 import junit.framework.TestCase;
 
-@SuppressWarnings("unused")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
@@ -68,7 +67,7 @@ public class HelloWorldTest extends TestCase {
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
     }
- 
+
     @After
     public void tearDown() {
         // ログイン状態の場合ログアウトする。
@@ -82,23 +81,21 @@ public class HelloWorldTest extends TestCase {
      * ログインを実行しHello worldが表示されることを確認する。
      */
     @Test
-    public void helloTest(){
+    public void helloTest() {
 
         // 事前準備
         userId = "0000000002";
         password = "aaaaa11111";
 
         // テスト実行
-        HelloPage helloWorldPage =
-        open(applicationContextUrl, TopPage.class)
-        .login(userId, password);
+        open(applicationContextUrl, TopPage.class).login(userId, password);
 
         // アサーション
         $("h1").shouldHave(text("Hello world!"));
         $$("p").get(1).shouldHave(text("Taro Denden"));
-        
+
         // 証跡取得
         screenshot("helloTest");
     }
-    
+
 }

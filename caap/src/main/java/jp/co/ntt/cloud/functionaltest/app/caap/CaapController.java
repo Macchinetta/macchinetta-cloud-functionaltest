@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,8 @@ public class CaapController {
 
     @RequestMapping(value = "inspect", method = RequestMethod.GET)
     public String inspect(Model model) {
-        final CaapProjectInfo caapProjectInfo = caapService.inspectElastiCache();
+        final CaapProjectInfo caapProjectInfo = caapService
+                .inspectElastiCache();
         model.addAttribute("caapProjectInfo", caapProjectInfo);
         return "caap/home";
     }

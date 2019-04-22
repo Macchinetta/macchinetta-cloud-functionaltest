@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ public class ReadReplicaTest extends TestCase {
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
     }
- 
+
     @After
     public void tearDown() {
     }
@@ -87,12 +87,14 @@ public class ReadReplicaTest extends TestCase {
         open(applicationContextUrl, TopPage.class);
 
         // アサーション
-        
+
         // 顧客テーブルに初期投入データが表示されていることを確認する。
-        $(byId("userListTable")).$("tr", 1).$(".lastName").shouldBe(text("Denden"));
+        $(byId("userListTable")).$("tr", 1).$(".lastName").shouldBe(text(
+                "Denden"));
         $(byId("userListTable")).$("tr", 1).$(".firstName").shouldBe(text(
                 "Hanako"));
-        $(byId("userListTable")).$("tr", 2).$(".lastName").shouldBe(text("Denden"));
+        $(byId("userListTable")).$("tr", 2).$(".lastName").shouldBe(text(
+                "Denden"));
         $(byId("userListTable")).$("tr", 2).$(".firstName").shouldBe(text(
                 "Taro"));
 
@@ -104,18 +106,18 @@ public class ReadReplicaTest extends TestCase {
      * <ul>
      * <li>マスタデータベースにデータを更新できることを確認する。</li>
      * </ul>
+     * @throws InterruptedException
      */
     @Test
-    public void testRDRP0201002() {
+    public void testRDRP0201002() throws InterruptedException {
 
         // 事前準備
         lastName = "Toyosu";
         firstName = "Yoshiko";
 
         // テスト実行
-        open(applicationContextUrl, TopPage.class)
-        .register(lastName, firstName)
-        .reload();
+        open(applicationContextUrl, TopPage.class).register(lastName, firstName)
+                .reload();
 
         // アサーション
         // 顧客テーブルに顧客情報が登録されていることを確認する。

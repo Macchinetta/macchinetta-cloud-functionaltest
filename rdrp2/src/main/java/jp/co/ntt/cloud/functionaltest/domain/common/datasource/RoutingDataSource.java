@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,8 @@ public class RoutingDataSource extends AbstractRoutingDataSource {
     /**
      * ロガー。
      */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(RoutingDataSource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(
+            RoutingDataSource.class);
 
     /**
      * デフォルトスキーマ名。<br>
@@ -39,7 +39,6 @@ public class RoutingDataSource extends AbstractRoutingDataSource {
      */
     @Value("${database.default.schema.name:default}")
     private String databaseDefaultSchemaName;
-
 
     /**
      * データソースのキー(シャードキー)を保持するホルダ。

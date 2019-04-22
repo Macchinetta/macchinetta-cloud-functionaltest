@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -272,36 +272,16 @@ public class S02TransactionTokenTest extends FunctionTestSupport {
 
         driver.findElement(By.id("btn-end")).click();
         assertFalse(webDriverOperations.exists(By.name("_TRANSACTION_TOKEN")));
-
     }
 
     /**
      * testSSMN0102005
      * <ul>
-     * <li>BEGIN-IN-TransactionTokenContext経由破棄</li>
-     * </ul>
-     */
-    @Test
-    public void testSSMN0102005() {
-        driver.findElement(By.id("link2")).click();
-
-        driver.findElement(By.id("btn-flow1")).click();
-        assertThat(driver.findElement(By.name("_TRANSACTION_TOKEN")),
-                notNullValue());
-
-        driver.findElement(By.id("btn-in-finish")).click();
-        assertFalse(webDriverOperations.exists(By.name("_TRANSACTION_TOKEN")));
-
-    }
-
-    /**
-     * testSSMN0102006
-     * <ul>
      * <li>BEGIN-IN-IN(Redo)-IN-END</li>
      * </ul>
      */
     @Test
-    public void testSSMN0102006() {
+    public void testSSMN0102005() throws InterruptedException {
         driver.findElement(By.id("link2")).click();
 
         driver.findElement(By.id("btn-flow1")).click();
@@ -367,13 +347,12 @@ public class S02TransactionTokenTest extends FunctionTestSupport {
     }
 
     /**
-     * testSSMN0102007
+     * testSSMN0102006
      * <ul>
      * <li>BEGIN(Input Error)-BEGIN-IN</li>
      * </ul>
      */
-    @Test
-    public void testSSMN0102007() {
+    public void testSSMN0102006() throws InterruptedException {
         driver.findElement(By.id("link2")).click();
 
         driver.findElement(By.id("btn-flow5_1")).click();
@@ -389,8 +368,10 @@ public class S02TransactionTokenTest extends FunctionTestSupport {
                 .getAttribute("value");
 
         driver.findElement(By.id("btn-in")).click();
-        assertThat(driver.findElement(By.name("_TRANSACTION_TOKEN")), notNullValue());
-        String inToken = driver.findElement(By.name("_TRANSACTION_TOKEN")).getAttribute("value");
+        assertThat(driver.findElement(By.name("_TRANSACTION_TOKEN")),
+                notNullValue());
+        String inToken = driver.findElement(By.name("_TRANSACTION_TOKEN"))
+                .getAttribute("value");
 
         String currentTokenName = currentToken.split("~")[0];
         String newTokenName = newToken.split("~")[0];
@@ -414,13 +395,13 @@ public class S02TransactionTokenTest extends FunctionTestSupport {
     }
 
     /**
-     * testSSMN0102008
+     * testSSMN0102007
      * <ul>
      * <li>BEGIN-END (Business Error)</li>
      * </ul>
      */
     @Test
-    public void testSSMN0102008() {
+    public void testSSMN0102007() throws InterruptedException {
         driver.findElement(By.id("link2")).click();
 
         // token generation
@@ -434,68 +415,30 @@ public class S02TransactionTokenTest extends FunctionTestSupport {
     }
 
     /**
-     * testSSMN0102009
-     * <ul>
-     * <li>BEGIN-IN-TransactionTokenContext経由破棄(Business Error)</li>
-     * </ul>
-     */
-    @Test
-    public void testSSMN0102009() {
-        driver.findElement(By.id("link2")).click();
-
-        // token generation
-        driver.findElement(By.id("btn-flow1")).click();
-        assertThat(driver.findElement(By.name("_TRANSACTION_TOKEN")),
-                notNullValue());
-        String currentToken = driver.findElement(By.name("_TRANSACTION_TOKEN"))
-                .getAttribute("value");
-
-        // error occurs in IN and returns back to step-2 screen but transaction token not destroyed
-        driver.findElement(By.id("btn-in-finish-error")).click();
-        assertThat(driver.findElement(By.name("_TRANSACTION_TOKEN")),
-                notNullValue());
-        String newToken = driver.findElement(By.name("_TRANSACTION_TOKEN"))
-                .getAttribute("value");
-
-        // Check whether transaction token is updated
-        // key will remain same, only value will be updated
-        String currentTokenName = currentToken.split("~")[0];
-        String newTokenName = newToken.split("~")[0];
-        String currentTokenKey = currentToken.split("~")[1];
-        String newTokenKey = newToken.split("~")[1];
-        String currentTokenValue = currentToken.split("~")[2];
-        String newTokenValue = newToken.split("~")[2];
-        assertThat(newTokenName, is(currentTokenName));
-        assertThat(newTokenKey, is(currentTokenKey));
-        assertThat(newTokenValue, is(not(currentTokenValue)));
-
-        // this time no error and token is destroyed
-        driver.findElement(By.id("btn-in-finish")).click();
-        assertFalse(webDriverOperations.exists(By.name("_TRANSACTION_TOKEN")));
-    }
-
-    /**
-     * testSSMN0102010
+     * testSSMN0102008
      * <ul>
      * <li>IN called without BEGIN (Token error since token not present)</li>
      * </ul>
+     * @throws InterruptedException
      */
     @Test
-    public void testSSMN0102010() {
+    public void testSSMN0102008() throws InterruptedException {
         driver.findElement(By.id("link2")).click();
+        Thread.sleep(300);
         driver.findElement(By.id("btn-flow3")).click();
+        Thread.sleep(300);
         assertThat(driver.findElement(By.cssSelector("h2")).getText(), is(
                 "Transaction Token Error"));
     }
 
     /**
-     * testSSMN0102011
+     * testSSMN0102009
      * <ul>
      * <li>BEGIN-IN-(Browser Back)-IN (Token error due to Token mismatch)</li>
      * </ul>
      */
     @Test
-    public void testSSMN0102011() {
+    public void testSSMN0102009() throws InterruptedException {
 
         driver.findElement(By.id("link2")).click();
 
@@ -530,13 +473,13 @@ public class S02TransactionTokenTest extends FunctionTestSupport {
     }
 
     /**
-     * testSSMN0102012
+     * testSSMN0102010
      * <ul>
      * <li>BEGIN-IN (Token error due to Token mismatch)</li>
      * </ul>
      */
     @Test
-    public void testSSMN0102012() {
+    public void testSSMN0102010() throws InterruptedException {
         driver.findElement(By.id("link2")).click();
 
         driver.findElement(By.id("btn-flow7")).click();
@@ -550,13 +493,13 @@ public class S02TransactionTokenTest extends FunctionTestSupport {
     }
 
     /**
-     * testSSMN0102013
+     * testSSMN0102011
      * <ul>
      * <li>END called without BEGIN (Token error since token not present)</li>
      * </ul>
      */
     @Test
-    public void testSSMN0102013() {
+    public void testSSMN0102011() throws InterruptedException {
         driver.findElement(By.id("link2")).click();
         driver.findElement(By.id("btn-flow4")).click();
         assertThat(driver.findElement(By.cssSelector("h2")).getText(), is(
@@ -564,13 +507,13 @@ public class S02TransactionTokenTest extends FunctionTestSupport {
     }
 
     /**
-     * testSSMN0102014
+     * testSSMN0102012
      * <ul>
      * <li>BEGIN-END (Token error due to Token mismatch)</li>
      * </ul>
      */
     @Test
-    public void testSSMN0102014() {
+    public void testSSMN0102012() throws InterruptedException {
         driver.findElement(By.id("link2")).click();
 
         driver.findElement(By.id("btn-flow7")).click();
@@ -583,13 +526,13 @@ public class S02TransactionTokenTest extends FunctionTestSupport {
     }
 
     /**
-     * testSSMN0102015
+     * testSSMN0102013
      * <ul>
      * <li>BEGIN-IN</li>
      * </ul>
      */
     @Test
-    public void testSSMN0102015() {
+    public void testSSMN0102013() throws InterruptedException {
         driver.findElement(By.id("link2")).click();
 
         driver.findElement(By.id("btn-flow1")).click();
@@ -616,13 +559,13 @@ public class S02TransactionTokenTest extends FunctionTestSupport {
     }
 
     /**
-     * testSSMN0102016
+     * testSSMN0102014
      * <ul>
      * <li>BEGIN-CHECK(File Download)-IN</li>
      * </ul>
      */
     @Test
-    public void testSSMN0102016() {
+    public void testSSMN0102014() throws InterruptedException {
         driver.findElement(By.id("link2")).click();
 
         // begin
@@ -647,13 +590,13 @@ public class S02TransactionTokenTest extends FunctionTestSupport {
     }
 
     /**
-     * testSSMN0102017
+     * testSSMN0102015
      * <ul>
      * <li>BEGIN-IN-(Browser Back)-CHECK</li>
      * </ul>
      */
     @Test
-    public void testSSMN0102017() {
+    public void testSSMN0102015() throws InterruptedException {
         driver.findElement(By.id("link2")).click();
 
         // begin
@@ -693,13 +636,13 @@ public class S02TransactionTokenTest extends FunctionTestSupport {
     }
 
     /**
-     * testSSMN0102018
+     * testSSMN0102016
      * <ul>
      * <li>CHECK called without BEGIN (Token error since token not present)</li>
      * </ul>
      */
     @Test
-    public void testSSMN0102018() {
+    public void testSSMN0102016() throws InterruptedException {
         driver.findElement(By.id("link2")).click();
         driver.findElement(By.id("btn-flow8")).click();
         assertThat(driver.findElement(By.cssSelector("h2")).getText(), is(
@@ -969,9 +912,10 @@ public class S02TransactionTokenTest extends FunctionTestSupport {
      * <ul>
      * <li>セッションタイムアウト時にDBに保持しているTransactionTokenが削除される</li>
      * </ul>
+     * @throws InterruptedException
      */
     @Test
-    public void testSSMN0105001() {
+    public void testSSMN0105001() throws InterruptedException {
         driver.findElement(By.id("link2")).click();
 
         driver.findElement(By.id("btn-flow1")).click();
@@ -979,11 +923,7 @@ public class S02TransactionTokenTest extends FunctionTestSupport {
                 notNullValue());
 
         // wait for session timeout 1min.
-        try {
-            Thread.sleep(untilSessionTimeout * 1000);
-        } catch (InterruptedException e) {
-            fail();
-        }
+        Thread.sleep((long) untilSessionTimeout * 1000);
 
         driver.findElement(By.id("btn-in")).click();
         assertThat(driver.findElement(By.cssSelector("h2")).getText(), is(

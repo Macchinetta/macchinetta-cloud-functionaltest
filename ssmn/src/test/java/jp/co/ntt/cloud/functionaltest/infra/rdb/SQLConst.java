@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package jp.co.ntt.cloud.functionaltest.infra.rdb;
 
 /**
  * @author NTT 電電太郎
- *
  */
 public class SQLConst {
     /**
@@ -25,7 +24,9 @@ public class SQLConst {
      */
     public static class TRANSACTION_TOKEN {
         public static final String TRUNCATE = "TRUNCATE TABLE transaction_token";
+
         public static final String SELECT_ALL = "SELECT token_name, token_key, token_value, session_id, sequence FROM transaction_token ORDER BY sequence DESC";
+
         public static final String SELECT_FIND_ONE = "SELECT token_name, token_key, token_value, session_id, sequence FROM transaction_token WHERE session_id=?";
     }
 }

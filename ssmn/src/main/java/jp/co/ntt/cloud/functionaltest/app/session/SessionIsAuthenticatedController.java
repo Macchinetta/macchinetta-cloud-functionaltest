@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * セッション試験用(認証ある場合)コントローラ
- *
  * @author NTT 電電太郎
- *
  */
 @Controller
 @RequestMapping("session/isAuthenticated")
@@ -31,7 +29,6 @@ public class SessionIsAuthenticatedController {
 
     /**
      * POST 実行
-     *
      * @return
      */
     @RequestMapping(method = RequestMethod.POST, params = "postTest")
@@ -41,7 +38,6 @@ public class SessionIsAuthenticatedController {
 
     /**
      * GET 実行
-     *
      * @return
      */
     @RequestMapping(method = RequestMethod.GET, params = "getTest")
@@ -51,7 +47,6 @@ public class SessionIsAuthenticatedController {
 
     /**
      * セッション試験のWelcomeページ表示
-     *
      * @return
      */
     @RequestMapping(method = RequestMethod.GET)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,7 @@ import org.apache.tools.ant.Task;
 
 /**
  * Config Serverを終了するタスク
- *
  * @author NTT 電電太郎
- *
  */
 public class ConfigServerShutdownTask extends Task {
 
@@ -71,9 +69,7 @@ public class ConfigServerShutdownTask extends Task {
 
     /**
      * Config Serverが起動しているかチェックするURLを設定する。
-     *
-     * @param configServerPingUrl
-     *            Config Serverが起動しているかチェックするURL
+     * @param configServerPingUrl Config Serverが起動しているかチェックするURL
      */
     public void setConfigServerPingUrl(String configServerPingUrl) {
         this.configServerPingUrl = whenSetValidation(configServerPingUrl);
@@ -81,19 +77,16 @@ public class ConfigServerShutdownTask extends Task {
 
     /**
      * Config Serverを終了するように指示するエンドポイントを設定する。
-     *
-     * @param configServerShutdownUrl
-     *            Config Serverを終了するように指示するエンドポイント
+     * @param configServerShutdownUrl Config Serverを終了するように指示するエンドポイント
      */
     public void setConfigServerShutdownUrl(String configServerShutdownUrl) {
-        this.configServerShutdownUrl = whenSetValidation(configServerShutdownUrl);
+        this.configServerShutdownUrl = whenSetValidation(
+                configServerShutdownUrl);
     }
 
     /**
      * Config Serverに接続する user名を設定する。
-     *
-     * @param configUser
-     *            Config Serverに接続する user名
+     * @param configUser Config Serverに接続する user名
      */
     public void setConfigServerUser(String configUser) {
         this.configUser = whenSetValidation(configUser);
@@ -101,9 +94,7 @@ public class ConfigServerShutdownTask extends Task {
 
     /**
      * Config Serverに接続するPasswordを設定する。
-     *
-     * @param configPassword
-     *            Config Serverに接続する password名
+     * @param configPassword Config Serverに接続する password名
      */
     public void setConfigServerPassword(String configPassword) {
         this.configPassword = whenSetValidation(configPassword);
@@ -111,9 +102,7 @@ public class ConfigServerShutdownTask extends Task {
 
     /**
      * Config Server が起動するまでのタイムアウト時間を設定する。
-     *
-     * @param timeout
-     *            Config Server が起動するまでのタイムアウト時間
+     * @param timeout Config Server が起動するまでのタイムアウト時間
      */
     public void setTimeout(String timeout) {
         if (timeout != null && timeout.startsWith("${")) {
@@ -124,32 +113,36 @@ public class ConfigServerShutdownTask extends Task {
 
     /*
      * (非 Javadoc)
-     *
      * @see org.apache.tools.ant.Task#execute()
      */
     @Override
     public void execute() throws BuildException {
 
-        System.out.println("*********************** Config Server を終了します。 " + " timeout=" + timeout
-                + " configServerShutdownUrl=" + configServerShutdownUrl + " configServerPingUrl=" + configServerPingUrl
-                + " ***********************");
+        System.out.println("*********************** Config Server を終了します。 "
+                + " timeout=" + timeout + " configServerShutdownUrl="
+                + configServerShutdownUrl + " configServerPingUrl="
+                + configServerPingUrl + " ***********************");
 
         // Basic認証設定
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(configUser, configPassword));
+        credentialsProvider.setCredentials(AuthScope.ANY,
+                new UsernamePasswordCredentials(configUser, configPassword));
 
         // Timeout設定
-        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(timeout)
-                .setConnectionRequestTimeout(timeout).setSocketTimeout(timeout).build();
+        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(
+                timeout).setConnectionRequestTimeout(timeout).setSocketTimeout(
+                        timeout).build();
 
-        CloseableHttpClient client = HttpClientBuilder.create().setDefaultCredentialsProvider(credentialsProvider)
+        CloseableHttpClient client = HttpClientBuilder.create()
+                .setDefaultCredentialsProvider(credentialsProvider)
                 .setDefaultRequestConfig(requestConfig).build();
 
         long start = System.currentTimeMillis();
         long timeDiff = 0;
         boolean postConfigServerShutdownEndPointFlag = false;
         while (true) {
-            try (CloseableHttpResponse response = client.execute(new HttpPost(configServerShutdownUrl))) {
+            try (CloseableHttpResponse response = client.execute(
+                    new HttpPost(configServerShutdownUrl))) {
                 if (200 == response.getStatusLine().getStatusCode()) {
                     System.out.println(
                             "*********************** Config Server を終了するエンドポイントへPOSTしました。 ***********************");
@@ -166,12 +159,14 @@ public class ConfigServerShutdownTask extends Task {
             try {
                 Thread.sleep(100); // 100ミリ秒Sleepする
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
 
             long end = System.currentTimeMillis();
             timeDiff = end - start;
             if (timeDiff >= timeout) {
-                throw new BuildException("Config Server を終了するエンドポイントへのPOSTがタイムアウトしました。 timeout=" + timeout + " ms");
+                throw new BuildException("Config Server を終了するエンドポイントへのPOSTがタイムアウトしました。 timeout="
+                        + timeout + " ms");
             }
         }
 
@@ -179,10 +174,12 @@ public class ConfigServerShutdownTask extends Task {
         timeDiff = 0;
         boolean shutdownConfigServerCompleteFlag = false;
         while (true) {
-            try (CloseableHttpResponse response = client.execute(new HttpGet(configServerPingUrl))) {
+            try (CloseableHttpResponse response = client.execute(
+                    new HttpGet(configServerPingUrl))) {
             } catch (ClientProtocolException e) {
             } catch (IOException e) {
-                System.out.println("*********************** Config Server が終了しました。 ***********************");
+                System.out.println(
+                        "*********************** Config Server が終了しました。 ***********************");
                 shutdownConfigServerCompleteFlag = true;
             }
 
@@ -193,12 +190,14 @@ public class ConfigServerShutdownTask extends Task {
             try {
                 Thread.sleep(100); // 100ミリ秒Sleepする
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
 
             long end = System.currentTimeMillis();
             timeDiff = end - start;
             if (timeDiff >= timeout) {
-                throw new BuildException("Config Server を終了できませんでした。タイムアウトしました。 timeout=" + timeout + " ms");
+                throw new BuildException("Config Server を終了できませんでした。タイムアウトしました。 timeout="
+                        + timeout + " ms");
             }
         }
 
@@ -206,9 +205,7 @@ public class ConfigServerShutdownTask extends Task {
 
     /**
      * 入力文字列チェック
-     *
-     * @param str
-     *            入力文字列
+     * @param str 入力文字列
      * @return 入力文字列("${" で始まっていたら {@link null}を返す)
      */
     private String whenSetValidation(String str) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,24 +19,19 @@ import jp.co.ntt.cloud.functionaltest.domain.model.Member;
 
 /**
  * メンバーテーブルにアクセスするリポジトリインターフェース
- *
  * @author NTT 電電太郎
- *
  */
 public interface MemberRepository {
 
     /**
      * メンバー情報を取得する。
-     *
-     * @param customerId
-     *            お客様番号
+     * @param customerId お客様番号
      * @return メンバー情報
      */
     Member findOne(String customerNo);
 
     /**
      * メンバー情報を更新する。
-     *
      * @param メンバー情報
      */
     void update(Member member);

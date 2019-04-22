@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,43 +19,33 @@ import jp.co.ntt.cloud.functionaltest.domain.model.Member;
 
 /**
  * 会員情報サービスクラス。
- *
  * @author NTT 電電太郎
- *
  */
 public interface MemberUpdateService {
 
     /**
      * 会員番号を指定して、会員情報を1件取得する。CacheにHeapを使用している。
-     *
-     * @param customerNo
-     *            会員番号
+     * @param customerNo 会員番号
      * @return 会員情報
      */
     Member findMemberWithHeapCache(String customerNo);
 
     /**
      * 会員情報を更新する。CacheにHeapを使用している。
-     *
-     * @param member
-     *            会員情報
+     * @param member 会員情報
      */
     void updateMemberWithHeapCache(Member member);
 
     /**
      * 会員番号を指定して、会員情報を1件取得する。CacheにRedisを使用している。
-     *
-     * @param customerNo
-     *            会員番号
+     * @param customerNo 会員番号
      * @return 会員情報
      */
     Member findMemberWithRedisCache(String customerNo);
 
     /**
      * 会員情報を更新する。CacheにRedisを使用している。
-     *
-     * @param member
-     *            会員情報
+     * @param member 会員情報
      */
     void updateMemberWithRedisCache(Member member);
 }

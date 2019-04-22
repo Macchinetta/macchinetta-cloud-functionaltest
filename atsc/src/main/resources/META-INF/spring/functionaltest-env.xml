@@ -25,11 +25,6 @@
     <bean id="dataSource" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
         <constructor-arg index="0" ref="realDataSource" />
     </bean>
-    
-    <jdbc:initialize-database data-source="realDataSource" ignore-failures="ALL" >
-        <jdbc:script location="classpath:/sqls/create_all_tables.sql" />
-        <jdbc:script location="classpath:/sqls/insert_data.sql" />
-    </jdbc:initialize-database>
 
     <bean id="transactionManager"
         class="org.springframework.jdbc.datasource.DataSourceTransactionManager">

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import jp.co.ntt.cloud.functionaltest.domain.service.login.AccountSharedService;
  */
 @Service
 public class SampleUserDetailsService implements UserDetailsService {
-    
+
     /**
      * ログイン業務共通サービス。
      */
@@ -45,7 +45,8 @@ public class SampleUserDetailsService implements UserDetailsService {
      */
     @Transactional(readOnly = true)
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(
+            String username) throws UsernameNotFoundException {
         try {
             Account account = accountSharedService.findOne(username);
             return new SampleUserDetails(account);

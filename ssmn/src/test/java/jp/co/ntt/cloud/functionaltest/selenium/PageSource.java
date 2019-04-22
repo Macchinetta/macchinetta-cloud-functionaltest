@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ public class PageSource {
 
         try {
             FileUtils.writeStringToFile(pageSourceFile, webDriver
-                    .getPageSource());
+                    .getPageSource(), "UTF-8");
 
         } catch (IOException e) {
             logger.error(e.toString());

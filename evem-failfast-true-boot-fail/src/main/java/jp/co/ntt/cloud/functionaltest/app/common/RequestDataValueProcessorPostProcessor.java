@@ -20,10 +20,9 @@ import org.terasoluna.gfw.web.token.transaction.TransactionTokenRequestDataValue
 /**
  * トランザクショントークンチェック有効化用PostProcessor
  * @author NTT 電電太郎
- *
  */
 public class RequestDataValueProcessorPostProcessor implements
-                                                   BeanDefinitionRegistryPostProcessor {
+                                                    BeanDefinitionRegistryPostProcessor {
 
     /**
      * {@inheritDoc}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-
 /**
  * データソース共通情報。
- *
  * @author NTT 電電太郎
- *
  */
 @ConfigurationProperties(prefix = "database.common")
 public class CommonDatabaseProperties {
@@ -34,7 +31,6 @@ public class CommonDatabaseProperties {
 
     /**
      * データソース共通情報を取得する。
-     *
      * @return dataSource データソース共通情報
      */
     public Map<String, String> getDataSource() {
@@ -43,9 +39,7 @@ public class CommonDatabaseProperties {
 
     /**
      * データソース共通情報を設定する。
-     * 
-     * @param dataSource
-     *            データソース共通情報t
+     * @param dataSource データソース共通情報t
      */
     public void setDataSource(Map<String, String> dataSource) {
         this.dataSource = dataSource;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,18 +32,16 @@ import jp.co.ntt.cloud.functionaltest.domain.common.shard.annotation.ShardWithAc
 
 /**
  * シャーディングのヘルパー
- *
  * @author NTT 電電太郎
- *
  */
 public class ShardAccountHelper {
 
     /**
      * 対象オブジェクトからシャードキーの値を取得する。
-     *
      * @return
      */
-    public String getAccountValue(MethodInvocation invocation) throws Exception {
+    public String getAccountValue(
+            MethodInvocation invocation) throws Exception {
         String ret = null;
         // 実行対象のオブジェクトを取得
         Object target = invocation.getThis();
@@ -63,9 +61,11 @@ public class ShardAccountHelper {
         }
 
         // 実行対象のメソッドを取得
-        Method method = ReflectionUtils.findMethod(targetClass, invocation.getMethod().getName(), classes);
+        Method method = ReflectionUtils.findMethod(targetClass, invocation
+                .getMethod().getName(), classes);
         // 実行対象のメソッドに付与されたShardKeyアノテーションを取得
-        ShardWithAccount shardWithAccount = AnnotationUtils.findAnnotation(method, ShardWithAccount.class);
+        ShardWithAccount shardWithAccount = AnnotationUtils.findAnnotation(
+                method, ShardWithAccount.class);
 
         if (Objects.nonNull(shardWithAccount)) {
             // ShardKeyアノテーションの属性valueの値を取得
@@ -86,7 +86,8 @@ public class ShardAccountHelper {
                 Parameter[] parameters = method.getParameters();
                 for (Parameter parameter : parameters) {
                     // 引数からShardParamアノテーションを取得
-                    shardAccountParam = AnnotationUtils.findAnnotation(parameter, ShardAccountParam.class);
+                    shardAccountParam = AnnotationUtils.findAnnotation(
+                            parameter, ShardAccountParam.class);
                     if (Objects.nonNull(shardAccountParam)) {
                         // ShardParamアノテーションが付与されている引数のオブジェクトを使用
                         obj = arguments[argumentsLength];
@@ -95,8 +96,7 @@ public class ShardAccountHelper {
                     argumentsLength++;
                 }
                 if (Objects.isNull(shardAccountParam) && values.length > 1) {
-                    throw new IllegalArgumentException(
-                            "メソッド引数が複数あり ShardWithAccount アノテーションに値を設定した時に、メソッド引数へ ShardAccountParam アノテーションの付与は必須です。");
+                    throw new IllegalArgumentException("メソッド引数が複数あり ShardWithAccount アノテーションに値を設定した時に、メソッド引数へ ShardAccountParam アノテーションの付与は必須です。");
                 }
             }
             if (Objects.isNull(obj)) {

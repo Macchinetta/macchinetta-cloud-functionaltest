@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public class HelloPage {
      * ログアウトする。
      * @return TopPage トップページ
      */
-    public TopPage logout(){
+    public TopPage logout() {
         $("button").click();
         return new TopPage();
     }
@@ -48,7 +48,6 @@ public class HelloPage {
 
     /**
      * RDBの設定値を表示しているテーブルを返却する。
-     *
      * @return RDBの設定値テーブル
      */
     public SelenideElement getRdbConfigTable() {

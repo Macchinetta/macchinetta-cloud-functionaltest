@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,13 +37,13 @@ import static com.codeborne.selenide.Selenide.*;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.CoreMatchers.*;
 
-@SuppressWarnings("unused")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
 public class AsprTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(AsprTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            AsprTest.class);
 
     /*
      * アプリケーション URL
@@ -72,10 +72,7 @@ public class AsprTest {
     }
 
     /**
-     * Selenide関連のクリア処理。
-     * setUp()内で実施すると画面が真っ白になるなどの不具合が確認できたため、
-     * 本メソッドで共通的に実施
-     *
+     * Selenide関連のクリア処理。 setUp()内で実施すると画面が真っ白になるなどの不具合が確認できたため、 本メソッドで共通的に実施
      * @throws Exception 予期しない例外
      */
     private void clearSetup() throws Exception {
@@ -98,9 +95,7 @@ public class AsprTest {
     }
 
     /**
-     * 同期送信の確認。
-     * SQSのreservation-queueにUUIDを送信することで、同一メッセージが同期受信できること。
-     *
+     * 同期送信の確認。 SQSのreservation-queueにUUIDを送信することで、同一メッセージが同期受信できること。
      * @throws Exception 意図しない例外
      */
     @Test
@@ -126,9 +121,7 @@ public class AsprTest {
     }
 
     /**
-     * JMSリスナを使用し、3件のメッセージを非同期に受信する。
-     * メッセージの受信件数を揃えるため、3件のメッセージ同期受信の後、JMSリスナを起動する。
-     *
+     * JMSリスナを使用し、3件のメッセージを非同期に受信する。 メッセージの受信件数を揃えるため、3件のメッセージ同期受信の後、JMSリスナを起動する。
      * @throws Exception 予期しない例外
      */
     @Test
@@ -171,18 +164,14 @@ public class AsprTest {
         screenshot("testReceiveMessageByAsync_receive_async");
 
         // 検証：RDSのメッセージIDが3件存在すること(MESSAGE IDのみ記録されているため、件数のみ確認)。
-        assertThat(
-                jdbcTemplate.queryForList("SELECT MESSAGE_ID FROM MESSAGE_ID_STORE").size(),
-                is(3));
+        assertThat(jdbcTemplate.queryForList(
+                "SELECT MESSAGE_ID FROM MESSAGE_ID_STORE").size(), is(3));
         logger.debug("+++ end testReceiveMessageByAsync");
     }
 
     /**
-     * JMSリスナによる非同期受信で重複したメッセージを受信した場合の挙動を確認する。
-     * RDSによるメッセージIDの管理テーブルが一意制約違反を検出し、
-     * 業務処理（ここではBlockingQueueにメッセージを追加）が行われず、
+     * JMSリスナによる非同期受信で重複したメッセージを受信した場合の挙動を確認する。 RDSによるメッセージIDの管理テーブルが一意制約違反を検出し、 業務処理（ここではBlockingQueueにメッセージを追加）が行われず、
      * SQSスタンダードキューからのメッセージが削除されていることを確認する。
-     *
      * @throws Exception 予期しない例外
      */
     @Test
@@ -208,7 +197,9 @@ public class AsprTest {
 
         // 事前準備:メッセージID管理テーブルに対し、二重受信エラーを発生させるため、
         // メッセージIDを先行登録する。
-        int insertCount = jdbcTemplate.update("INSERT INTO MESSAGE_ID_STORE (MESSAGE_ID) VALUES (?)", messageId);
+        int insertCount = jdbcTemplate.update(
+                "INSERT INTO MESSAGE_ID_STORE (MESSAGE_ID) VALUES (?)",
+                messageId);
         assertThat(insertCount, is(1));
 
         // テスト実行(JMSリスナを起動)
@@ -234,7 +225,8 @@ public class AsprTest {
         // 証跡取得
         screenshot("testPseudoDuplicationReceive_reservation-queue_empty");
 
-        open(applicationContextUrl + "browse/reservation-deadletter?delete=true");
+        open(applicationContextUrl
+                + "browse/reservation-deadletter?delete=true");
         $(byId("status")).shouldHave(text("status:EMPTY"));
 
         // 証跡取得
@@ -286,7 +278,8 @@ public class AsprTest {
         screenshot("testDispatchDeadLetterQueue_reservation-queue_empty");
 
         // 検証:デッドレターキューに移動したメッセージIDが受信時と同一であること。
-        open(applicationContextUrl + "browse/reservation-deadletter?delete=true");
+        open(applicationContextUrl
+                + "browse/reservation-deadletter?delete=true");
         $(byId("status")).shouldHave(text("status:" + messageId));
 
         // 証跡取得

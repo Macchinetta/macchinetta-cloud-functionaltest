@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,6 @@ public class CartController {
 
     /**
      * カートの内容を表示する。
-     *
      * @param model
      * @return
      */
@@ -65,16 +64,17 @@ public class CartController {
 
     /**
      * カートにアイテムを1個追加する。
-     *
      * @param cartForm
      * @param bindingResult
      * @param model
      * @return
      */
     @RequestMapping(value = "add", method = RequestMethod.POST)
-    public String addItemToCart(@Validated CartForm cartForm, BindingResult bindingResult, Model model) {
+    public String addItemToCart(@Validated CartForm cartForm,
+            BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            ResultMessages messages = ResultMessages.error().add("e.st.ca.5001");
+            ResultMessages messages = ResultMessages.error().add(
+                    "e.st.ca.5001");
             model.addAttribute(messages);
             return "redirect:/cart";
         }
@@ -90,7 +90,6 @@ public class CartController {
 
     /**
      * カートに入っている製品の個数を変更する。
-     *
      * @param cartForm
      * @param bindingResult
      * @param model
@@ -100,7 +99,8 @@ public class CartController {
     public String changeItemQuantityFromCart(@Validated CartForm cartForm,
             BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            ResultMessages messages = ResultMessages.error().add("e.st.ca.5001");
+            ResultMessages messages = ResultMessages.error().add(
+                    "e.st.ca.5001");
             model.addAttribute(messages);
             return "redirect:/cart";
         }
@@ -117,17 +117,17 @@ public class CartController {
 
     /**
      * カートからアイテムを削除する。
-     *
      * @param cartForm
      * @param bindingResult
      * @param model
      * @return
      */
     @RequestMapping(value = "delete", method = RequestMethod.POST)
-    public String deleteItemFormCart(@Validated CartForm cartForm, BindingResult bindingResult,
-            Model model) {
+    public String deleteItemFormCart(@Validated CartForm cartForm,
+            BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            ResultMessages messages = ResultMessages.error().add("e.st.ca.5001");
+            ResultMessages messages = ResultMessages.error().add(
+                    "e.st.ca.5001");
             model.addAttribute(messages);
             return "redirect:/cart";
         }

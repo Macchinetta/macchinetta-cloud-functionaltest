@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * 予約問い合わせ用form
- *
  * @author NTT 電電太郎
- *
  */
 public class ReservationForm implements Serializable {
 
@@ -52,7 +50,6 @@ public class ReservationForm implements Serializable {
 
     /**
      * 予約番号を取得する。
-     *
      * @return 予約番号
      */
     public String getReserveNo() {
@@ -61,9 +58,7 @@ public class ReservationForm implements Serializable {
 
     /**
      * 予約番号を設定する。
-     *
-     * @param reserveNo
-     *            予約番号
+     * @param reserveNo 予約番号
      */
     public void setReserveNo(String reserveNo) {
         this.reserveNo = reserveNo;
@@ -71,7 +66,6 @@ public class ReservationForm implements Serializable {
 
     /**
      * お客様番号を取得する。
-     *
      * @return お客様番号
      */
     public String getCustomerNo() {
@@ -80,9 +74,7 @@ public class ReservationForm implements Serializable {
 
     /**
      * お客様番号を設定する。
-     *
-     * @param customerNo
-     *            お客様番号
+     * @param customerNo お客様番号
      */
     public void setCustomerNo(String customerNo) {
         this.customerNo = customerNo;
@@ -93,6 +85,7 @@ public class ReservationForm implements Serializable {
      */
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+        return ToStringBuilder.reflectionToString(this,
+                ToStringStyle.MULTI_LINE_STYLE);
     }
 }

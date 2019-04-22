@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,7 @@ import jp.co.ntt.cloud.functionaltest.domain.service.product.ProductService;
 
 /**
  * 商品注文用のコントローラ
- *
  * @author NTT 電電太郎
- *
  */
 @Controller
 @TransactionTokenCheck("order")
@@ -46,11 +44,11 @@ public class OrderController {
 
     /**
      * 注文ページ表示
-     *
      * @param model
      * @return
      */
-    @RequestMapping(value = "form", method = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "form", method = { RequestMethod.GET,
+            RequestMethod.POST })
     public String form(Model model) {
 
         model.addAttribute("products", prodcutService.findAll());
@@ -60,12 +58,12 @@ public class OrderController {
 
     /**
      * 確認ページ表示
-     *
      * @param model
      * @return
      */
     @TransactionTokenCheck
-    @RequestMapping(value = "confirm", method = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "confirm", method = { RequestMethod.GET,
+            RequestMethod.POST })
     public String confirm(Model model) {
 
         model.addAttribute("cartItems", cart.getCartItems());
@@ -76,12 +74,12 @@ public class OrderController {
 
     /**
      * 注文完了
-     *
      * @param model
      * @param sessionStatus
      * @return
      */
-    @RequestMapping(value = "finish", method = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "finish", method = { RequestMethod.GET,
+            RequestMethod.POST })
     public String complete(Model model, SessionStatus sessionStatus) {
         cart.clear();
         return "order/orderFinish";

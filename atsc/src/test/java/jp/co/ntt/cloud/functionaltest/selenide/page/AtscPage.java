@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,17 @@ import static com.codeborne.selenide.Selenide.$;
 public class AtscPage {
 
     private String newState;
+
     private String newStateReason;
+
     private String metricName;
+
     private String namespace;
+
     private String dimensions;
 
     /**
      * リスナーからアラーム通知イベントを取得する。
-     *
      * @return アラーム通知ページ情報
      */
     public AtscPage submit() {

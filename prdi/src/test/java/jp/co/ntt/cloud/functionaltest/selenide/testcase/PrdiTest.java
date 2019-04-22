@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@SuppressWarnings("unused")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
@@ -66,8 +65,8 @@ public class PrdiTest {
         Configuration.reportsFolder = reportPath;
 
         // ログイン
-        open(applicationContextUrl, TopPage.class)
-                .login("0000000001", "aaaaa11111");
+        open(applicationContextUrl, TopPage.class).login("0000000001",
+                "aaaaa11111");
     }
 
     /*
@@ -79,20 +78,20 @@ public class PrdiTest {
     }
 
     /*
-     * S3による署名つきURLのファイルをダウンロードする。
-     * オブジェクトキーは landscape/logo.jpg (既存)
+     * S3による署名つきURLのファイルをダウンロードする。 オブジェクトキーは landscape/logo.jpg (既存)
      */
     @Test
     public void testNormalDownload() throws Exception {
         // テスト実行
-        DownloadPage downloadPage = open(applicationContextUrl, PrdiMainPage.class)
-                .clickDownload()
-                .download("landscape/logo.jpg");
+        DownloadPage downloadPage = open(applicationContextUrl,
+                PrdiMainPage.class).clickDownload().download(
+                        "landscape/logo.jpg");
 
         // アサーション
         assertThat(downloadPage.getStatus(), is("load complete."));
         assertThat(downloadPage.getSelectedKey(), is("landscape/logo.jpg"));
-        assertThat(downloadPage.getLocalBase64(), is(downloadPage.getS3Base64()));
+        assertThat(downloadPage.getLocalBase64(), is(downloadPage
+                .getS3Base64()));
 
         // 証跡取得
         screenshot("testNormalDownload");
@@ -100,15 +99,13 @@ public class PrdiTest {
     }
 
     /*
-     * 有効期限30秒を超えた署名つきURLを使用したとき、ダウンロードに失敗すること。
-     * オブジェクトキーは expire/logo.jpg (既存だがダウンロード不可)
+     * 有効期限30秒を超えた署名つきURLを使用したとき、ダウンロードに失敗すること。 オブジェクトキーは expire/logo.jpg (既存だがダウンロード不可)
      */
     @Test
     public void testExpiredFileDownload() throws Exception {
         // テスト実行
-        DownloadPage downloadPage = open(applicationContextUrl, PrdiMainPage.class)
-                .clickDownload()
-                .download("expire/logo.jpg");
+        DownloadPage downloadPage = open(applicationContextUrl,
+                PrdiMainPage.class).clickDownload().download("expire/logo.jpg");
 
         // アサーション
         assertThat(downloadPage.getStatus(), is("load failure."));
@@ -119,16 +116,14 @@ public class PrdiTest {
     }
 
     /*
-     * S3上に存在しないオブジェクトキーを使用してファイルダウンロードを行う。
-     * オブジェクトキーは  invalid-object-key.jpg (S3上に存在しない)
-     *
+     * S3上に存在しないオブジェクトキーを使用してファイルダウンロードを行う。 オブジェクトキーは invalid-object-key.jpg (S3上に存在しない)
      */
     @Test
     public void testNotExistObjectKeyDownload() throws Exception {
         // テスト実行
-        DownloadPage downloadPage = open(applicationContextUrl, PrdiMainPage.class)
-                .clickDownload()
-                .download("invalid-object-key.jpg");
+        DownloadPage downloadPage = open(applicationContextUrl,
+                PrdiMainPage.class).clickDownload().download(
+                        "invalid-object-key.jpg");
 
         // アサーション
         assertThat(downloadPage.getStatus(), is("load failure."));

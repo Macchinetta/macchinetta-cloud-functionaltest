@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
@@ -115,11 +114,10 @@ public class DirectUploadTest extends TestCase {
         String filePath = "src/test/resources/files/Liberty.jpg";
         File uploadFile = new File(filePath);
 
-        //@formatter:off
-        open(applicationContextUrl, TopPage.class)
-                .login(userId, password)
+        // @formatter:off
+        open(applicationContextUrl, TopPage.class).login(userId, password)
                 .upload(uploadFile);
-        //@formatter:on
+        // @formatter:on
 
         // アップロード成功確認
         $("#message").shouldHave(text("アップロードに成功しました。"));
@@ -181,11 +179,10 @@ public class DirectUploadTest extends TestCase {
         String filePath = "src/test/resources/files/Napoleon.jpg";
         File uploadFile = new File(filePath);
 
-        //@formatter:off
-        open(applicationContextUrl, TopPage.class)
-                .login(userId, password)
+        // @formatter:off
+        open(applicationContextUrl, TopPage.class).login(userId, password)
                 .upload(uploadFile);
-        //@formatter:on
+        // @formatter:on
 
         // アップロード失敗確認
         $("#message").shouldHave(text("アップロードできるファイルは819200バイトまでです。"));
@@ -235,11 +232,10 @@ public class DirectUploadTest extends TestCase {
         String filePath = "src/test/resources/files/Liberty.jpg";
         File uploadFile = new File(filePath);
 
-        //@formatter:off
-        open(applicationContextUrl, TopPage.class)
-                .login(userId, password)
+        // @formatter:off
+        open(applicationContextUrl, TopPage.class).login(userId, password)
                 .uploadWithDelay(uploadFile);
-        //@formatter:on
+        // @formatter:on
 
         // アップロード失敗確認
         $("#message").shouldHave(text("アップロードに失敗しました。"));
@@ -274,8 +270,7 @@ public class DirectUploadTest extends TestCase {
 
     @PostConstruct
     private void createS3Client() {
-        s3Client = new AmazonS3Client(new DefaultAWSCredentialsProviderChain()
-                .getCredentials());
+        s3Client = AmazonS3ClientBuilder.defaultClient();
     }
 
 }

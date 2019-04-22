@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,6 @@ public class CartForm {
 
     /**
      * 製品IDを取得する。
-     *
      * @return 製品ID
      */
     public String getId() {
@@ -55,9 +54,7 @@ public class CartForm {
 
     /**
      * 製品IDを設定する。
-     *
-     * @param productId
-     *            製品ID
+     * @param productId 製品ID
      */
     public void setId(String id) {
         this.id = id;
@@ -65,7 +62,6 @@ public class CartForm {
 
     /**
      * 数量を取得する。
-     *
      * @return 数量
      */
     public int getQuantity() {
@@ -74,9 +70,7 @@ public class CartForm {
 
     /**
      * 数量を設定する。
-     *
-     * @param quantity
-     *            数量
+     * @param quantity 数量
      */
     public void setQuantity(int quantity) {
         this.quantity = quantity;

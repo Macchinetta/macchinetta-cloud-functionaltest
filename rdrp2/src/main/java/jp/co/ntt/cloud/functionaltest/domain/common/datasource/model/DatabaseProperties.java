@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,6 @@ public class DatabaseProperties {
 
     /**
      * データソース情報を格納する {@link List}を取得する。
-     *
      * @return dataSources
      */
     public List<Map<String, String>> getDataSources() {
@@ -44,7 +43,6 @@ public class DatabaseProperties {
 
     /**
      * データソース情報を格納する {@link List}を設定する。
-     *
      * @param dataSources セットする dataSources
      */
     public void setDataSources(List<Map<String, String>> dataSources) {

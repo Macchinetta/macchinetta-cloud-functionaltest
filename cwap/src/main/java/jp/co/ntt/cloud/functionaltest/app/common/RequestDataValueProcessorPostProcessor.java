@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,11 +31,10 @@ import java.util.List;
 
 /**
  * トランザクショントークンチェック有効化用PostProcessor
- *
  * @author NTT 電電太郎
  */
-public class RequestDataValueProcessorPostProcessor
-        implements BeanDefinitionRegistryPostProcessor {
+public class RequestDataValueProcessorPostProcessor implements
+                                                    BeanDefinitionRegistryPostProcessor {
 
     /**
      * {@inheritDoc}
@@ -56,8 +55,7 @@ public class RequestDataValueProcessorPostProcessor
         values.add(new TransactionTokenRequestDataValueProcessor());
         values.add(new CsrfRequestDataValueProcessor());
         cav.addGenericArgumentValue(values);
-        RootBeanDefinition rootBeanDefinition = new RootBeanDefinition(
-                CompositeRequestDataValueProcessor.class, cav, null);
+        RootBeanDefinition rootBeanDefinition = new RootBeanDefinition(CompositeRequestDataValueProcessor.class, cav, null);
 
         registry.removeBeanDefinition("requestDataValueProcessor");
         registry.registerBeanDefinition("requestDataValueProcessor",

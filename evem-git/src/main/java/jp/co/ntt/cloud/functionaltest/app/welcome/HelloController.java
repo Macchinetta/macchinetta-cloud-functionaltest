@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,8 @@ public class HelloController {
     /**
      * ロガー
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(HelloController.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            HelloController.class);
 
     /**
      * RDB関連の設定情報を取得するサービス
@@ -51,7 +51,6 @@ public class HelloController {
 
     /**
      * Hello画面を表示する。
-     *
      * @param locale 地域情報を保持するクラス
      * @param model 出力情報を保持するクラス
      * @return View論理名

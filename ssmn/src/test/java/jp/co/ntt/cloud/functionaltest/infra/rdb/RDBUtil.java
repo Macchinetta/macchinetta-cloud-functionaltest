@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Value;
 
 /**
  * @author NTT 電電太郎
- *
  */
 public class RDBUtil {
 
@@ -53,9 +52,7 @@ public class RDBUtil {
 
     /**
      * DBのドライバークラスを設定する。
-     *
-     * @param driverClassName
-     *            ドライバークラス名
+     * @param driverClassName ドライバークラス名
      */
     public void setDriverClassName(String driverClassName) {
         this.driverClassName = driverClassName;
@@ -63,9 +60,7 @@ public class RDBUtil {
 
     /**
      * デフォルトDBのURLを設定する。
-     *
-     * @param urlDefault
-     *            デフォルトDBのURL
+     * @param urlDefault デフォルトDBのURL
      */
     public void setUrlDefault(String urlDefault) {
         this.urlDefault = urlDefault;
@@ -73,9 +68,7 @@ public class RDBUtil {
 
     /**
      * DBのユーザー名を設定する。
-     *
-     * @param user
-     *            DBのユーザー名
+     * @param user DBのユーザー名
      */
     public void setUser(String user) {
         this.user = user;
@@ -83,9 +76,7 @@ public class RDBUtil {
 
     /**
      * DBのパスワードを設定する。
-     *
-     * @param password
-     *            DBのパスワード
+     * @param password DBのパスワード
      */
     public void setPassword(String password) {
         this.password = password;
@@ -93,7 +84,6 @@ public class RDBUtil {
 
     /**
      * デフォルトDBのコネクションを取得する。
-     *
      * @return
      * @throws SQLException
      * @throws ClassNotFoundException

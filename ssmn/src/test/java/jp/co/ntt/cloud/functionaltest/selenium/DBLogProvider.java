@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,20 +33,12 @@ public class DBLogProvider {
         return jdbcOperations;
     }
 
-    public void waitForAssertion() {
-        try {
-            Thread.sleep(50);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public void waitForAssertion() throws InterruptedException {
+        Thread.sleep(50);
     }
 
-    public void waitForAssertion(long waitTime) {
-        try {
-            Thread.sleep(waitTime);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public void waitForAssertion(long waitTime) throws InterruptedException {
+        Thread.sleep(waitTime);
     }
 
     public long countContainsByRegexExceptionMessage(String xTrack,

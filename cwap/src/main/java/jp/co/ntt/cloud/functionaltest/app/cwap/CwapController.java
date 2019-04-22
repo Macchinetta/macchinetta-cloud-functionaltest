@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * CWAP画面表示コントローラ。
- *
  * @author NTT 電電太郎
  */
 @Controller
@@ -45,12 +44,11 @@ public class CwapController {
     /**
      * ロガー。
      */
-    private static final Logger logger = LoggerFactory
-            .getLogger(CwapController.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            CwapController.class);
 
     /**
      * UUIDを格納するフォームを生成する。
-     *
      * @return フォームオブジェクト
      */
     @ModelAttribute
@@ -60,9 +58,8 @@ public class CwapController {
 
     /**
      * Hello画面を表示する。
-     *
      * @param locale 地域情報を保持するクラス
-     * @param model  出力情報を保持するクラス
+     * @param model 出力情報を保持するクラス
      * @return View論理名
      */
     @TransactionTokenCheck(value = "cwap", type = TransactionTokenType.BEGIN)
@@ -72,18 +69,17 @@ public class CwapController {
         logger.info("Welcome home! The client locale is {}.", locale);
 
         Date date = new Date();
-        DateFormat dateFormat = DateFormat
-                .getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
+        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG,
+                DateFormat.LONG, locale);
 
         String formattedDate = dateFormat.format(date);
 
         model.addAttribute("serverTime", formattedDate);
 
-        AtomicInteger counter = (AtomicInteger) request
-                .getAttribute(DuplicateCheckFilter.COUNTER_KEY);
+        AtomicInteger counter = (AtomicInteger) request.getAttribute(
+                DuplicateCheckFilter.COUNTER_KEY);
         if (counter == null) {
-            throw new IllegalArgumentException(
-                    "counter isn't set in DuplicateCheckFilter.");
+            throw new IllegalArgumentException("counter isn't set in DuplicateCheckFilter.");
         }
         model.addAttribute("counter", counter.get());
         return "cwap/home";
@@ -91,7 +87,6 @@ public class CwapController {
 
     /**
      * トランザクショントークンチェックを行う。
-     *
      * @return トークンチェック確認正常画面
      */
     @TransactionTokenCheck(value = "cwap", type = TransactionTokenType.CHECK)
@@ -103,7 +98,6 @@ public class CwapController {
 
     /**
      * カスタムビュー表示を行う。
-     *
      * @return カスタムビュー
      */
     @RequestMapping(value = "/showCustomView")
@@ -113,7 +107,6 @@ public class CwapController {
 
     /**
      * ログ出力開始点画面の表示を行う。
-     *
      * @return ログ出力開始点画面
      */
     @RequestMapping(value = "/logging")
@@ -123,7 +116,6 @@ public class CwapController {
 
     /**
      * UUIDが格納されたフォームを元に、アプリケーションログの出力を行う。
-     *
      * @param cwapForm UUID格納フォーム
      * @return ログ出力の確認を促す結果画面
      */

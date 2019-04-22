@@ -33,3 +33,6 @@
 | Redisがクラスターモードのときに設定するRedisのエンドポイント | `<redis.cluster.endpoint>xxxx</redis.cluster.endpoint>` | - |
 | Redisがクラスターモードでないときに設定するRedisのエンドポイント |  `<redis.host>localhost</redis.host>` | 作成したRedisのエンドポイントに合わせて変更する。 |
 | Redisがクラスターモードでないときに設定するRedisのポート番号 |  `<redis.port>6379</redis.port>` | 作成したRedisのポート番号に合わせて変更する。 |
+
+## ローカル環境構築時の注意
+Mavenでの自動試験ではなく、手動でTomcatを起動して画面確認を行う場合、本機能ではHTTPポートを「8084」に設定する必要がある。

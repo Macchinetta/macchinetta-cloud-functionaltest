@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,67 +23,76 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class MaintenanceForm implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-	
-	/** 登録：ファイル */
-	private MultipartFile uFile;
-	/** 登録：アップロードユーザ */
-	@Size(min = 0, max = 100)
-	private String uUploadUser;
-	/** 登録：バケット名 */
-	@Size(min = 0, max = 100)
-	private String uBucketName;
-	
-	/** 削除：バケット名 */
-	@Size(min = 0, max = 100)
-	private String dBucketName;
-	/** 削除：オブジェクトキー */
-	@Size(min = 0, max = 100)
-	private String dObjectKey;
-	/** 削除：アップロードユーザ */
-	@Size(min = 0, max = 100)
-	private String dUploadUser;
+    private static final long serialVersionUID = 1L;
 
+    /** 登録：ファイル */
+    private MultipartFile uFile;
 
-	public MultipartFile getuFile() {
-		return uFile;
-	}
-	public void setuFile(MultipartFile uFile) {
-		this.uFile = uFile;
-	}
+    /** 登録：アップロードユーザ */
+    @Size(min = 0, max = 100)
+    private String uUploadUser;
 
-	public String getuUploadUser() {
-		return uUploadUser;
-	}
-	public void setuUploadUser(String uUploadUser) {
-		this.uUploadUser = uUploadUser;
-	}
+    /** 登録：バケット名 */
+    @Size(min = 0, max = 100)
+    private String uBucketName;
 
-	public String getuBucketName() {
-		return uBucketName;
-	}
-	public void setuBucketName(String uBucketName) {
-		this.uBucketName = uBucketName;
-	}
+    /** 削除：バケット名 */
+    @Size(min = 0, max = 100)
+    private String dBucketName;
 
-	public String getdBucketName() {
-		return dBucketName;
-	}
-	public void setdBucketName(String dBucketName) {
-		this.dBucketName = dBucketName;
-	}
+    /** 削除：オブジェクトキー */
+    @Size(min = 0, max = 100)
+    private String dObjectKey;
 
-	public String getdObjectKey() {
-		return dObjectKey;
-	}
-	public void setdObjectKey(String dObjectKey) {
-		this.dObjectKey = dObjectKey;
-	}
+    /** 削除：アップロードユーザ */
+    @Size(min = 0, max = 100)
+    private String dUploadUser;
 
-	public String getdUploadUser() {
-		return dUploadUser;
-	}
-	public void setdUploadUser(String dUploadUser) {
-		this.dUploadUser = dUploadUser;
-	}
+    public MultipartFile getuFile() {
+        return uFile;
+    }
+
+    public void setuFile(MultipartFile uFile) {
+        this.uFile = uFile;
+    }
+
+    public String getuUploadUser() {
+        return uUploadUser;
+    }
+
+    public void setuUploadUser(String uUploadUser) {
+        this.uUploadUser = uUploadUser;
+    }
+
+    public String getuBucketName() {
+        return uBucketName;
+    }
+
+    public void setuBucketName(String uBucketName) {
+        this.uBucketName = uBucketName;
+    }
+
+    public String getdBucketName() {
+        return dBucketName;
+    }
+
+    public void setdBucketName(String dBucketName) {
+        this.dBucketName = dBucketName;
+    }
+
+    public String getdObjectKey() {
+        return dObjectKey;
+    }
+
+    public void setdObjectKey(String dObjectKey) {
+        this.dObjectKey = dObjectKey;
+    }
+
+    public String getdUploadUser() {
+        return dUploadUser;
+    }
+
+    public void setdUploadUser(String dUploadUser) {
+        this.dUploadUser = dUploadUser;
+    }
 }

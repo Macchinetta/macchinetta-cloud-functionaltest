@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,21 +21,20 @@ import java.io.ObjectInputStream;
 
 /**
  * バイト配列とオブジェクト(Serializable)を変換するクラス
- *
  * @author NTT 電電太郎
- *
  */
 public class ByteObjectConvarter {
 
     /**
      * バイト配列からオブジェクトに変換する
-     * 
      * @param bytes
      * @return
      * @throws ClassNotFoundException
      * @throws IOException
      */
-    public static Object toObject(byte[] bytes) throws ClassNotFoundException, IOException {
-        return new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
+    public static Object toObject(
+            byte[] bytes) throws ClassNotFoundException, IOException {
+        return new ObjectInputStream(new ByteArrayInputStream(bytes))
+                .readObject();
     }
 }

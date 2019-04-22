@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,13 @@ import static com.codeborne.selenide.Selenide.$;
 public class DownloadPage {
 
     private String selectedKey;
+
     private String status;
+
     private String presignedUrl;
+
     private String s3Base64;
+
     private String localBase64;
 
     public DownloadPage download(String key) throws Exception {

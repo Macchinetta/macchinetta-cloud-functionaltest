@@ -21,7 +21,7 @@
                 session_id,
                 sequence
             FROM
-                ssmn_transaction_token
+                transaction_token
             WHERE
                 token_name = #{tokenName}
             AND
@@ -33,7 +33,7 @@
         </select>
         <insert id="insert" parameterType="StoredTransactionToken">
         <![CDATA[
-            INSERT INTO ssmn_transaction_token
+            INSERT INTO transaction_token
             (
                 token_name,
                 token_key,
@@ -47,13 +47,13 @@
                 #{tokenKey},
                 #{tokenValue},
                 #{sessionId},
-                nextval('SSMN_TRANSACTION_TOKEN_SEQUENCE')
+                nextval('TRANSACTION_TOKEN_SEQUENCE')
             )
         ]]>
         </insert>
         <delete id="delete">
         <![CDATA[
-            DELETE FROM ssmn_transaction_token
+            DELETE FROM transaction_token
             WHERE
                 token_name = #{tokenName}
             AND
@@ -64,9 +64,9 @@
         </delete>
         <delete id="deleteOlderThanNLatest">
         <![CDATA[
-            DELETE FROM ssmn_transaction_token
+            DELETE FROM transaction_token
             WHERE sequence IN (
-                SELECT sequence FROM ssmn_transaction_token
+                SELECT sequence FROM transaction_token
                 WHERE
                     token_name = #{tokenName}
                 AND
@@ -78,7 +78,7 @@
         </delete>
         <delete id="deleteBySessionId">
             <![CDATA[
-                DELETE FROM ssmn_transaction_token
+                DELETE FROM transaction_token
                 WHERE
                     session_id = #{sessionId}
             ]]>

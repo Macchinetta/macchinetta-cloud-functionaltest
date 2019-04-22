@@ -1,6 +1,6 @@
-<h2>SessionEnforcerFilter Functional Test(Is Authenticated)</h2>
+<h2>Session Management Functional Test(Is Authenticated)</h2>
 <table>
-  <!-- SessionEnforcerFilter get test scenario -->
+  <!-- Session Management get test scenario -->
   <tr>
     <td>
       <form:form action="${pageContext.request.contextPath}/session/isAuthenticated" method="get">
@@ -8,7 +8,7 @@
       </form:form>
     </td>
   </tr>
-  <!-- SessionEnforcerFilter post test scenario -->
+  <!-- Session Management post test scenario -->
   <tr>
     <td>
       <form:form action="${pageContext.request.contextPath}/session/isAuthenticated" method="post">

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,8 @@ import javax.inject.Inject;
 @Component
 public class ReservationMessageListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(ReservationMessageListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            ReservationMessageListener.class);
 
     @Inject
     ReservationInspectionService reservationInspectionService;
@@ -39,9 +40,11 @@ public class ReservationMessageListener {
     public void receive(Reservation reservation,
             @Header(JmsHeaders.MESSAGE_ID) String messageId) {
         try {
-            reservationInspectionService.inspectAndNotify(reservation, messageId);
+            reservationInspectionService.inspectAndNotify(reservation,
+                    messageId);
         } catch (DuplicateReceivingException e) {
-            logger.warn("*** Detected duplicate receive messageId [{}]", e.getMessage());
+            logger.warn("*** Detected duplicate receive messageId [{}]", e
+                    .getMessage());
         }
     }
 }

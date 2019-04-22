@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,14 +27,23 @@ import java.util.List;
 public class MailNotification {
 
     private String type;
+
     private String messageId;
+
     private String topicArn;
+
     private String messageStr;
+
     private Message message;
+
     private Date timestamp;
+
     private int signatureVersion;
+
     private String signature;
+
     private String signingCertURL;
+
     private String unsubscribeURL;
 
     @JsonProperty("Type")
@@ -129,9 +138,13 @@ public class MailNotification {
     public static class Message {
 
         private String notificationType;
+
         private Bounce bounce;
+
         private Mail mail;
+
         private Delivery delivery;
+
         private Complaint complaint;
 
         @JsonProperty
@@ -182,9 +195,13 @@ public class MailNotification {
         public static class Complaint {
 
             private List<ComplainedRecipient> complainedRecipients;
+
             private Date timestamp;
+
             private String feedbackId;
+
             private String userAgent;
+
             private String complaintFeedbackType;
 
             @JsonProperty
@@ -250,10 +267,15 @@ public class MailNotification {
         public static class Delivery {
 
             private Date timestamp;
+
             private long processingTimeMillis;
+
             private List<String> recipients;
+
             private String smtpResponse;
+
             private String remoteMtaIp;
+
             private String reportingMTA;
 
             @JsonProperty
@@ -314,8 +336,11 @@ public class MailNotification {
         public static class CommonHeaders {
 
             private List<String> from;
+
             private List<String> to;
+
             private String messageId;
+
             private String subject;
 
             public List<String> getFrom() {
@@ -354,14 +379,23 @@ public class MailNotification {
         public static class Mail {
 
             private Date timestamp;
+
             private String source;
+
             private String sourceArn;
+
             private String sourceIp;
+
             private String sendingAccountId;
+
             private String messageId;
+
             private List<String> destination;
+
             private boolean headersTruncated;
+
             private List<Header> headers;
+
             private CommonHeaders commonHeaders;
 
             @JsonProperty
@@ -457,6 +491,7 @@ public class MailNotification {
             public static class Header {
 
                 private String name;
+
                 private String value;
 
                 @JsonProperty
@@ -482,11 +517,17 @@ public class MailNotification {
         public static class Bounce {
 
             private String bounceType;
+
             private String bounceSubType;
+
             private List<BouncedRecipients> bouncedRecipients;
+
             private Date timestamp;
+
             private String feedbackId;
+
             private String remoteMtaIp;
+
             private String reportingMTA;
 
             @JsonProperty
@@ -556,8 +597,11 @@ public class MailNotification {
             public static class BouncedRecipients {
 
                 private String emailAddress;
+
                 private String action;
+
                 private String status;
+
                 private String diagnosticCode;
 
                 public String getEmailAddress() {

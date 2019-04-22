@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,13 @@ package jp.co.ntt.cloud.functionaltest.domain.model;
 
 public class StoredTransactionToken {
     private String tokenName;
+
     private String tokenKey;
+
     private String tokenValue;
+
     private String sessionId;
+
     private long sequence;
 
     public String getTokenName() {
@@ -54,12 +58,12 @@ public class StoredTransactionToken {
         this.sessionId = sessionId;
     }
 
-	public long getSequence() {
-		return sequence;
-	}
+    public long getSequence() {
+        return sequence;
+    }
 
-	public void setSequence(long sequence) {
-		this.sequence = sequence;
-	}
+    public void setSequence(long sequence) {
+        this.sequence = sequence;
+    }
 
 }

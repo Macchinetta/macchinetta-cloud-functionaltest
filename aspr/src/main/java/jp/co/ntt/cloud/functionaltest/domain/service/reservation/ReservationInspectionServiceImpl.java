@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,11 @@ import javax.inject.Inject;
 import java.util.concurrent.ArrayBlockingQueue;
 
 @Service
-public class ReservationInspectionServiceImpl implements ReservationInspectionService {
+public class ReservationInspectionServiceImpl implements
+                                              ReservationInspectionService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ReservationInspectionServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            ReservationInspectionServiceImpl.class);
 
     @Inject
     DuplicateMessageChecker duplicateMessageChecker;
@@ -41,7 +43,8 @@ public class ReservationInspectionServiceImpl implements ReservationInspectionSe
     @Override
     public void inspectAndNotify(Reservation reservation, String messageId) {
 
-        logger.info("### checker before reserveNo[{}]", reservation.getReserveNo());
+        logger.info("### checker before reserveNo[{}]", reservation
+                .getReserveNo());
 
         duplicateMessageChecker.checkDuplicateMessage(messageId);
 
@@ -49,7 +52,8 @@ public class ReservationInspectionServiceImpl implements ReservationInspectionSe
             throw new BusinessException("Retryable business exception");
         }
 
-        logger.info("### checker after reserveNo[{}]", reservation.getReserveNo());
+        logger.info("### checker after reserveNo[{}]", reservation
+                .getReserveNo());
 
         // business-process.
         reservationBlockingQueue.add(reservation);

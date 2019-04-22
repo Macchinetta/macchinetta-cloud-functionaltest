@@ -21,7 +21,7 @@ import jp.co.ntt.cloud.functionaltest.domain.service.login.AccountSharedService;
  */
 @Service
 public class SampleUserDetailsService implements UserDetailsService {
-    
+
     /**
      * ログイン業務共通サービス。
      */
@@ -33,7 +33,8 @@ public class SampleUserDetailsService implements UserDetailsService {
      */
     @Transactional(readOnly = true)
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(
+            String username) throws UsernameNotFoundException {
         try {
             Account account = accountSharedService.findOne(username);
             return new SampleUserDetails(account);

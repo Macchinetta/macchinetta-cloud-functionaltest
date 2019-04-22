@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,27 +32,21 @@ public interface ReservationRepository {
 
     /**
      * 予約情報を取得する。
-     *
-     * @param reserveNo
-     *            予約番号
+     * @param reserveNo 予約番号
      * @return 予約情報
      */
     Reservation findOne(String reserveNo);
 
     /**
      * 予約情報を更新する。
-     *
-     * @param reservation
-     *            予約情報
+     * @param reservation 予約情報
      * @return 更新件数
      */
     int update(Reservation reservation);
 
     /**
      * 予約情報を削除する。
-     *
-     * @param reservation
-     *            予約番号
+     * @param reservation 予約番号
      * @return 削除件数
      */
     int delete(String reservationNo);

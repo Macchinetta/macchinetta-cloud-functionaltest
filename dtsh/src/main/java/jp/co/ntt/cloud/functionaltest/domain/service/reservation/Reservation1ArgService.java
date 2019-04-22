@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,7 @@ import jp.co.ntt.cloud.functionaltest.domain.repository.reservation.ReservationR
 
 /**
  * 予約情報サービス。シャーディングテスト用。
- *
  * @author NTT 電電太郎
- *
  */
 @Service
 public class Reservation1ArgService {
@@ -38,9 +36,7 @@ public class Reservation1ArgService {
 
     /**
      * 予約情報登録。
-     *
-     * @param reservation
-     *            予約情報
+     * @param reservation 予約情報
      */
     @Transactional
     @ShardWithAccount("reservation.repMember.customerNo")
@@ -50,9 +46,7 @@ public class Reservation1ArgService {
 
     /**
      * 予約情報取得。
-     *
-     * @param reservation
-     *            予約情報
+     * @param reservation 予約情報
      */
     @Transactional
     @ShardWithAccount("reservation.repMember.customerNo")
@@ -62,9 +56,7 @@ public class Reservation1ArgService {
 
     /**
      * 予約情報更新。
-     *
-     * @param reservation
-     *            予約情報
+     * @param reservation 予約情報
      */
     @Transactional
     @ShardWithAccount("reservation.repMember.customerNo")
@@ -74,9 +66,7 @@ public class Reservation1ArgService {
 
     /**
      * 予約情報削除。
-     *
-     * @param reservation
-     *            予約情報
+     * @param reservation 予約情報
      */
     @Transactional
     @ShardWithAccount("reservation.repMember.customerNo")

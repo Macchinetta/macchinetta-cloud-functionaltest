@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,6 @@ import junit.framework.TestCase;
  * 優先度キューのテストクラス。
  * @author NTT 電電太郎
  */
-@SuppressWarnings("unused")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
@@ -74,7 +73,8 @@ public class PriorityQueueTest extends TestCase {
     @After
     public void tearDown() {
         // ログイン状態の場合ログアウトする。
-        PriorityQueuePage helloPage = open(applicationContextUrl, PriorityQueuePage.class);
+        PriorityQueuePage helloPage = open(applicationContextUrl,
+                PriorityQueuePage.class);
         if (helloPage.isLoggedIn()) {
             helloPage.logout();
         }
@@ -91,9 +91,7 @@ public class PriorityQueueTest extends TestCase {
         password = "aaaaa11111";
 
         // テスト実行
-        PriorityQueuePage priorityQueuePage = open(applicationContextUrl,
-                TopPage.class)
-                .login(userId, password);
+        open(applicationContextUrl, TopPage.class).login(userId, password);
 
         // アサーション
         $$("p").get(1).shouldHave(text("Hanako Denden"));
@@ -116,9 +114,7 @@ public class PriorityQueueTest extends TestCase {
         password = "aaaaa11111";
 
         // テスト実行
-        PriorityQueuePage priorityQueuePage =
-        open(applicationContextUrl, TopPage.class)
-        .login(userId, password);
+        open(applicationContextUrl, TopPage.class).login(userId, password);
 
         // アサーション
         $$("p").get(1).shouldHave(text("Taro Denden"));
@@ -128,7 +124,6 @@ public class PriorityQueueTest extends TestCase {
         } else {
             assertTrue("通常会員のため、メッセージは10秒遅延処理される。", Long.valueOf(val) >= 10);
         }
-
 
         // 証跡取得
         screenshot("lowPriorityQueueTest");

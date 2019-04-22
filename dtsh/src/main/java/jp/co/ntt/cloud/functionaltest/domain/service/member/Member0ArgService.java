@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,7 @@ import jp.co.ntt.cloud.functionaltest.domain.repository.member.MemberRepository;
 
 /**
  * メンバー登録サービス。引数がないメソッドに{@link ShardWithAccount}アノテーションを付与して、デフォルトDBにアクセスすることを確認する。
- *
  * @author NTT 電電太郎
- *
  */
 @Service
 public class Member0ArgService {
@@ -40,7 +38,6 @@ public class Member0ArgService {
      * <p>
      * 引数がないメソッドに{@link ShardWithAccount}アノテーションを付与して、デフォルトDBにアクセスすることを確認する試験用のメソッド。
      * </p>
-     *
      */
     @Transactional
     @ShardWithAccount("reservation.repMember.customerNo")

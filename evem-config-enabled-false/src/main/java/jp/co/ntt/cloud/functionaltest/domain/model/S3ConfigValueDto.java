@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,7 @@ import org.springframework.stereotype.Component;
  * プロパティファイルから取得したS3関連の情報を保持するDtoクラス
  * <p>
  * {@link @Value}で取得するパターン
- *
  * @author NTT 電電太郎
- *
  */
 @Component
 public class S3ConfigValueDto {
@@ -48,7 +46,6 @@ public class S3ConfigValueDto {
 
     /**
      * S3バケット名を取得する。
-     *
      * @return S3バケット名
      */
     public String getBucketname() {
@@ -57,7 +54,6 @@ public class S3ConfigValueDto {
 
     /**
      * ファイル一時保存ディレクトリを取得する。
-     *
      * @return ファイル一時保存ディレクトリ
      */
     public String getTemproryDirectory() {
@@ -66,7 +62,6 @@ public class S3ConfigValueDto {
 
     /**
      * ファイル保存ディレクトリを取得する。
-     *
      * @return ファイル保存ディレクトリ
      */
     public String getSaveDirectory() {

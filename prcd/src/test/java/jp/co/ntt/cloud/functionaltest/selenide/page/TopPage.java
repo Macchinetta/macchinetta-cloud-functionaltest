@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ public class TopPage {
      * @param password パスワード
      * @return TopPage トップページ
      */
-    public HelloPage login(String userId, String password){
+    public HelloPage login(String userId, String password) {
         $(byId("userId")).clear();
         $(byId("userId")).setValue(userId);
         $(byId("password")).clear();

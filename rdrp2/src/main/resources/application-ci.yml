@@ -37,7 +37,7 @@ database:
       name: default
   data-sources:
     - schema: default
-      dbInstanceIdentifier: ci-functionaltest
+      dbInstanceIdentifier: ci-functionaltest-1-0-x
       driverUrlOption: socketTimeout=120&connectTimeout=120
 
 # Logging

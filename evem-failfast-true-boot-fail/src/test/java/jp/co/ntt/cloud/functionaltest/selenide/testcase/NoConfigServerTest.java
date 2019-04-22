@@ -1,3 +1,6 @@
+/*
+ * Copyright(c) 2017 NTT Corporation.
+ */
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
 import static com.codeborne.selenide.Condition.text;
@@ -24,7 +27,8 @@ import jp.co.ntt.cloud.functionaltest.selenide.page.TopPage;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:META-INF/spring/selenideContext.xml" })
+@ContextConfiguration(locations = {
+        "classpath:META-INF/spring/selenideContext.xml" })
 public class NoConfigServerTest extends TestCase {
 
     /**
@@ -84,19 +88,24 @@ public class NoConfigServerTest extends TestCase {
         password = "aaaaa11111";
 
         // テスト実行
-        HelloPage helloWorldPage = open(applicationContextUrl, TopPage.class).login(userId, password);
+        HelloPage helloWorldPage = open(applicationContextUrl, TopPage.class)
+                .login(userId, password);
 
         $("h1").shouldHave(text("Hello world!"));
         $$("p").get(1).shouldHave(text("Taro Denden"));
 
         // @ConfigurationPropertiesで取得した値
-        SelenideElement s3ConfigConfigurationPropertiesTable = helloWorldPage.getS3ConfigConfigurationPropertiesTable();
+        SelenideElement s3ConfigConfigurationPropertiesTable = helloWorldPage
+                .getS3ConfigConfigurationPropertiesTable();
         // @Valueで取得した値
-        SelenideElement s3ConfigValueTable = helloWorldPage.getS3ConfigValueTable();
+        SelenideElement s3ConfigValueTable = helloWorldPage
+                .getS3ConfigValueTable();
 
-        s3ConfigConfigurationPropertiesTable.shouldHave(text("functionaltest.external.properties.config.repo"),
-                text("tmp/"), text("save/"));
-        s3ConfigValueTable.shouldHave(text("functionaltest.external.properties.config.repo"), text("tmp/"),
+        s3ConfigConfigurationPropertiesTable.shouldHave(text(
+                "functionaltest.external.properties.config.repo"), text("tmp/"),
+                text("save/"));
+        s3ConfigValueTable.shouldHave(text(
+                "functionaltest.external.properties.config.repo"), text("tmp/"),
                 text("save/from/local/properties"));
 
         // 証跡取得

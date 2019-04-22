@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,8 @@ public class MyBatisTransactionTokenStore implements TransactionTokenStore {
 
     private final TokenStringGenerator generator;
 
-    public MyBatisTransactionTokenStore(int transactionTokenSizePerTokenName, TokenStringGenerator generator) {
+    public MyBatisTransactionTokenStore(int transactionTokenSizePerTokenName,
+            TokenStringGenerator generator) {
         this.transactionTokenSizePerTokenName = transactionTokenSizePerTokenName;
         this.generator = generator;
     }
@@ -93,7 +94,8 @@ public class MyBatisTransactionTokenStore implements TransactionTokenStore {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public String createAndReserveTokenKey(String tokenName) {
         String sessionId = getSession().getId();
-        tokenRepository.deleteOlderThanNLatest(tokenName, sessionId, transactionTokenSizePerTokenName - 1);
+        tokenRepository.deleteOlderThanNLatest(tokenName, sessionId,
+                transactionTokenSizePerTokenName - 1);
         return generator.generate(UUID.randomUUID().toString());
     }
 

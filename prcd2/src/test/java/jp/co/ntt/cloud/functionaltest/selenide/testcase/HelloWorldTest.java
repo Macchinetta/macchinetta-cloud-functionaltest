@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,6 +63,9 @@ public class HelloWorldTest {
 
     @Before
     public void setUp() {
+        // ブラウザの設定
+        Configuration.browser = "jp.co.ntt.cloud.functionaltest.selenide.testcase.FirefoxWebDriverProvider";
+
         // テスト結果の出力先の設定
         Configuration.reportsFolder = reportPath;
     }
@@ -77,11 +80,10 @@ public class HelloWorldTest {
     }
 
     /*
-     * PRCD20101_001
-     * 署名付きCookieを利用して、アクセス制限が設定されているCloudFront上のファイルにIP制限に因ってアクセスできないことを確認する
+     * PRCD20101_001 署名付きCookieを利用して、アクセス制限が設定されているCloudFront上のファイルにIP制限に因ってアクセスできないことを確認する
      */
     @Test
-    public void testPRCD20101_001() {
+    public void testPRCD20101_001() throws InterruptedException {
 
         // 事前準備
         userId = "0000000002";
@@ -97,19 +99,11 @@ public class HelloWorldTest {
         $$("p").get(1).shouldHave(text("Taro Denden"));
 
         // コンテンツの閲覧期限に達したので閲覧可能だがIP制限で閲覧不可
+        Thread.sleep(5000);
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
         helloWorldPage.loadVerificationContent();
 
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(10000);
 
         String cloudfrontVal = $(byId("cloudFrontResult")).val();
         assertThat(cloudfrontVal, isEmptyOrNullString());

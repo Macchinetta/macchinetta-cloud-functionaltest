@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ public class AfterLoginOp {
      * ログアウトする。
      * @return TopPage トップページ
      */
-    public LoginPage logout(){
+    public LoginPage logout() {
         $(byId("logout")).click();
         return new LoginPage();
     }

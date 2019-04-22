@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,13 @@ import org.springframework.data.repository.CrudRepository;
 import jp.co.ntt.cloud.functionaltest.domain.common.shard.model.ShardingAccount;
 
 /**
- * 　シャードアカウントのリポジトリー。
+ * シャードアカウントのリポジトリー。
  * @author NTT 電電太郎
  */
 @CacheConfig(cacheNames = "shardids")
 @EnableScan
-public interface AccountShardKeyRepository
-                                          extends
-                                          CrudRepository<ShardingAccount, String> {
+public interface AccountShardKeyRepository extends
+                                           CrudRepository<ShardingAccount, String> {
 
     /*
      * (非 Javadoc)

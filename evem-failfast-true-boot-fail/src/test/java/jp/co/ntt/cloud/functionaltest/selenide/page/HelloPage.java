@@ -1,3 +1,6 @@
+/*
+ * Copyright(c) 2017 NTT Corporation.
+ */
 package jp.co.ntt.cloud.functionaltest.selenide.page;
 
 import static com.codeborne.selenide.Selectors.byId;
@@ -15,7 +18,7 @@ public class HelloPage {
      * ログアウトする。
      * @return TopPage トップページ
      */
-    public TopPage logout(){
+    public TopPage logout() {
         $("button").click();
         return new TopPage();
     }
@@ -33,7 +36,6 @@ public class HelloPage {
 
     /**
      * S3設定値を表示しているテーブルを返却する。
-     *
      * @return S3設定値テーブル
      */
     public SelenideElement getS3ConfigConfigurationPropertiesTable() {
@@ -42,7 +44,6 @@ public class HelloPage {
 
     /**
      * S3設定値を表示しているテーブルを返却する。
-     *
      * @return S3設定値テーブル
      */
     public SelenideElement getS3ConfigValueTable() {

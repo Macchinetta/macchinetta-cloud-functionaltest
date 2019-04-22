@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * データソース個別情報。
- *
  * @author NTT 電電太郎
- *
  */
 @ConfigurationProperties(prefix = "database")
 public class DatabaseProperties {
@@ -40,8 +38,7 @@ public class DatabaseProperties {
     }
 
     /**
-     * @param dataSources
-     *            the dataSources to set
+     * @param dataSources the dataSources to set
      */
     public void setDataSources(List<Map<String, String>> dataSources) {
         this.dataSources = dataSources;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright(c) 2017 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package jp.co.ntt.cloud.functionaltest.app.reservation;
 
 import jp.co.ntt.cloud.functionaltest.domain.model.Reservation;
 import jp.co.ntt.cloud.functionaltest.domain.service.reservation.ReservationService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.config.JmsListenerEndpointRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -52,7 +51,8 @@ public class ReservationController {
     }
 
     @RequestMapping(value = "/send/{message}", method = RequestMethod.GET)
-    public String sendMessage(@PathVariable("message") String message, Model model) {
+    public String sendMessage(@PathVariable("message") String message,
+            Model model) {
         final Reservation reservation = new Reservation();
         reservation.setReserveNo(message);
         reservationService.sendMessage(reservation);
@@ -61,13 +61,12 @@ public class ReservationController {
     }
 
     @RequestMapping(value = "/receive/{count}", method = RequestMethod.GET)
-    public String receiveMessage(@PathVariable("count") int count, Model model)
-            throws InterruptedException, TimeoutException {
+    public String receiveMessage(@PathVariable("count") int count,
+            Model model) throws InterruptedException, TimeoutException {
 
         final String[] reserveNos = new String[count];
         for (int i = 0; i < count; i++) {
-            final String reserveNo = reservations
-                    .poll(1L, TimeUnit.MINUTES)
+            final String reserveNo = reservations.poll(1L, TimeUnit.MINUTES)
                     .getReserveNo();
             if (reserveNo == null) {
                 throw new TimeoutException("Can not poll message in 1 minute.");
@@ -125,9 +124,11 @@ public class ReservationController {
     }
 
     @RequestMapping(value = "/browse/{queueName}", method = RequestMethod.GET)
-    public String browseMessageId(Model model, @PathVariable("queueName") String queueName,
+    public String browseMessageId(Model model,
+            @PathVariable("queueName") String queueName,
             @RequestParam("delete") boolean delete) {
-        List<String> messageIds = reservationService.browseMessageIds(queueName, delete);
+        List<String> messageIds = reservationService.browseMessageIds(queueName,
+                delete);
         String messageId;
         if (messageIds.size() > 0) {
             messageId = messageIds.get(0);
@@ -139,7 +140,8 @@ public class ReservationController {
     }
 
     @RequestMapping(value = "/deleteAll/{queueName}", method = RequestMethod.GET)
-    public String deleteAllMessages(Model model, @PathVariable("queueName") String queueName) {
+    public String deleteAllMessages(Model model,
+            @PathVariable("queueName") String queueName) {
         reservationService.deleteAllMessages(queueName);
         model.addAttribute("status", "all-cleared");
         return "reservation/home";
@@ -147,7 +149,7 @@ public class ReservationController {
 
     private void awaitListenerState(boolean start) {
         int timeoutCount = 0;
-        while(jmsListenerEndpointRegistry.isRunning() ^ start) {
+        while (jmsListenerEndpointRegistry.isRunning() ^ start) {
             timeoutCount++;
             if (timeoutCount > 100) {
                 throw new IllegalStateException("exceeded await time in JmsListener.");
@@ -155,7 +157,7 @@ public class ReservationController {
             try {
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
-                // ignore.
+                Thread.currentThread().interrupt();
             }
         }
     }
