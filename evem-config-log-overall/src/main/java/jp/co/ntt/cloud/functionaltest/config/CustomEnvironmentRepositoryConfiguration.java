@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  *
  */
 package jp.co.ntt.cloud.functionaltest.config;
-
-import javax.inject.Inject;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.config.server.config.ConfigServerProperties;
@@ -42,16 +40,14 @@ public class CustomEnvironmentRepositoryConfiguration {
     @Profile(value = { "loginfo", "logwarn" })
     protected static class S3RepositoryConfiguration {
 
-        @Inject
-        private ConfigurableEnvironment environment;
-
         /**
          * 環境レポジトリをBean登録する。
          * @return S3 環境レポジトリ
          */
         @Bean
-        public EnvironmentRepository environmentRepository() {
-            return new S3EnvironmentRepository(this.environment);
+        public EnvironmentRepository environmentRepository(
+                ConfigurableEnvironment environment) {
+            return new S3EnvironmentRepository(environment);
         }
 
     }

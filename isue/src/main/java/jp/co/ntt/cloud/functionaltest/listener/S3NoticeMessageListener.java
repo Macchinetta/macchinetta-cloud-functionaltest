@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,8 +112,11 @@ public class S3NoticeMessageListener {
                 "yyyy-MM-dd"));
         String sequencer = eventMsg.getS3().getObject().getSequencer();
 
+        // objectKey -> {Prefix, fileName}
+        String splitObjectKey = dataSplitByPrefix(objectKey);
+
         // objectKey -> {userId, fileName}
-        String[] objectKeyArr = dataSplit(objectKey);
+        String[] objectKeyArr = dataSplitByUser(splitObjectKey);
         String uploadUser = objectKeyArr[0];
         String fileName = objectKeyArr[1];
 
@@ -159,8 +162,11 @@ public class S3NoticeMessageListener {
         String strUploadDate = uploadDate.toString(DateTimeFormat.forPattern(
                 "yyyy-MM-dd"));
 
+        // objectKey -> {Prefix, fileName}
+        String splitObjectKey = dataSplitByPrefix(objectKey);
+
         // objectKey -> {userId, fileName}
-        String[] objectKeyArr = dataSplit(objectKey);
+        String[] objectKeyArr = dataSplitByUser(splitObjectKey);
         String uploadUser = objectKeyArr[0];
         String fileName = objectKeyArr[1];
 
@@ -218,7 +224,7 @@ public class S3NoticeMessageListener {
      * @param objectKey オブジェクトキー
      * @return 分割後配列
      */
-    private String[] dataSplit(String objectKey) {
+    private String[] dataSplitByUser(String objectKey) {
         // input string is "[UserId]-[FileName]"
         if (objectKey.contains("-")) {
             int dividePos = objectKey.indexOf("-");
@@ -227,5 +233,19 @@ public class S3NoticeMessageListener {
         } else {
             return new String[] { objectKey, objectKey };
         }
+    }
+
+    /**
+     * オブジェクトキー（"[Prefix]/[FileName]"のフォーマットの想定）を {[Prefix],[FileName]}の文字列配列に分割する。
+     * @param objectKey オブジェクトキー
+     * @return 分割後配列
+     */
+    private String dataSplitByPrefix(String objectKey) {
+        // input string is "[Prefix]/[FileName]"
+        while (objectKey.contains("/")) {
+            int dividePos = objectKey.indexOf("/");
+            objectKey = objectKey.substring(dividePos + 1);
+        }
+        return objectKey;
     }
 }

@@ -13,7 +13,6 @@ cloud:
 
 functionaltest:
     download:
-      bucketName: private-distribution
       expiration: 30
       roleName: s3-direct-download
       roleSessionName: s3-direct-download01

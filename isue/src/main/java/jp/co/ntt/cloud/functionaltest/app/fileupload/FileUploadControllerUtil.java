@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import java.util.Map;
 public class FileUploadControllerUtil {
 
     /** 使用バケット名リスト */
-    private static final String[] BUCKET_NAME_ARR = new String[] {
-            "functionaltest.fileupload.a", "functionaltest.fileupload.b" };
+    private static final String[] BUCKET_NAME_ARR = new String[] { "func-temp",
+            "func-bucket" };
 
     /**
      * アップロード先バケット名のマップを返却する。

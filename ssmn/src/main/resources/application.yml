@@ -8,7 +8,9 @@ spring:
   session:
     store-type: redis
     # Session Timeout setting(Junit実行時は Selenide.property の until.session.timeout.sec の値のほうが大きいことを確認すること。)
-    timeoutSecond: 10
+    timeout: 10
+    redis:
+      configure-action: NONE
   redis:
     listener:
       concurrencyLimit: 2

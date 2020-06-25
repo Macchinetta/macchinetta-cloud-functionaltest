@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,27 @@
  */
 package jp.co.ntt.cloud.functionaltest.app.cwap;
 
-import jp.co.ntt.cloud.functionaltest.app.exception.CwapCustomException;
-import jp.co.ntt.cloud.functionaltest.app.filter.DuplicateCheckFilter;
-import jp.co.ntt.cloud.functionaltest.app.form.CwapForm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.terasoluna.gfw.web.token.transaction.TransactionTokenCheck;
-import org.terasoluna.gfw.web.token.transaction.TransactionTokenType;
-
-import javax.servlet.http.HttpServletRequest;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.terasoluna.gfw.web.token.transaction.TransactionTokenCheck;
+import org.terasoluna.gfw.web.token.transaction.TransactionTokenType;
+
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
+import jp.co.ntt.cloud.functionaltest.app.exception.CwapCustomException;
+import jp.co.ntt.cloud.functionaltest.app.filter.DuplicateCheckFilter;
+import jp.co.ntt.cloud.functionaltest.app.form.CwapForm;
 
 /**
  * CWAP画面表示コントローラ。
@@ -63,9 +66,7 @@ public class CwapController {
      * @param model 出力情報を保持するクラス
      * @return View論理名
      */
-    @TransactionTokenCheck(value = "cwap", type = TransactionTokenType.BEGIN)
-    @RequestMapping(value = "/", method = { RequestMethod.GET,
-            RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.ROOT_HOME)
     public String home(Locale locale, Model model, HttpServletRequest request) {
         logger.info("Welcome home! The client locale is {}.", locale);
 
@@ -83,7 +84,17 @@ public class CwapController {
             throw new IllegalArgumentException("counter isn't set in DuplicateCheckFilter.");
         }
         model.addAttribute("counter", counter.get());
-        return "cwap/home";
+        return WebPagePathConstants.WELCOME_HOME;
+    }
+
+    /**
+     * トランザクショントークンを生成する。
+     * @return トークン生成完了画面
+     */
+    @TransactionTokenCheck(value = "cwap", type = TransactionTokenType.BEGIN)
+    @GetMapping(value = WebPagePathConstants.TRANSACTION_GENERATETOKEN)
+    public String generateToken() {
+        return WebPagePathConstants.TRANSACTION_GENERATETOKEN;
     }
 
     /**
@@ -91,28 +102,27 @@ public class CwapController {
      * @return トークンチェック確認正常画面
      */
     @TransactionTokenCheck(value = "cwap", type = TransactionTokenType.CHECK)
-    @RequestMapping(value = "/confirmToken", method = { RequestMethod.GET,
-            RequestMethod.POST })
+    @PostMapping(value = WebPagePathConstants.TRANSACTION_CONFIRMTOKEN)
     public String confirmToken() {
-        return "cwap/tokenCheck";
+        return WebPagePathConstants.TRANSACTION_CONFIRMTOKEN;
     }
 
     /**
      * カスタムビュー表示を行う。
      * @return カスタムビュー
      */
-    @RequestMapping(value = "/showCustomView")
+    @GetMapping(value = WebPagePathConstants.SHOWCUSTOMVIEW)
     public String showCustomView() {
-        return "cwapCustomView";
+        return WebPagePathConstants.CWAPCUSTOMVIEW;
     }
 
     /**
      * ログ出力開始点画面の表示を行う。
      * @return ログ出力開始点画面
      */
-    @RequestMapping(value = "/logging")
+    @GetMapping(value = WebPagePathConstants.LOGGER_LOGGING)
     public String loggingStart() {
-        return "cwap/logging";
+        return WebPagePathConstants.LOGGER_LOGGING;
     }
 
     /**
@@ -120,16 +130,16 @@ public class CwapController {
      * @param cwapForm UUID格納フォーム
      * @return ログ出力の確認を促す結果画面
      */
-    @RequestMapping(value = "/outputLog", method = RequestMethod.POST)
+    @PostMapping(value = WebPagePathConstants.LOGGER_LOGGED)
     public String outputLog(CwapForm cwapForm) {
         logger.info("outputUUID={}", cwapForm.getUuid());
-        return "cwap/logged";
+        return WebPagePathConstants.LOGGER_LOGGED;
     }
 
     /**
      * カスタム例外をハンドリングする画面を表示する。
      */
-    @RequestMapping(value = "/customError")
+    @GetMapping(value = WebPagePathConstants.CUSTOMERROR)
     public void throwsCustomError() {
         throw new CwapCustomException();
     }

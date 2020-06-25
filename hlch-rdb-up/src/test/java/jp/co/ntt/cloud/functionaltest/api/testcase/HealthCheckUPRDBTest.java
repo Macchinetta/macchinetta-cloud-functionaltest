@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,12 +29,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.codeborne.selenide.Configuration;
 
 import io.restassured.RestAssured;
-import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
-public class HealthCheckUPRDBTest extends TestCase {
+public class HealthCheckUPRDBTest {
 
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
@@ -56,16 +55,17 @@ public class HealthCheckUPRDBTest extends TestCase {
     }
 
     /**
-     * HLCH0104 001 Spring Boot Actuator を依存関係に追加しただけで有効になるRDBのヘルスチェックのstatusが「UP」になること
+     * HLCH0103 001 Spring Boot Actuator を依存関係に追加しただけで有効になるRDBのヘルスチェックのstatusが「UP」になること
      */
     @Test
     public void upRDBhealthCheckTest() {
 
         // アサート:dbのstatusが「UP」になっていること
         given().get("/management/health").then().assertThat().body("status",
-                equalTo("UP")).body("details.diskSpace.status", equalTo("UP"))
-                .body("details.db.status", equalTo("UP")).body(
-                        "details.refreshScope.status", equalTo("UP"));
+                equalTo("UP")).body("components.diskSpace.status", equalTo(
+                        "UP")).body("components.db.status", equalTo("UP")).body(
+                                "components.refreshScope.status", equalTo(
+                                        "UP"));
 
     }
 }

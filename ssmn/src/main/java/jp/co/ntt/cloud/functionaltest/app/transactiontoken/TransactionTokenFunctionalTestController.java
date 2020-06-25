@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,34 +17,34 @@
 package jp.co.ntt.cloud.functionaltest.app.transactiontoken;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
 
 @Controller
-@RequestMapping("transactiontoken")
 public class TransactionTokenFunctionalTestController {
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping(value = WebPagePathConstants.TRANSACTIONTOKEN)
     public String index() {
-        return "transactiontoken/index";
+        return WebPagePathConstants.TRANSACTIONTOKEN_INDEX;
     }
 
     // Contents confirmation testing
-    @RequestMapping(value = "create", method = RequestMethod.GET)
+    @GetMapping(value = WebPagePathConstants.TRANSACTIONTOKEN_CREATE)
     public String functionTestContentsConfirmation() {
-        return "transactiontoken/createInput";
+        return WebPagePathConstants.TRANSACTIONTOKEN_CREATEINPUT;
     }
 
     // flow testing
-    @RequestMapping(value = "flow", method = RequestMethod.GET)
+    @GetMapping(value = WebPagePathConstants.TRANSACTIONTOKEN_FLOW)
     public String functionTestFlow() {
-        return "transactiontoken/flowAllStep1";
+        return WebPagePathConstants.TRANSACTIONTOKEN_FLOWALLSTEP1;
     }
 
     // flow @AliasFor namespace testing
-    @RequestMapping(value = "flow_namespace", method = RequestMethod.GET)
+    @GetMapping(value = WebPagePathConstants.TRANSACTIONTOKEN_FLOWNAMESPACE)
     public String functionTestFlowNamespace() {
-        return "transactiontoken/flowAllNamespaceStep1";
+        return WebPagePathConstants.TRANSACTIONTOKEN_FLOWALLNAMESPACESTEP1;
     }
 
 }

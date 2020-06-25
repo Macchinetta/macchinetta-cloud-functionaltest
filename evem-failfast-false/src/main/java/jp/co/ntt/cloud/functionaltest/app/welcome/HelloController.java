@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
 import jp.co.ntt.cloud.functionaltest.domain.service.getconfig.GetS3ConfigService;
 
 /**
@@ -53,8 +53,7 @@ public class HelloController {
      * @param model 出力情報を保持するクラス
      * @return View論理名
      */
-    @RequestMapping(value = "/", method = { RequestMethod.GET,
-            RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.ROOT_HOME)
     public String home(Locale locale, Model model) {
         logger.info("Welcome home! The client locale is {}.", locale);
 
@@ -71,7 +70,7 @@ public class HelloController {
         model.addAttribute("s3ConfigConfigValueDto", getS3ConfigService
                 .getConfigurationPropertiesDto());
 
-        return "welcome/home";
+        return WebPagePathConstants.WELCOME_HOME;
     }
 
 }

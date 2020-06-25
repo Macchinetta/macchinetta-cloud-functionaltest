@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public class ReservationMessageListener {
     @Inject
     ReservationInspectionService reservationInspectionService;
 
-    @JmsListener(destination = "reservation-queue", concurrency = "5-10")
+    @JmsListener(destination = "func-reservation-queue-12x", concurrency = "5-10")
     public void receive(Reservation reservation,
             @Header(JmsHeaders.MESSAGE_ID) String messageId) {
         try {

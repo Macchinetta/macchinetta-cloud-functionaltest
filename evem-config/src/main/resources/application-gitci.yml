@@ -3,8 +3,8 @@ spring:
     config:
       server:
         git:
-          uri: http://10.0.1.196:8888/git/macchinetta-cloud/macchinetta-cloud-functionaltest.git
-          username: cloudtest
-          password: cloudtest
+          uri: http://10.0.1.146:8888/git/macchinetta-cloud/macchinetta-cloud-functionaltest.git
+          username: guest
+          password: guest123
           clone-on-start: true
           searchPaths: smpl/src/main/resources

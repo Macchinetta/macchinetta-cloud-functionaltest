@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,21 +78,30 @@ public class MlsnTest {
     @Test
     public void testSimpleDelivery() {
 
-        // テスト実行:メールを送信する。
-        HomePage homePage = open(applicationContextUrl, HomePage.class).send(
-                ADDRESS_DELIVERY, KIND_SIMPLE, "simple message");
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
 
-        // アサート:以下情報を含む通知が返却されること。
-        // NotificationType:Delivery
-        // To:success@simulator.amazonses.com
-        // Subject:testmail
-        homePage.getNotificationType().shouldHave(exactText("Delivery"));
-        homePage.getHeaders().shouldHave(text(
-                "To:success@simulator.amazonses.com"));
-        homePage.getHeaders().shouldHave(text("Subject:testmail"));
+                // テスト実行:メールを送信する。
+                HomePage homePage = open(applicationContextUrl, HomePage.class)
+                        .send(ADDRESS_DELIVERY, KIND_SIMPLE, "simple message");
 
-        // 証跡取得
-        screenshot("testSimpleDelivery");
+                // アサート:以下情報を含む通知が返却されること。
+                // NotificationType:Delivery
+                // To:success@simulator.amazonses.com
+                // Subject:testmail
+                homePage.getNotificationType().shouldHave(exactText(
+                        "Delivery"));
+                homePage.getHeaders().shouldHave(text(
+                        "To:success@simulator.amazonses.com"));
+                homePage.getHeaders().shouldHave(text("Subject:testmail"));
+
+                // 証跡取得
+                screenshot("testSimpleDelivery");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 
     /**
@@ -101,21 +110,29 @@ public class MlsnTest {
     @Test
     public void testSimpleBounce() {
 
-        // テスト実行:メールを送信する。
-        HomePage homePage = open(applicationContextUrl, HomePage.class).send(
-                ADDRESS_BOUNCE, KIND_SIMPLE, "simple message");
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+                // テスト実行:メールを送信する。
+                HomePage homePage = open(applicationContextUrl, HomePage.class)
+                        .send(ADDRESS_BOUNCE, KIND_SIMPLE, "simple message");
 
-        // アサート:以下情報を含む通知が返却されること。
-        // NotificationType:Bounce
-        // To:bounce@simulator.amazonses.com
-        // Subject:testmail
-        homePage.getNotificationType().shouldHave(exactText("Bounce"));
-        homePage.getHeaders().shouldHave(text(
-                "To:bounce@simulator.amazonses.com"));
-        homePage.getHeaders().shouldHave(text("Subject:testmail"));
+                // アサート:以下情報を含む通知が返却されること。
+                // NotificationType:Bounce
+                // To:bounce@simulator.amazonses.com
+                // Subject:testmail
+                homePage.getNotificationType().shouldHave(exactText("Bounce"));
+                homePage.getHeaders().shouldHave(text(
+                        "To:bounce@simulator.amazonses.com"));
+                homePage.getHeaders().shouldHave(text("Subject:testmail"));
 
-        // 証跡取得
-        screenshot("testSimpleBounce");
+                // 証跡取得
+                screenshot("testSimpleBounce");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
+
     }
 
     /**
@@ -124,21 +141,31 @@ public class MlsnTest {
     @Test
     public void testMimeDelivery() {
 
-        // テスト実行:メールを送信する。
-        HomePage homePage = open(applicationContextUrl, HomePage.class).send(
-                ADDRESS_DELIVERY, KIND_MIME, "MIME Message.");
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
 
-        // アサート:以下情報を含む通知が返却されること。
-        // NotificationType:Delivery
-        // To:success@simulator.amazonses.com
-        // Subject:MIME Mail test
-        homePage.getNotificationType().shouldHave(exactText("Delivery"));
-        homePage.getHeaders().shouldHave(text(
-                "To:success@simulator.amazonses.com"));
-        homePage.getHeaders().shouldHave(text("Subject:MIME Mail test"));
+                // テスト実行:メールを送信する。
+                HomePage homePage = open(applicationContextUrl, HomePage.class)
+                        .send(ADDRESS_DELIVERY, KIND_MIME, "MIME Message.");
 
-        // 証跡取得
-        screenshot("testMimeDelivery");
+                // アサート:以下情報を含む通知が返却されること。
+                // NotificationType:Delivery
+                // To:success@simulator.amazonses.com
+                // Subject:MIME Mail test
+                homePage.getNotificationType().shouldHave(exactText(
+                        "Delivery"));
+                homePage.getHeaders().shouldHave(text(
+                        "To:success@simulator.amazonses.com"));
+                homePage.getHeaders().shouldHave(text(
+                        "Subject:MIME Mail test"));
+
+                // 証跡取得
+                screenshot("testMimeDelivery");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 
     /**
@@ -147,20 +174,28 @@ public class MlsnTest {
     @Test
     public void testMimeBounce() {
 
-        // テスト実行:メールを送信する。
-        HomePage homePage = open(applicationContextUrl, HomePage.class).send(
-                ADDRESS_BOUNCE, KIND_MIME, "MIME Message.");
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+                // テスト実行:メールを送信する。
+                HomePage homePage = open(applicationContextUrl, HomePage.class)
+                        .send(ADDRESS_BOUNCE, KIND_MIME, "MIME Message.");
 
-        // アサート:以下情報を含む通知が返却されること。
-        // NotificationType:Bounce
-        // To:bounce@simulator.amazonses.com
-        // Subject:MIME Mail test
-        homePage.getNotificationType().shouldHave(exactText("Bounce"));
-        homePage.getHeaders().shouldHave(text(
-                "To:bounce@simulator.amazonses.com"));
-        homePage.getHeaders().shouldHave(text("Subject:MIME Mail test"));
+                // アサート:以下情報を含む通知が返却されること。
+                // NotificationType:Bounce
+                // To:bounce@simulator.amazonses.com
+                // Subject:MIME Mail test
+                homePage.getNotificationType().shouldHave(exactText("Bounce"));
+                homePage.getHeaders().shouldHave(text(
+                        "To:bounce@simulator.amazonses.com"));
+                homePage.getHeaders().shouldHave(text(
+                        "Subject:MIME Mail test"));
 
-        // 証跡取得
-        screenshot("testMimeBounce");
+                // 証跡取得
+                screenshot("testMimeBounce");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 }

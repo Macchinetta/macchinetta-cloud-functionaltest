@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,7 @@ public class PresignedCookieCleaner {
             cookie.setPath(signatureHelper.getCookiePath() + "/");
             cookie.setDomain(signatureHelper.getDomain());
             cookie.setMaxAge(0);
+            cookie.setHttpOnly(true);
             response.addCookie(cookie);
         }
     }

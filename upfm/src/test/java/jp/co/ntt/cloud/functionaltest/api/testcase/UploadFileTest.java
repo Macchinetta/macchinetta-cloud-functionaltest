@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,12 +51,42 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 
-import junit.framework.TestCase;
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
-public class UploadFileTest extends TestCase {
+public class UploadFileTest {
+
+    /**
+     * 検索試験用ファイルパス
+     */
+    private static final String TEMP_SEARCH_TEST_FILE = "temp/searchTestFile_";
+
+    /**
+     * 削除試験用ファイルパス
+     */
+    private static final String TEMP_DELETE_TEST_FILE = "temp/deleteTestFile_";
+
+    /**
+     * リクエストパラメータ：複数オブジェクトキー、複数条件
+     */
+    private static final String URL_OBJECTKEYS_AND = "&objectkeys=";
+
+    /**
+     * リクエストパラメータ：複数オブジェクトキー
+     */
+    private static final String URL_OBJECTKEYS = "?objectkeys=";
+
+    /**
+     * リクエストパラメータ：オブジェクトキー
+     */
+    private static final String URL_OBJECTKEY = "?objectkey=";
+
+    /**
+     * RESTサーブレットURLパス
+     */
+    private static final String API_VER_FILE = "api/v1/file";
 
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
@@ -62,13 +94,16 @@ public class UploadFileTest extends TestCase {
     @Value("${bucketName}")
     private String bucketName;
 
+    @Value("${s3.prefix}")
+    private String prefix;
+
     private AmazonS3 s3Client;
 
     @After
     public void tearDown() {
 
         // s3バケット内のオブジェクト（tempディレクトリ配下）を削除する。 削除後はディレクトリも削除されるため、新たにtempディレクトリを追加する。
-        ObjectListing list = s3Client.listObjects(bucketName, "temp/");
+        ObjectListing list = s3Client.listObjects(bucketName, prefix + "temp/");
         List<KeyVersion> keys = new ArrayList<KeyVersion>();
         if (list.getObjectSummaries() != null) {
             for (S3ObjectSummary s : list.getObjectSummaries()) {
@@ -77,7 +112,7 @@ public class UploadFileTest extends TestCase {
             DeleteObjectsRequest request2 = new DeleteObjectsRequest(bucketName);
             request2.setKeys(keys);
             s3Client.deleteObjects(request2);
-            s3Client.putObject(bucketName, "temp/", "");
+            s3Client.putObject(bucketName, prefix + "temp/", "");
         }
     }
 
@@ -92,8 +127,9 @@ public class UploadFileTest extends TestCase {
         File uploadFile = new File("src/test/resources/files/Liberty.jpg");
 
         // テスト実行:ファイルをアップロードする
-        String response = given().multiPart("file", uploadFile).when().post(
-                applicationContextUrl + "api/").asString();
+        String response = given().multiPart(WebPagePathConstants.FILE,
+                uploadFile).when().post(applicationContextUrl + API_VER_FILE)
+                .asString();
 
         // ファイルがアップロードされたことの確認
         // 引用符を削除
@@ -122,14 +158,15 @@ public class UploadFileTest extends TestCase {
 
         // 事前準備:削除するためのファイル(単一)をアップロードしておく
         File uploadFile = new File("src/test/resources/files/Gleaners.jpg");
-        String objectKey = "temp/deleteTestFile_" + UUID.randomUUID();
+        String objectKey = prefix + TEMP_DELETE_TEST_FILE + UUID.randomUUID();
         s3Client.putObject(bucketName, objectKey, uploadFile);
 
         // サスペンド:アップロード確認
         assertTrue(s3Client.doesObjectExist(bucketName, objectKey));
 
         // テスト実行:ファイルを削除する
-        given().delete(applicationContextUrl + "api?objectkey=" + objectKey);
+        given().delete(applicationContextUrl + API_VER_FILE + URL_OBJECTKEY
+                + objectKey);
 
         // アサート:削除したファイルが、S3上に存在しないことを、SDKを使用して確認する。
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey));
@@ -144,8 +181,8 @@ public class UploadFileTest extends TestCase {
         // 事前準備:削除するためのファイル(複数)をアップロードしておく
         File uploadFile1 = new File("src/test/resources/files/Liberty.jpg");
         File uploadFile2 = new File("src/test/resources/files/Gleaners.jpg");
-        String objectKey1 = "temp/deleteTestFile_" + UUID.randomUUID();
-        String objectKey2 = "temp/deleteTestFile_" + UUID.randomUUID();
+        String objectKey1 = prefix + TEMP_DELETE_TEST_FILE + UUID.randomUUID();
+        String objectKey2 = prefix + TEMP_DELETE_TEST_FILE + UUID.randomUUID();
         s3Client.putObject(bucketName, objectKey1, uploadFile1);
         s3Client.putObject(bucketName, objectKey2, uploadFile2);
 
@@ -154,8 +191,8 @@ public class UploadFileTest extends TestCase {
         assertTrue(s3Client.doesObjectExist(bucketName, objectKey2));
 
         // テスト実行:ファイルを削除する
-        given().delete(applicationContextUrl + "api?objectkeys=" + objectKey1
-                + "&objectkeys=" + objectKey2);
+        given().delete(applicationContextUrl + API_VER_FILE + URL_OBJECTKEYS
+                + objectKey1 + URL_OBJECTKEYS_AND + objectKey2);
 
         // アサート:削除したファイルが、S3上に存在しないことを、SDKを使用して確認する。
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey1));
@@ -171,8 +208,8 @@ public class UploadFileTest extends TestCase {
         // 事前準備:検索するためのファイル(複数)をアップロードしておく
         File uploadFile1 = new File("src/test/resources/files/Liberty.jpg");
         File uploadFile2 = new File("src/test/resources/files/Gleaners.jpg");
-        String objectKey1 = "temp/searchTestFile_" + UUID.randomUUID();
-        String objectKey2 = "temp/searchTestFile_" + UUID.randomUUID();
+        String objectKey1 = prefix + TEMP_SEARCH_TEST_FILE + UUID.randomUUID();
+        String objectKey2 = prefix + TEMP_SEARCH_TEST_FILE + UUID.randomUUID();
         s3Client.putObject(bucketName, objectKey1, uploadFile1);
         s3Client.putObject(bucketName, objectKey2, uploadFile2);
 
@@ -181,11 +218,11 @@ public class UploadFileTest extends TestCase {
         assertTrue(s3Client.doesObjectExist(bucketName, objectKey2));
 
         // 検索パターン
-        String pattern = "temp/searchTestFile*";
+        String pattern = prefix + "temp/searchTestFile*";
 
         // テスト実行:ファイルを検索する
         String[] searchResult = given().get(applicationContextUrl
-                + "api?pattern=" + pattern).as(String[].class);
+                + "api/v1/file?pattern=" + pattern).as(String[].class);
         List<String> list = Arrays.asList(searchResult);
         System.out.println("test" + searchResult[0]);
         String[] expectedArray = { objectKey1, objectKey2 };
@@ -201,14 +238,14 @@ public class UploadFileTest extends TestCase {
     public void testDeleteNonExistObject() {
 
         // 事前準備:削除対象のオブジェクトキー(単一)を作成しておく
-        String objectKey1 = "temp/searchTestFile_" + UUID.randomUUID();
+        String objectKey1 = prefix + TEMP_SEARCH_TEST_FILE + UUID.randomUUID();
 
         // サスペンド:削除対象のオブジェクトキーが存在しないことを確認
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey1));
 
         // テスト実行:オブジェクトキーを指定して削除する
-        int status = given().delete(applicationContextUrl + "api?objectkey="
-                + objectKey1).getStatusCode();
+        int status = given().delete(applicationContextUrl + API_VER_FILE
+                + URL_OBJECTKEY + objectKey1).getStatusCode();
 
         // アサート:例外が発生せず、そのままAPIがリターンすること。
         assertThat(status, is(200));
@@ -221,16 +258,17 @@ public class UploadFileTest extends TestCase {
     public void testDeleteNonExistObjects() {
 
         // 事前準備:削除対象のオブジェクトキー(複数)を作成しておく
-        String objectKey1 = "temp/searchTestFile_" + UUID.randomUUID();
-        String objectKey2 = "temp/searchTestFile_" + UUID.randomUUID();
+        String objectKey1 = prefix + TEMP_SEARCH_TEST_FILE + UUID.randomUUID();
+        String objectKey2 = prefix + TEMP_SEARCH_TEST_FILE + UUID.randomUUID();
 
         // サスペンド:削除対象のオブジェクトキーが存在しないことを確認
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey1));
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey2));
 
         // テスト実行:オブジェクトキーを指定して削除する
-        int status = given().delete(applicationContextUrl + "api?objectkeys="
-                + objectKey1 + "&objectkeys=" + objectKey2).getStatusCode();
+        int status = given().delete(applicationContextUrl + API_VER_FILE
+                + URL_OBJECTKEYS + objectKey1 + URL_OBJECTKEYS_AND + objectKey2)
+                .getStatusCode();
 
         // アサート:例外が発生せず、そのままAPIがリターンすること。
         assertThat(status, is(200));
@@ -244,8 +282,8 @@ public class UploadFileTest extends TestCase {
 
         // 事前準備:削除対象のオブジェクトキー(複数)を作成しておく
         File uploadFile1 = new File("src/test/resources/files/Liberty.jpg");
-        String objectKey1 = "temp/searchTestFile_" + UUID.randomUUID();
-        String objectKey2 = "temp/searchTestFile_" + UUID.randomUUID();
+        String objectKey1 = prefix + TEMP_SEARCH_TEST_FILE + UUID.randomUUID();
+        String objectKey2 = prefix + TEMP_SEARCH_TEST_FILE + UUID.randomUUID();
 
         // 事前準備:objectKey1をアップロードしておく
         s3Client.putObject(bucketName, objectKey1, uploadFile1);
@@ -255,8 +293,9 @@ public class UploadFileTest extends TestCase {
         assertFalse(s3Client.doesObjectExist(bucketName, objectKey2));
 
         // テスト実行:オブジェクトキーを指定して削除する
-        int status = given().delete(applicationContextUrl + "api?objectkeys="
-                + objectKey1 + "&objectkeys=" + objectKey2).getStatusCode();
+        int status = given().delete(applicationContextUrl + API_VER_FILE
+                + URL_OBJECTKEYS + objectKey1 + URL_OBJECTKEYS_AND + objectKey2)
+                .getStatusCode();
 
         // アサート:例外が発生せず、S3上に存在するオブジェクトが削除されていること。
         assertThat(status, is(200));
@@ -271,15 +310,15 @@ public class UploadFileTest extends TestCase {
 
         // 事前準備:パターン検索するためのファイルをアップロードしておく
         File uploadFile1 = new File("src/test/resources/files/Liberty.jpg");
-        String objectKey1 = "temp/searchTestFile_" + UUID.randomUUID();
+        String objectKey1 = prefix + TEMP_SEARCH_TEST_FILE + UUID.randomUUID();
         s3Client.putObject(bucketName, objectKey1, uploadFile1);
 
         // 検索パターン
         String pattern = "temp/dummy*";
 
         // テスト実行:ファイルを検索する
-        String[] searchResult = given().get(applicationContextUrl
-                + "api?pattern=" + pattern).as(String[].class);
+        String[] searchResult = given().get(applicationContextUrl + API_VER_FILE
+                + "?pattern=" + pattern).as(String[].class);
 
         // アサート:検索条件にマッチする配列が空であること。
         assertThat(searchResult, is(emptyArray()));

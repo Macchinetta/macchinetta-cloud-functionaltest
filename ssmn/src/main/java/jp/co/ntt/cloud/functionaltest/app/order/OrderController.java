@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,12 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.support.SessionStatus;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenCheck;
 
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
 import jp.co.ntt.cloud.functionaltest.domain.model.Cart;
 import jp.co.ntt.cloud.functionaltest.domain.service.product.ProductService;
 
@@ -34,7 +35,6 @@ import jp.co.ntt.cloud.functionaltest.domain.service.product.ProductService;
  */
 @Controller
 @TransactionTokenCheck("order")
-@RequestMapping("order")
 public class OrderController {
 
     @Inject
@@ -46,44 +46,40 @@ public class OrderController {
     /**
      * 注文ページ表示
      * @param model
-     * @return
+     * @return View論理名
      */
-    @RequestMapping(value = "form", method = { RequestMethod.GET,
-            RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.ORDER_FORM)
     public String form(Model model) {
 
         model.addAttribute("products", prodcutService.findAll());
 
-        return "order/orderForm";
+        return WebPagePathConstants.ORDER_ORDERFORM;
     }
 
     /**
      * 確認ページ表示
      * @param model
-     * @return
+     * @return View論理名
      */
-    @TransactionTokenCheck
-    @RequestMapping(value = "confirm", method = { RequestMethod.GET,
-            RequestMethod.POST })
+    @PostMapping(value = WebPagePathConstants.ORDER_CONFIRM)
     public String confirm(Model model) {
 
         model.addAttribute("cartItems", cart.getCartItems());
         model.addAttribute("totalAmount", cart.getTotalAmount());
 
-        return "order/orderConfirm";
+        return WebPagePathConstants.ORDER_ORDERCONFIRM;
     }
 
     /**
      * 注文完了
      * @param model
      * @param sessionStatus
-     * @return
+     * @return View論理名
      */
-    @RequestMapping(value = "finish", method = { RequestMethod.GET,
-            RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.ORDER_FINISH)
     public String complete(Model model, SessionStatus sessionStatus) {
         cart.clear();
-        return "order/orderFinish";
+        return WebPagePathConstants.ORDER_ORDERFINISH;
     }
 
 }

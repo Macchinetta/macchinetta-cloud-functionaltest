@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,17 @@ public class S3Helper implements InitializingBean {
      * @return ファイル一覧
      */
     public List<S3ObjectSummary> listFiles(String bucketName) {
-        return listFiles(bucketName, null, null);
+        return fetchlistFiles(bucketName, null, null);
+    }
+
+    /**
+     * バケット名、接頭辞、区切り文字を指定してS3のファイル一覧を取得する。
+     * @param bucketName 一覧を取得するバケット
+     * @param prefix 接頭辞
+     * @return ファイル一覧
+     */
+    public List<S3ObjectSummary> listFiles(String bucketName, String prefix) {
+        return fetchlistFiles(bucketName, prefix, null);
     }
 
     /**
@@ -81,6 +91,18 @@ public class S3Helper implements InitializingBean {
         if (prefix != null && !prefix.endsWith(delimiter)) {
             prefix += delimiter;
         }
+        return fetchlistFiles(bucketName, prefix, delimiter);
+    }
+
+    /**
+     * バケット名、接頭辞、区切り文字を指定してS3のファイル一覧を取得する。
+     * @param bucketName 一覧を取得するバケット
+     * @param prefix 接頭辞
+     * @param delimiter 区切り文字
+     * @return ファイル一覧
+     */
+    public List<S3ObjectSummary> fetchlistFiles(String bucketName,
+            String prefix, String delimiter) {
 
         ListObjectsRequest request = new ListObjectsRequest(bucketName, prefix, null, delimiter, null);
         ObjectListing list;

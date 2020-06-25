@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.terasoluna.gfw.common.message.ResultMessages;
 
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
 import jp.co.ntt.cloud.functionaltest.domain.model.FileMetaData;
 import jp.co.ntt.cloud.functionaltest.domain.service.fileupload.SearchSharedService;
 
@@ -55,14 +56,13 @@ public class SearchController {
      * @param model 出力情報を保持するクラス
      * @return View論理名
      */
-    @RequestMapping(value = "/", method = { RequestMethod.GET,
-            RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.ROOT_HOME)
     public String home(Model model) {
 
         model.addAttribute("bucketNameList", FileUploadControllerUtil
                 .createBucketPulldown(true));
         model.addAttribute(new SearchForm());
-        return "fileupload/search";
+        return WebPagePathConstants.FILEUPLOAD_SEARCH;
     }
 
     /**
@@ -72,13 +72,13 @@ public class SearchController {
      * @param result バリデーション結果
      * @param redirectAttributes リダイレクトパラメータ
      */
-    @RequestMapping(value = "/search", method = { RequestMethod.POST })
+    @PostMapping(value = WebPagePathConstants.SEARCH)
     public String search(Model model, @Validated SearchForm form,
             BindingResult result, RedirectAttributes redirectAttributes) {
         logger.info("do File Search.");
 
         if (result.hasErrors()) {
-            return "fileupload/search";
+            return WebPagePathConstants.FILEUPLOAD_SEARCH;
         }
 
         List<FileMetaData> srchRsltList = null;
@@ -112,6 +112,6 @@ public class SearchController {
         redirectAttributes.addFlashAttribute(ResultMessages.success().add(
                 "i.xx.at.0001"));
 
-        return "fileupload/search";
+        return WebPagePathConstants.FILEUPLOAD_SEARCH;
     }
 }

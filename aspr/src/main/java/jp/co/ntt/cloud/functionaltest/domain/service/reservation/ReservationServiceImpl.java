@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,13 +45,14 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void sendMessage(Reservation reservation) {
-        jmsMessagingTemplate.convertAndSend("reservation-queue", reservation);
+        jmsMessagingTemplate.convertAndSend("func-reservation-queue-12x",
+                reservation);
     }
 
     @Override
     public Reservation receiveMessageSync() {
-        return jmsMessagingTemplate.receiveAndConvert("reservation-queue",
-                Reservation.class);
+        return jmsMessagingTemplate.receiveAndConvert(
+                "func-reservation-queue-12x", Reservation.class);
     }
 
     @Override

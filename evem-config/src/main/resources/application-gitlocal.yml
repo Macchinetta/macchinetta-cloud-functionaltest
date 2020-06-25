@@ -4,7 +4,7 @@ spring:
       server:
         git:
           uri: https://XXXX/git/macchinetta-cloud/macchinetta-cloud-functionaltest.git
-          username: cloudtest
-          password: cloudtest
+          username: guest
+          password: guest123
           clone-on-start: true
           searchPaths: smpl/src/main/resources

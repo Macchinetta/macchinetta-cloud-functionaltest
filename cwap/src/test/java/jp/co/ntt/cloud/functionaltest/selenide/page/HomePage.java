@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,6 @@ public class HomePage {
 
     private SelenideElement csrf;
 
-    private SelenideElement transactionToken;
-
     /**
      * Homeページのコンストラクタ。
      */
@@ -42,7 +40,6 @@ public class HomePage {
         this.h = $("h1");
         this.counter = $(byId("counter"));
         this.csrf = $(byName("_csrf"));
-        this.transactionToken = $(byName("_TRANSACTION_TOKEN"));
     }
 
     /**
@@ -59,6 +56,15 @@ public class HomePage {
     public TokenCheckPage confirmToken() {
         $(byId("transactionTokenCheck")).click();
         return new TokenCheckPage();
+    }
+
+    /**
+     * transactionTokenGenerateをクリックする。
+     * @return TokenCheckPage
+     */
+    public TokenBeginPage generateToken() {
+        $(byId("transactionTokenGenerate")).click();
+        return new TokenBeginPage();
     }
 
     /**
@@ -112,11 +118,4 @@ public class HomePage {
         return csrf;
     }
 
-    /**
-     * トランザクショントークンの要素を返却する。
-     * @return SelenideElement
-     */
-    public SelenideElement getTransactionToken() {
-        return transactionToken;
-    }
 }

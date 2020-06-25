@@ -10,8 +10,3 @@ cloud:
   aws:
     stack:
       auto: false
-
-functionaltest:
-  upload:
-    bucketName: functionaltest.uploadfile
-    tmpDirectory: temp/

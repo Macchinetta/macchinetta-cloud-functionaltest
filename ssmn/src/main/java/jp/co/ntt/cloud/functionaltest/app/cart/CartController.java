@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.terasoluna.gfw.common.message.ResultMessages;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenCheck;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenType;
 
+import jp.co.ntt.cloud.functionaltest.app.common.constants.SsmnConstants;
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
 import jp.co.ntt.cloud.functionaltest.domain.model.Cart;
 import jp.co.ntt.cloud.functionaltest.domain.model.CartItem;
 import jp.co.ntt.cloud.functionaltest.domain.model.Product;
@@ -37,7 +39,6 @@ import jp.co.ntt.cloud.functionaltest.domain.service.product.ProductService;
 
 @Controller
 @TransactionTokenCheck("order")
-@RequestMapping("cart")
 public class CartController {
 
     @Inject
@@ -52,15 +53,35 @@ public class CartController {
     }
 
     /**
+     * カートの内容を表示する。Getリクエスト用
+     * @param model
+     * @return View論理名
+     */
+    @GetMapping(value = WebPagePathConstants.CART)
+    @TransactionTokenCheck(type = TransactionTokenType.BEGIN)
+    public String viewCartGet(Model model, HttpSession session) {
+        return viewCart(model, session);
+    }
+
+    /**
+     * カートの内容を表示する。Postリクエスト用
+     * @param model
+     * @return View論理名
+     */
+    @PostMapping(value = WebPagePathConstants.CART)
+    @TransactionTokenCheck(type = TransactionTokenType.BEGIN)
+    public String viewCartPost(Model model, HttpSession session) {
+        return viewCart(model, session);
+    }
+
+    /**
      * カートの内容を表示する。
      * @param model
-     * @return
+     * @return View論理名
      */
-    @RequestMapping(method = { RequestMethod.GET, RequestMethod.POST })
-    @TransactionTokenCheck(type = TransactionTokenType.BEGIN)
     private String viewCart(Model model, HttpSession session) {
         model.addAttribute("sessionId", session.getId());
-        return "cart/viewCart";
+        return WebPagePathConstants.CART_VIEWCART;
     }
 
     /**
@@ -68,16 +89,16 @@ public class CartController {
      * @param cartForm
      * @param bindingResult
      * @param model
-     * @return
+     * @return View論理名
      */
-    @RequestMapping(value = "add", method = RequestMethod.POST)
+    @PostMapping(value = WebPagePathConstants.CART_ADD)
     public String addItemToCart(@Validated CartForm cartForm,
             BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             ResultMessages messages = ResultMessages.error().add(
-                    "e.st.ca.5001");
+                    SsmnConstants.MSG_ID_5001);
             model.addAttribute(messages);
-            return "redirect:/cart";
+            return WebPagePathConstants.REDIRECT_CART;
         }
         Product product = productService.findOne(cartForm.getId());
         CartItem cartItem = new CartItem();
@@ -86,7 +107,7 @@ public class CartController {
 
         cart.add(cartItem);
 
-        return "redirect:/order/form";
+        return WebPagePathConstants.REDIRECT_ORDER_FORM;
     }
 
     /**
@@ -94,16 +115,16 @@ public class CartController {
      * @param cartForm
      * @param bindingResult
      * @param model
-     * @return
+     * @return View論理名
      */
-    @RequestMapping(value = "change", method = RequestMethod.POST)
+    @PostMapping(value = WebPagePathConstants.CART_CHANGE)
     public String changeItemQuantityFromCart(@Validated CartForm cartForm,
             BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             ResultMessages messages = ResultMessages.error().add(
-                    "e.st.ca.5001");
+                    SsmnConstants.MSG_ID_5001);
             model.addAttribute(messages);
-            return "redirect:/cart";
+            return WebPagePathConstants.REDIRECT_CART;
         }
         Product product = productService.findOne(cartForm.getId());
         CartItem cartItem = new CartItem();
@@ -113,7 +134,7 @@ public class CartController {
 
         cart.setQuantity(cartItem);
 
-        return "redirect:/cart";
+        return WebPagePathConstants.REDIRECT_CART;
     }
 
     /**
@@ -121,20 +142,20 @@ public class CartController {
      * @param cartForm
      * @param bindingResult
      * @param model
-     * @return
+     * @return View論理名
      */
-    @RequestMapping(value = "delete", method = RequestMethod.POST)
+    @PostMapping(value = WebPagePathConstants.CART_DELETE)
     public String deleteItemFormCart(@Validated CartForm cartForm,
             BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             ResultMessages messages = ResultMessages.error().add(
-                    "e.st.ca.5001");
+                    SsmnConstants.MSG_ID_5001);
             model.addAttribute(messages);
-            return "redirect:/cart";
+            return WebPagePathConstants.REDIRECT_CART;
         }
 
         cart.remove(cartForm.getId());
 
-        return "redirect:/cart";
+        return WebPagePathConstants.REDIRECT_CART;
     }
 }

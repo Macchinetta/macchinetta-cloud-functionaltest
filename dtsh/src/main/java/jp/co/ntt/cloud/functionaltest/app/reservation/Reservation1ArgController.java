@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,10 @@ import org.joda.time.DateTime;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
 import jp.co.ntt.cloud.functionaltest.domain.model.Member;
 import jp.co.ntt.cloud.functionaltest.domain.model.Reservation;
 import jp.co.ntt.cloud.functionaltest.domain.service.member.MemberService;
@@ -37,7 +37,6 @@ import jp.co.ntt.cloud.functionaltest.domain.service.reservation.Reservation1Arg
  * @author NTT 電電太郎
  */
 @Controller
-@RequestMapping(value = "reserve/1arg")
 public class Reservation1ArgController {
 
     @Inject
@@ -52,8 +51,7 @@ public class Reservation1ArgController {
      * @param model 出力情報を保持するクラス
      * @return View論理名
      */
-    @RequestMapping(value = "register", method = { RequestMethod.GET,
-            RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.RESERVE_1ARG_REGISTER)
     public String register() {
         new Member();
         Reservation reservation = new Reservation();
@@ -82,37 +80,35 @@ public class Reservation1ArgController {
         reservation.setRepMember(memberService.findOne("0000000003"));
         reservationService.register(reservation);
 
-        return "redirect:/hello";
+        return WebPagePathConstants.REDIRECT_HELLO;
     }
 
     /**
      * 予約情報1件読み込み
-     * @return
+     * @return View論理名
      */
-    @RequestMapping(value = "get", method = { RequestMethod.GET,
-            RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.RESERVE_1ARG_GET)
     public String read(Model model, RedirectAttributes redirectAttrs,
             @Valid ReservationForm reservationForm, BindingResult result) {
         if (result.hasErrors()) {
-            return "redirect:/hello";
+            return WebPagePathConstants.REDIRECT_HELLO;
         }
         Reservation reservation = reservationService.findOne(ReservationFactory
                 .create(reservationForm));
 
         redirectAttrs.addFlashAttribute("reservation", reservation);
 
-        return "redirect:/hello";
+        return WebPagePathConstants.REDIRECT_HELLO;
     }
 
     /**
      * 予約情報更新。旅行代金を0にする。
      */
-    @RequestMapping(value = "update", method = { RequestMethod.GET,
-            RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.RESERVE_1ARG_UPDATE)
     public String update(RedirectAttributes redirectAttrs,
             @Valid ReservationForm reservationForm, BindingResult result) {
         if (result.hasErrors()) {
-            return "redirect:/hello";
+            return WebPagePathConstants.REDIRECT_HELLO;
         }
 
         Reservation reservation = reservationService.findOne(ReservationFactory
@@ -120,20 +116,19 @@ public class Reservation1ArgController {
         reservation.setTotalFare(0);
         reservationService.update(reservation);
 
-        return "redirect:/hello";
+        return WebPagePathConstants.REDIRECT_HELLO;
     }
 
     /**
      * 予約情報削除
      */
-    @RequestMapping(value = "delete", method = { RequestMethod.GET,
-            RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.RESERVE_1ARG_DELETE)
     public String delete(RedirectAttributes redirectAttrs,
             @Valid ReservationForm reservationForm, BindingResult result) {
         if (result.hasErrors()) {
-            return "redirect:/hello";
+            return WebPagePathConstants.REDIRECT_HELLO;
         }
         reservationService.delete(ReservationFactory.create(reservationForm));
-        return "redirect:/hello";
+        return WebPagePathConstants.REDIRECT_HELLO;
     }
 }

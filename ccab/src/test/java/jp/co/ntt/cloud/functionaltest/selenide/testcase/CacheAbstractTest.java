@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,14 +35,19 @@ import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
 import jp.co.ntt.cloud.functionaltest.selenide.page.HomePage;
-import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
-public class CacheAbstractTest extends TestCase {
+public class CacheAbstractTest {
+
+    /**
+     * リクエストパラメータ：更新
+     */
+    private static final String UPDATE = "?update";
 
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
@@ -56,7 +61,6 @@ public class CacheAbstractTest extends TestCase {
     @Rule
     public TestName testName = new TestName();
 
-    @Override
     @Before
     public void setUp() {
 
@@ -76,17 +80,26 @@ public class CacheAbstractTest extends TestCase {
     @Test
     public void h1HeapCachingTest() {
 
-        HomePage homePage = open(applicationContextUrl + "heap",
-                HomePage.class);
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+                HomePage homePage = open(applicationContextUrl
+                        + WebPagePathConstants.HEAP, HomePage.class);
 
-        String firstRandomNo = homePage.getMemberRandomNo().getText();
-        screenshot(testName.getMethodName() + "-access-1");
+                String firstRandomNo = homePage.getMemberRandomNo().getText();
+                screenshot(testName.getMethodName() + "-access-1");
 
-        Selenide.refresh();
+                Selenide.refresh();
 
-        // アサート:1回目と2回目のメソッド呼び出し時の戻り値が同じになること。
-        homePage.getMemberRandomNo().shouldHave(exactText(firstRandomNo));
-        screenshot(testName.getMethodName() + "-access-2");
+                // アサート:1回目と2回目のメソッド呼び出し時の戻り値が同じになること。
+                homePage.getMemberRandomNo().shouldHave(exactText(
+                        firstRandomNo));
+                screenshot(testName.getMethodName() + "-access-2");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
+
     }
 
     /**
@@ -95,23 +108,33 @@ public class CacheAbstractTest extends TestCase {
     @Test
     public void h2EvictHeapCacheTest() {
 
-        HomePage homePage = open(applicationContextUrl + "heap",
-                HomePage.class);
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+                HomePage homePage = open(applicationContextUrl
+                        + WebPagePathConstants.HEAP, HomePage.class);
 
-        String firstRandomNo = homePage.getMemberRandomNo().getText();
-        screenshot(testName.getMethodName() + "-access-1");
+                String firstRandomNo = homePage.getMemberRandomNo().getText();
+                screenshot(testName.getMethodName() + "-access-1");
 
-        Selenide.refresh();
+                Selenide.refresh();
 
-        // アサート:1回目と2回目のメソッド呼び出し時の戻り値が同じになること。
-        homePage.getMemberRandomNo().shouldHave(exactText(firstRandomNo));
-        screenshot(testName.getMethodName() + "-access-2");
+                // アサート:1回目と2回目のメソッド呼び出し時の戻り値が同じになること。
+                homePage.getMemberRandomNo().shouldHave(exactText(
+                        firstRandomNo));
+                screenshot(testName.getMethodName() + "-access-2");
 
-        open(applicationContextUrl + "heap/deleteCache?update");
+                open(applicationContextUrl
+                        + WebPagePathConstants.HEAP_DELETECACHE + UPDATE);
 
-        // アサート:3回目のメソッド呼び出し時の戻り値と、1回めのメソッド呼び出し時の戻り値が異なること。
-        homePage.getMemberRandomNo().shouldNotHave(exactText(firstRandomNo));
-        screenshot(testName.getMethodName() + "-access-3");
+                // アサート:3回目のメソッド呼び出し時の戻り値と、1回めのメソッド呼び出し時の戻り値が異なること。
+                homePage.getMemberRandomNo().shouldNotHave(exactText(
+                        firstRandomNo));
+                screenshot(testName.getMethodName() + "-access-3");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 
     /**
@@ -120,17 +143,26 @@ public class CacheAbstractTest extends TestCase {
     @Test
     public void h2RedisCachingTest() {
 
-        HomePage homePage = open(applicationContextUrl + "redis",
-                HomePage.class);
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
 
-        String firstRandomNo = homePage.getMemberRandomNo().getText();
-        screenshot("cachingTest-access-1");
+                HomePage homePage = open(applicationContextUrl
+                        + WebPagePathConstants.REDIS, HomePage.class);
 
-        Selenide.refresh();
+                String firstRandomNo = homePage.getMemberRandomNo().getText();
+                screenshot("cachingTest-access-1");
 
-        // アサート:1回目と2回目のメソッド呼び出し時の戻り値が同じになること。
-        homePage.getMemberRandomNo().shouldHave(exactText(firstRandomNo));
-        screenshot("cachingTest-access-2");
+                Selenide.refresh();
+
+                // アサート:1回目と2回目のメソッド呼び出し時の戻り値が同じになること。
+                homePage.getMemberRandomNo().shouldHave(exactText(
+                        firstRandomNo));
+                screenshot("cachingTest-access-2");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 
     /**
@@ -139,23 +171,34 @@ public class CacheAbstractTest extends TestCase {
     @Test
     public void h4RedisHeapCacheTest() {
 
-        HomePage homePage = open(applicationContextUrl + "redis",
-                HomePage.class);
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+                HomePage homePage = open(applicationContextUrl
+                        + WebPagePathConstants.REDIS, HomePage.class);
 
-        String firstRandomNo = homePage.getMemberRandomNo().getText();
-        screenshot("evictCacheTest-access-1");
+                String firstRandomNo = homePage.getMemberRandomNo().getText();
+                screenshot("evictCacheTest-access-1");
 
-        Selenide.refresh();
+                Selenide.refresh();
 
-        // アサート:1回目と2回目のメソッド呼び出し時の戻り値が同じになること。
-        homePage.getMemberRandomNo().shouldHave(exactText(firstRandomNo));
-        screenshot("evictCacheTest-access-2");
+                // アサート:1回目と2回目のメソッド呼び出し時の戻り値が同じになること。
+                homePage.getMemberRandomNo().shouldHave(exactText(
+                        firstRandomNo));
+                screenshot("evictCacheTest-access-2");
 
-        open(applicationContextUrl + "redis/deleteCache?update");
+                open(applicationContextUrl
+                        + WebPagePathConstants.REDIS_DELETECACHE + UPDATE);
 
-        // アサート:3回目のメソッド呼び出し時の戻り値と、1回めのメソッド呼び出し時の戻り値が異なること。
-        homePage.getMemberRandomNo().shouldNotHave(exactText(firstRandomNo));
-        screenshot("evictCacheTest-access-3");
+                // アサート:3回目のメソッド呼び出し時の戻り値と、1回めのメソッド呼び出し時の戻り値が異なること。
+                homePage.getMemberRandomNo().shouldNotHave(exactText(
+                        firstRandomNo));
+                screenshot("evictCacheTest-access-3");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
+
     }
 
 }

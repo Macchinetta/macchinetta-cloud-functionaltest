@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,15 @@
  */
 package jp.co.ntt.cloud.functionaltest.app.caap;
 
-import jp.co.ntt.cloud.functionaltest.domain.service.caap.CaapProjectInfo;
-import jp.co.ntt.cloud.functionaltest.domain.service.caap.CaapService;
+import javax.inject.Inject;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 
-import javax.inject.Inject;
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
+import jp.co.ntt.cloud.functionaltest.domain.service.caap.CaapProjectInfo;
+import jp.co.ntt.cloud.functionaltest.domain.service.caap.CaapService;
 
 @Controller
 public class CaapController {
@@ -31,11 +32,11 @@ public class CaapController {
     @Inject
     CaapService caapService;
 
-    @RequestMapping(value = "inspect", method = RequestMethod.GET)
+    @GetMapping(value = WebPagePathConstants.INSPECT)
     public String inspect(Model model) {
         final CaapProjectInfo caapProjectInfo = caapService
                 .inspectElastiCache();
         model.addAttribute("caapProjectInfo", caapProjectInfo);
-        return "caap/home";
+        return WebPagePathConstants.CAAP_HOME;
     }
 }

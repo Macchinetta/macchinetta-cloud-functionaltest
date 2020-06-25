@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,29 +17,30 @@
 package jp.co.ntt.cloud.functionaltest.app.transactiontoken.customstoresize;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenCheck;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenType;
 
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
+
 @Controller
-@RequestMapping("transactiontoken/customTransactionStoreSize1")
 public class TransactionTokenCustomFlow1Controller {
 
-    @RequestMapping(value = "index", method = RequestMethod.GET)
+    @GetMapping(value = WebPagePathConstants.TRANSACTIONTOKEN_CUSTOMTRANSACTIONSTORESIZE1_INDEX)
     public String customflowMenu() {
-        return "transactiontoken/customStoreSizeMenu";
+        return WebPagePathConstants.TRANSACTIONTOKEN_CUSTOMSTORESIZEMENU;
     }
 
-    @RequestMapping(value = "createFlow", method = RequestMethod.POST)
+    @PostMapping(value = WebPagePathConstants.TRANSACTIONTOKEN_CUSTOMTRANSACTIONSTORESIZE1_CREATEFLOW)
     @TransactionTokenCheck(type = TransactionTokenType.BEGIN)
     public String customflowStepBegin() {
-        return "transactiontoken/customStoreSizeNext";
+        return WebPagePathConstants.TRANSACTIONTOKEN_CUSTOMSTORESIZENEXT;
     }
 
-    @RequestMapping(value = "createFlow", method = RequestMethod.POST, params = "intermediate")
+    @PostMapping(value = WebPagePathConstants.TRANSACTIONTOKEN_CUSTOMTRANSACTIONSTORESIZE1_CREATEFLOW, params = "intermediate")
     @TransactionTokenCheck(type = TransactionTokenType.IN)
     public String customflowStepIn() {
-        return "transactiontoken/customStoreSizeNext";
+        return WebPagePathConstants.TRANSACTIONTOKEN_CUSTOMSTORESIZENEXT;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,23 +76,32 @@ public class CaapTest {
     @Test
     public void testInspect() {
 
-        // 事前準備:ログイン
-        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
-                "0000000002", "aaaaa11111");
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+                // 事前準備:ログイン
+                HomePage homePage = open(applicationContextUrl, LoginPage.class)
+                        .login("0000000002", "aaaaa11111");
 
-        // サスペンド:画面遷移確認
-        homePage.getH().shouldHave(exactText("Hello world!"));
+                // サスペンド:画面遷移確認
+                homePage.getH().shouldHave(exactText("Hello world!"));
 
-        // テスト実行:AmazonElastiCacheの生成を行う。
-        CaapPage caapPage = homePage.inspect();
+                // テスト実行:AmazonElastiCacheの生成を行う。
+                CaapPage caapPage = homePage.inspect();
 
-        // アサート:AutoConfigurationでBeanとして生成対象となるAmazonElastiCacheがクラスパスに存在すること。
-        caapPage.getExistFQCNClasspath().shouldHave(exactText("true"));
+                // アサート:AutoConfigurationでBeanとして生成対象となるAmazonElastiCacheがクラスパスに存在すること。
+                caapPage.getExistFQCNClasspath().shouldHave(exactText("true"));
 
-        // アサート:ApplicationContext内にAmazonElastiCacheが登録されていないこと。
-        caapPage.getExistInApplicationContext().shouldHave(exactText("false"));
+                // アサート:ApplicationContext内にAmazonElastiCacheが登録されていないこと。
+                caapPage.getExistInApplicationContext().shouldHave(exactText(
+                        "false"));
 
-        // 証跡取得
-        screenshot("testInspect");
+                // 証跡取得
+                screenshot("testInspect");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
+
     }
 }

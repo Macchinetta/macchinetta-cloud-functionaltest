@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package jp.co.ntt.cloud.functionaltest.domain.directupload;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -26,7 +27,6 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -48,6 +48,7 @@ import com.amazonaws.services.securitytoken.model.Credentials;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jp.co.ntt.cloud.functionaltest.domain.common.constants.LogMessageConstants;
 import jp.co.ntt.cloud.functionaltest.domain.service.login.SampleUserDetails;
 
 /**
@@ -87,6 +88,12 @@ public class DirectUploadHelper implements InitializingBean {
     String fileSizeLimit;
 
     /**
+     * S3バケットのプレフィックス
+     */
+    @Value("${functionaltest.upload.prefix}")
+    String s3prefix;
+
+    /**
      * オブジェクトマッパー
      */
     @Inject
@@ -114,7 +121,7 @@ public class DirectUploadHelper implements InitializingBean {
             String fileName, SampleUserDetails userDetails) {
 
         // オブジェクトキーを生成する
-        String objectKey = createObjectKey(userDetails);
+        String objectKey = s3prefix + createObjectKey(userDetails);
 
         // STSから一時的認証情報を取得する
         Credentials credentials = getTemporaryCredentials(bucketName,
@@ -154,12 +161,13 @@ public class DirectUploadHelper implements InitializingBean {
         try {
             policyDocument = objectMapper.writeValueAsString(postPolicy);
         } catch (JsonProcessingException e) {
-            throw new SystemException("e.xx.fw.9001", "invalid policy.", e);
+            throw new SystemException(LogMessageConstants.MSG_ID_9001, e
+                    .getMessage(), e);
         }
 
         // POSTポリシーをBASE64エンコーディング
-        String base64policy = Base64.encodeBase64String(policyDocument.getBytes(
-                StandardCharsets.UTF_8));
+        String base64policy = Base64.getEncoder().encodeToString(policyDocument
+                .getBytes(StandardCharsets.UTF_8));
 
         // 認証情報を元に、署名バージョン4の署名キーを生成する
         byte[] signingKey = getSignatureKey(credentials.getSecretAccessKey(),
@@ -236,12 +244,14 @@ public class DirectUploadHelper implements InitializingBean {
         try {
             mac = Mac.getInstance(algorithm);
         } catch (NoSuchAlgorithmException e) {
-            throw new SystemException("e.xx.fw.9001", "invalid algorithm.", e);
+            throw new SystemException(LogMessageConstants.MSG_ID_9001, e
+                    .getMessage(), e);
         }
         try {
             mac.init(new SecretKeySpec(signingKey, algorithm));
         } catch (InvalidKeyException e) {
-            throw new SystemException("e.xx.fw.9001", "invalid encoding key.", e);
+            throw new SystemException(LogMessageConstants.MSG_ID_9001, e
+                    .getMessage(), e);
         }
 
         return mac.doFinal(stringToSign.getBytes(StandardCharsets.UTF_8));

@@ -6,7 +6,7 @@
         http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
     ">
-    <sec:http pattern="/api/**" security="none"/>
+    <sec:http pattern="/api/v1/**" security="none"/>
     <sec:http pattern="/resources/**" security="none"/>
     <sec:http>
         <sec:form-login

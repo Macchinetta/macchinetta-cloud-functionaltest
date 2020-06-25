@@ -36,6 +36,10 @@
         <level value="debug" />
     </logger>
 
+    <logger name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <level value="trace" />
+    </logger>
+
     <!-- TERASOLUNA -->
     <logger name="org.terasoluna.gfw">
         <level value="debug" />

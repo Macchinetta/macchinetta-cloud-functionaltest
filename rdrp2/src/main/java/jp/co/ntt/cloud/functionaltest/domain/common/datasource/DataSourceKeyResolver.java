@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.Map;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 
+import jp.co.ntt.cloud.functionaltest.domain.common.constants.Rdrp2Constants;
 import jp.co.ntt.cloud.functionaltest.domain.common.datasource.model.DatabaseProperties;
 
 /**
@@ -66,7 +67,7 @@ public class DataSourceKeyResolver implements ShardKeyResolver,
         for (Map<String, String> dataSource : this.databaseProperties
                 .getDataSources()) {
             if (!databaseDefaultSchemaName.equals(dataSource.get(
-                    ShardKeyResolver.SCHEMA_KEY_NAME))) {
+                    Rdrp2Constants.SCHEMA_KEY_NAME))) {
                 this.dataSources.add(dataSource);
             }
         }
@@ -81,7 +82,7 @@ public class DataSourceKeyResolver implements ShardKeyResolver,
         Integer key = Integer.valueOf(shardKey);
         int dataSourceIndex = key % (dataSources.size());
         Map<String, String> dataSource = dataSources.get(dataSourceIndex);
-        return dataSource.get(ShardKeyResolver.SCHEMA_KEY_NAME);
+        return dataSource.get(Rdrp2Constants.SCHEMA_KEY_NAME);
     }
 
 }

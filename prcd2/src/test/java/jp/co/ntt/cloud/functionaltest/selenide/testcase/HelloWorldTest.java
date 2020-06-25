@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,19 +69,27 @@ public class HelloWorldTest {
     @Test
     public void testPRCD20101_001() {
 
-        // テスト実行:有償会員でログインする。
-        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
-                "0000000002", "aaaaa11111");
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
 
-        // 再取得クリック後、判定用のコンテンツ値表示
-        homePage.reload().loadVerificationContent();
+                // テスト実行:有償会員でログインする。
+                HomePage homePage = open(applicationContextUrl, LoginPage.class)
+                        .login("0000000002", "aaaaa11111");
 
-        // アサート:CloudFront上のファイルにアクセスできないこと
-        homePage.getAppResult().shouldNotHave(empty);
-        homePage.getCloudFrontResult().shouldHave(empty);
+                // 再取得クリック後、判定用のコンテンツ値表示
+                homePage.reload().loadVerificationContent();
 
-        // 証跡取得
-        screenshot("PRCD20101_001");
+                // アサート:CloudFront上のファイルにアクセスできないこと
+                homePage.getAppResult().shouldNotHave(empty);
+                homePage.getCloudFrontResult().shouldHave(empty);
+
+                // 証跡取得
+                screenshot("PRCD20101_001");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 
 }

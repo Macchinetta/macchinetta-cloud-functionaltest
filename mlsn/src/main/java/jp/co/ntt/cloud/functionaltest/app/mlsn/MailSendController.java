@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,17 @@
  */
 package jp.co.ntt.cloud.functionaltest.app.mlsn;
 
-import jp.co.ntt.cloud.functionaltest.domain.service.mlsn.MailNotification;
-import jp.co.ntt.cloud.functionaltest.domain.service.mlsn.SesMailSender;
+import javax.inject.Inject;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 
-import javax.inject.Inject;
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
+import jp.co.ntt.cloud.functionaltest.domain.service.mlsn.MailNotification;
+import jp.co.ntt.cloud.functionaltest.domain.service.mlsn.SesMailSender;
 
 /**
  * メール送信機能確認用コントローラー。
@@ -41,12 +43,12 @@ public class MailSendController {
         return new MailForm();
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @GetMapping(value = WebPagePathConstants.ROOT_HOME)
     public String home() {
-        return "mlsn/home";
+        return WebPagePathConstants.MLSN_HOME;
     }
 
-    @RequestMapping(value = "send", method = RequestMethod.POST)
+    @PostMapping(value = WebPagePathConstants.SEND)
     public String send(MailForm mailForm, Model model) {
         MailNotification notification = null;
         if ("simple".equals(mailForm.getKind())) {
@@ -54,9 +56,9 @@ public class MailSendController {
                     mailForm.getBody());
         } else if ("mime".equals(mailForm.getKind())) {
             notification = sesMailSender.registerMime(
-                    "xxxx@xx.xx", mailForm
-                            .getTo(), "UTF-8", "MIME Mail test", mailForm
-                                    .getBody());
+                    "xxxx@xx.xx",
+                    mailForm.getTo(), "UTF-8", "MIME Mail test", mailForm
+                            .getBody());
         } else {
             throw new IllegalArgumentException("abnormal kind:" + mailForm
                     .getKind());
@@ -64,7 +66,7 @@ public class MailSendController {
 
         model.addAttribute("result", convertToMailResult(notification));
 
-        return "mlsn/home";
+        return WebPagePathConstants.MLSN_HOME;
     }
 
     private MailResult convertToMailResult(MailNotification mailNotification) {

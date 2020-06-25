@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.Selenide.screenshot;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,12 +50,11 @@ import com.codeborne.selenide.Configuration;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import jp.co.ntt.cloud.functionaltest.selenide.page.HomePage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.LoginPage;
-import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
-public class StaticContentsTest extends TestCase {
+public class StaticContentsTest {
 
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
@@ -102,13 +103,21 @@ public class StaticContentsTest extends TestCase {
     @Test
     public void imgLoadCompleteTest() {
 
-        // テスト実行:ログインして静的コンテンツを取得する
-        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
-                "0000000002", "aaaaa11111");
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
 
-        // アサート:画像が表示されていることを確認する。
-        homePage.getImgLoadState().shouldHave(exactText(
-                "Image loading is complete"));
+                // テスト実行:ログインして静的コンテンツを取得する
+                HomePage homePage = open(applicationContextUrl, LoginPage.class)
+                        .login("0000000002", "aaaaa11111");
+
+                // アサート:画像が表示されていることを確認する。
+                homePage.getImgLoadState().shouldHave(exactText(
+                        "Image loading is complete"));
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 
     /**
@@ -119,28 +128,39 @@ public class StaticContentsTest extends TestCase {
     @Test
     public void sameImgCheckTest() throws MalformedURLException, IOException {
 
-        // テスト実行:ログインして静的コンテンツを取得する
-        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
-                "0000000002", "aaaaa11111");
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
 
-        // 画像のURL取得
-        String imgSrc = homePage.getImagFromCloudFront().getAttribute("src");
+                // テスト実行:ログインして静的コンテンツを取得する
+                HomePage homePage = open(applicationContextUrl, LoginPage.class)
+                        .login("0000000002", "aaaaa11111");
 
-        // CloudFrontから取得した画像の保存先
-        String tempImgPath = temporaryFolder.getRoot() + "ochiboHiroi_temp.jpg";
+                // 画像のURL取得
+                String imgSrc = homePage.getImagFromCloudFront().getAttribute(
+                        "src");
 
-        // CloudFrontから画像ダウンロード
-        FileUtils.copyURLToFile(new URL(imgSrc), new File(tempImgPath));
+                // CloudFrontから取得した画像の保存先
+                String tempImgPath = temporaryFolder.getRoot()
+                        + "ochiboHiroi_temp.jpg";
 
-        File imgFromLocal = new File(testDataPath + "image/ochiboHiroi.jpg");
-        File imgFromCloudFront = new File(tempImgPath);
+                // CloudFrontから画像ダウンロード
+                FileUtils.copyURLToFile(new URL(imgSrc), new File(tempImgPath));
 
-        // アサート:CloudFrontから配信された画像が想定している画像と一致していることを確認する。
-        assertEquals(FileUtils.checksumCRC32(imgFromLocal), FileUtils
-                .checksumCRC32(imgFromCloudFront));
+                File imgFromLocal = new File(testDataPath
+                        + "image/ochiboHiroi.jpg");
+                File imgFromCloudFront = new File(tempImgPath);
 
-        // 証跡取得
-        screenshot(testName.getMethodName());
+                // アサート:CloudFrontから配信された画像が想定している画像と一致していることを確認する。
+                assertEquals(FileUtils.checksumCRC32(imgFromLocal), FileUtils
+                        .checksumCRC32(imgFromCloudFront));
+
+                // 証跡取得
+                screenshot(testName.getMethodName());
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 
     /**
@@ -151,33 +171,43 @@ public class StaticContentsTest extends TestCase {
     @Test
     public void xCacheTest() throws ClientProtocolException, IOException {
 
-        // テスト実行:ログインして静的コンテンツを取得する
-        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
-                "0000000002", "aaaaa11111");
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
 
-        // 画像のURL取得
-        String imgSrc = homePage.getImagFromCloudFront().getAttribute("src");
+                // テスト実行:ログインして静的コンテンツを取得する
+                HomePage homePage = open(applicationContextUrl, LoginPage.class)
+                        .login("0000000002", "aaaaa11111");
 
-        CloseableHttpClient client = HttpClients.createDefault();
+                // 画像のURL取得
+                String imgSrc = homePage.getImagFromCloudFront().getAttribute(
+                        "src");
 
-        // CloudFrontに画像をキャッシュさせるためにアクセス
-        try (CloseableHttpResponse response = client.execute(
-                new HttpGet(imgSrc))) {
-        }
+                CloseableHttpClient client = HttpClients.createDefault();
 
-        // CloudFrontのキャッシュから画像を取得
-        try (CloseableHttpResponse response = client.execute(
-                new HttpGet(imgSrc))) {
+                // CloudFrontに画像をキャッシュさせるためにアクセス
+                try (CloseableHttpResponse response = client.execute(
+                        new HttpGet(imgSrc))) {
+                }
 
-            // X-Cache の値を取得
-            String xCacheResult = response.getFirstHeader("X-Cache").getValue();
+                // CloudFrontのキャッシュから画像を取得
+                try (CloseableHttpResponse response = client.execute(
+                        new HttpGet(imgSrc))) {
 
-            if (StringUtils.isNotBlank(xCacheResult)) {
+                    // X-Cache の値を取得
+                    String xCacheResult = response.getFirstHeader("X-Cache")
+                            .getValue();
 
-                // アサート:レスポンスヘッダの「X-Cache」が「Hit from CloudFront」になっていることを確認する。
-                assertEquals("Hit from cloudfront", xCacheResult);
-            } else {
-                fail();
+                    if (StringUtils.isNotBlank(xCacheResult)) {
+
+                        // アサート:レスポンスヘッダの「X-Cache」が「Hit from CloudFront」になっていることを確認する。
+                        assertEquals("Hit from cloudfront", xCacheResult);
+                    } else {
+                        fail();
+                    }
+                }
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
             }
         }
     }

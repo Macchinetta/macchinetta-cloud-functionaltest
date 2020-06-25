@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
 import jp.co.ntt.cloud.functionaltest.domain.model.FTMessage;
 import jp.co.ntt.cloud.functionaltest.domain.service.login.SampleUserDetails;
 import jp.co.ntt.cloud.functionaltest.domain.service.message.MessageService;
@@ -61,15 +61,14 @@ public class PriorityQueueController {
     MessageService messageService;
 
     /**
-     * ログインユーザのサービスレベルに応じたキューを利用してメッセージ送信を行い処理時を確認する。。
+     * ログインユーザのサービスレベルに応じたキューを利用してメッセージ送信を行い処理時を確認する。
      * @param userDetails ユーザ詳細
      * @param locale 地域情報
      * @param model モデル
      * @return
      * @throws InterruptedException
      */
-    @RequestMapping(value = "/", method = { RequestMethod.GET,
-            RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.ROOT_HOME)
     public String home(@AuthenticationPrincipal SampleUserDetails userDetails,
             Locale locale, Model model) throws InterruptedException {
         logger.info("Welcome home! The client locale is {}.", locale);
@@ -102,7 +101,7 @@ public class PriorityQueueController {
             }
         }
 
-        return "welcome/home";
+        return WebPagePathConstants.WELCOME_HOME;
     }
 
 }

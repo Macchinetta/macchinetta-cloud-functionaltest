@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,92 +17,93 @@
 package jp.co.ntt.cloud.functionaltest.app.transactiontoken;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenCheck;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenContext;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenType;
 
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
+
 @Controller
-@RequestMapping("transactiontoken")
 @TransactionTokenCheck("transactiontoken")
 public class TransactionTokenFlow1Controller {
 
-    @RequestMapping(value = "flow1", method = RequestMethod.POST, params = "confirm")
+    @PostMapping(value = WebPagePathConstants.TRANSACTIONTOKEN_FLOW1, params = "confirm")
     @TransactionTokenCheck(type = TransactionTokenType.BEGIN)
     public String flow1Step2() {
-        return "transactiontoken/flow1Step2";
+        return WebPagePathConstants.TRANSACTIONTOKEN_FLOW1STEP2;
     }
 
-    @RequestMapping(value = "flow1", method = RequestMethod.POST, params = "confirmError")
+    @PostMapping(value = WebPagePathConstants.TRANSACTIONTOKEN_FLOW1, params = "confirmError")
     @TransactionTokenCheck(type = TransactionTokenType.BEGIN)
     public String flow1Step2_withError() {
-        return "transactiontoken/flowAllStep1";
+        return WebPagePathConstants.TRANSACTIONTOKEN_FLOWALLSTEP1;
     }
 
-    @RequestMapping(value = "flow1", method = RequestMethod.POST, params = "confirmDiffNamespace")
+    @PostMapping(value = WebPagePathConstants.TRANSACTIONTOKEN_FLOW1, params = "confirmDiffNamespace")
     @TransactionTokenCheck(type = TransactionTokenType.BEGIN)
     public String flow1Step2_toDifferentNamespace() {
-        return "transactiontoken/flow1Step2ToDifferentNamespace";
+        return WebPagePathConstants.TRANSACTIONTOKEN_FLOW1STEP2TODIFFERENTNAMESPACE;
     }
 
-    @RequestMapping(value = "flow1", method = RequestMethod.POST, params = "redo1")
+    @PostMapping(value = WebPagePathConstants.TRANSACTIONTOKEN_FLOW1, params = "redo1")
     public String flow1Step2Back() {
-        return "transactiontoken/flowAllStep1";
+        return WebPagePathConstants.TRANSACTIONTOKEN_FLOWALLSTEP1;
     }
 
-    @RequestMapping(value = "flow1", method = RequestMethod.POST, params = "intermediate")
+    @PostMapping(value = WebPagePathConstants.TRANSACTIONTOKEN_FLOW1, params = "intermediate")
     @TransactionTokenCheck(type = TransactionTokenType.IN)
     public String flow1Step3() {
-        return "transactiontoken/flow1Step3";
+        return WebPagePathConstants.TRANSACTIONTOKEN_FLOW1STEP3;
     }
 
-    @RequestMapping(value = "flow1", method = RequestMethod.POST, params = "intermediateWithFinish")
+    @PostMapping(value = WebPagePathConstants.TRANSACTIONTOKEN_FLOW1, params = "intermediateWithFinish")
     @TransactionTokenCheck(type = TransactionTokenType.IN)
     public String flow1Step3_withFinish(
             TransactionTokenContext transactionTokenContext) {
         // Navigate to final screen
-        return "transactiontoken/flow1Step4";
+        return WebPagePathConstants.TRANSACTIONTOKEN_FLOW1STEP4;
     }
 
-    @RequestMapping(value = "flow1", method = RequestMethod.POST, params = "intermediateWithFinishError")
+    @PostMapping(value = WebPagePathConstants.TRANSACTIONTOKEN_FLOW1, params = "intermediateWithFinishError")
     @TransactionTokenCheck(type = TransactionTokenType.IN)
     public String flow1Step3_withFinishError(
             TransactionTokenContext transactionTokenContext) {
         // Navigate to intermediate screen again
         // Transaction token will be updated
-        return "transactiontoken/flow1Step2";
+        return WebPagePathConstants.TRANSACTIONTOKEN_FLOW1STEP2;
     }
 
-    @RequestMapping(value = "flow1", method = RequestMethod.POST, params = "redo2")
+    @PostMapping(value = WebPagePathConstants.TRANSACTIONTOKEN_FLOW1, params = "redo2")
     @TransactionTokenCheck
     public String flow1Step3Back() {
-        return "transactiontoken/flow1Step2";
+        return WebPagePathConstants.TRANSACTIONTOKEN_FLOW1STEP2;
     }
 
-    @RequestMapping(value = "flow1", method = RequestMethod.POST, params = "finalize")
+    @PostMapping(value = WebPagePathConstants.TRANSACTIONTOKEN_FLOW1, params = "finalize")
     @TransactionTokenCheck(type = TransactionTokenType.END)
     public String flow1Step4() {
-        return "transactiontoken/flow1Step4";
+        return WebPagePathConstants.TRANSACTIONTOKEN_FLOW1STEP4;
     }
 
-    @RequestMapping(value = "flow1", method = RequestMethod.POST, params = "finalizeError")
+    @PostMapping(value = WebPagePathConstants.TRANSACTIONTOKEN_FLOW1, params = "finalizeError")
     @TransactionTokenCheck(type = TransactionTokenType.END)
     public String flow1Step4_withError() {
         // return to first step screen due to business error
-        return "transactiontoken/flowAllStep1";
+        return WebPagePathConstants.TRANSACTIONTOKEN_FLOWALLSTEP1;
     }
 
-    @RequestMapping(value = "flow1", method = RequestMethod.GET, params = "download01")
+    @GetMapping(value = WebPagePathConstants.TRANSACTIONTOKEN_FLOW1, params = "download01")
     @TransactionTokenCheck(type = TransactionTokenType.CHECK)
     public String flow1Step2Download_01() {
-        return "imageFileDownloadView";
+        return WebPagePathConstants.IMAGEFILEDOWNLOADVIEW;
     }
 
-    @RequestMapping(value = "flow1", method = RequestMethod.POST, params = "check")
+    @PostMapping(value = WebPagePathConstants.TRANSACTIONTOKEN_FLOW1, params = "check")
     @TransactionTokenCheck(type = TransactionTokenType.CHECK)
     public String flow1Step2Check() {
-        return "transactiontoken/flow1Step3";
+        return WebPagePathConstants.TRANSACTIONTOKEN_FLOW1STEP3;
     }
 
 }

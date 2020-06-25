@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,6 @@ package jp.co.ntt.cloud.functionaltest.domain.common.shard.datasource;
  * @author NTT 電電花子
  */
 public interface ShardKeyResolver {
-
-    /**
-     * スキーマキー名。
-     */
-    String SCHEMA_KEY_NAME = "schema";
 
     /**
      * シャードキーを解決する。

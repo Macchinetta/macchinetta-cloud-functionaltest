@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +21,10 @@ package jp.co.ntt.cloud.functionaltest.domain.common.shard.model;
 
 import java.io.Serializable;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
-
 /**
  * DynamoDBのシャーディングアカウントモデル。
  * @author NTT 電電太郎
  */
-@DynamoDBTable(tableName = "functionaltestShardAccount")
 public class ShardingAccount implements Serializable {
 
     /**
@@ -38,11 +33,9 @@ public class ShardingAccount implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** ユーザID */
-    @DynamoDBHashKey(attributeName = "user_id")
     private String id;
 
     /** データソースのキー */
-    @DynamoDBAttribute(attributeName = "data_source_key")
     private String dataSourceKey;
 
     /**
@@ -105,27 +98,18 @@ public class ShardingAccount implements Serializable {
         }
 
         ShardingAccount sa = (ShardingAccount) obj;
-        if (id != null) {
-            if (!id.equals(sa.id)) {
-                return false;
-            } else {
-                if (dataSourceKey == null) {
-                    return sa.dataSourceKey == null;
-                } else {
-                    return dataSourceKey.equals(sa.dataSourceKey);
-                }
-            }
+        // ユーザIDがnullでない、かつユーザIDがシャーディングアカウントが保有するユーザIDと一致しないまたはシャーディングアカウントが保有するユーザIDがnull出ない場合はfalseを返却する
+        if ((id != null && !id.equals(sa.id)) || (id != null
+                && sa.id != null)) {
+            return false;
         } else {
-            if (sa.id != null) {
-                return false;
+            if (dataSourceKey == null) {
+                return sa.dataSourceKey == null;
             } else {
-                if (dataSourceKey == null) {
-                    return sa.dataSourceKey == null;
-                } else {
-                    return dataSourceKey.equals(sa.dataSourceKey);
-                }
+                return dataSourceKey.equals(sa.dataSourceKey);
             }
         }
+
     }
 
 }

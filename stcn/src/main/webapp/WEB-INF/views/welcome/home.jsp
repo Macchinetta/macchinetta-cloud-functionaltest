@@ -21,7 +21,7 @@
         </p>
         <div>
             <!-- ${contentUrl} は include.jsp の spring:eval から取得している。 -->
-        	<img id="imgFromCloudFront" alt="" src="${contentUrl}/resources/image/ochiboHiroi.jpg"/>
+        	<img id="imgFromCloudFront" alt="" src="${contentUrl}/12x/ci/STCN/resources/image/ochiboHiroi.jpg"/>
             <p id="imgLoadState">Image loading isn't complete</p>
         </div>
     </div>

@@ -6,7 +6,7 @@
     <parent>
         <groupId>jp.co.ntt.cloud.functionaltest</groupId>
         <artifactId>macchinetta-cloud-functionaltest</artifactId>
-        <version>1.1.1.RELEASE</version>
+        <version>1.2.0.RELEASE</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -51,7 +51,7 @@
                         <deployable>
                             <location>${project.build.directory}/${project.artifactId}.war</location>
                             <type>war</type>
-                            <pingURL><![CDATA[http://localhost:${cargo.servlet.port}/${project.artifactId}/]]></pingURL>
+                            <pingURL><![CDATA[http://localhost:${cargo.servlet.port}/${project.artifactId}/list]]></pingURL>
                             <pingTimeout>360000</pingTimeout>
                         </deployable>
                     </deployables>

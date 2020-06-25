@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ public class CloudWatchMetricSender implements InitializingBean {
 
     }
 
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 15000)
     public void sendCloudWatch() {
         MemoryMXBean mBean = ManagementFactory.getMemoryMXBean();
         MemoryUsage heapUsage = mBean.getHeapMemoryUsage();

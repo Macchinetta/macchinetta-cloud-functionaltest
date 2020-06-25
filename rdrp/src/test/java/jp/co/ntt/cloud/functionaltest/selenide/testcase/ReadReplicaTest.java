@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,13 +30,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.codeborne.selenide.Configuration;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
 import jp.co.ntt.cloud.functionaltest.selenide.page.UserManagementPage;
-import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
-public class ReadReplicaTest extends TestCase {
+public class ReadReplicaTest {
 
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
@@ -72,19 +72,31 @@ public class ReadReplicaTest extends TestCase {
     @Test
     public void testRDRP0101001() {
 
-        // テスト実行:参照系トランザクションの処理を行う
-        UserManagementPage userManagementPage = open(applicationContextUrl,
-                UserManagementPage.class);
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
 
-        // アサート:顧客テーブルに初期投入データが表示されていることを確認する。
-        userManagementPage.getLastNameColumn(1).shouldHave(exactText("Denden"));
-        userManagementPage.getFirstNameColumn(1).shouldHave(exactText(
-                "Hanako"));
-        userManagementPage.getLastNameColumn(2).shouldHave(exactText("Denden"));
-        userManagementPage.getFirstNameColumn(2).shouldHave(exactText("Taro"));
+                // テスト実行:参照系トランザクションの処理を行う
+                UserManagementPage userManagementPage = open(
+                        applicationContextUrl + WebPagePathConstants.LIST,
+                        UserManagementPage.class);
 
-        // 証跡取得
-        screenshot("testRDRP0101001");
+                // アサート:顧客テーブルに初期投入データが表示されていることを確認する。
+                userManagementPage.getLastNameColumn(1).shouldHave(exactText(
+                        "Denden"));
+                userManagementPage.getFirstNameColumn(1).shouldHave(exactText(
+                        "Hanako"));
+                userManagementPage.getLastNameColumn(2).shouldHave(exactText(
+                        "Denden"));
+                userManagementPage.getFirstNameColumn(2).shouldHave(exactText(
+                        "Taro"));
+
+                // 証跡取得
+                screenshot("testRDRP0101001");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 
     /**
@@ -93,24 +105,33 @@ public class ReadReplicaTest extends TestCase {
     @Test
     public void testRDRP0101002() {
 
-        // 事前準備
-        lastName = "Toyosu";
-        firstName = "Yoshiko";
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
 
-        // テスト実行:更新系トランザクションの処理を行う
-        UserManagementPage userManagementPage = open(applicationContextUrl,
-                UserManagementPage.class).register(lastName, firstName)
-                        .reload();
+                // 事前準備
+                lastName = "Toyosu";
+                firstName = "Yoshiko";
 
-        // アサート:顧客テーブルに顧客情報が登録されていることを確認する。
-        // テーブルの行数を取得し最後のデータを確認する。
-        int maxNumberOfRow = userManagementPage.getRows().size() - 1;
-        userManagementPage.getLastNameColumn(maxNumberOfRow).shouldHave(
-                exactText(lastName));
-        userManagementPage.getFirstNameColumn(maxNumberOfRow).shouldHave(
-                exactText(firstName));
+                // テスト実行:更新系トランザクションの処理を行う
+                UserManagementPage userManagementPage = open(
+                        applicationContextUrl + WebPagePathConstants.LIST,
+                        UserManagementPage.class).register(lastName, firstName)
+                                .reload();
 
-        // 証跡取得
-        screenshot("testRDRP0101002");
+                // アサート:顧客テーブルに顧客情報が登録されていることを確認する。
+                // テーブルの行数を取得し最後のデータを確認する。
+                int maxNumberOfRow = userManagementPage.getRows().size() - 1;
+                userManagementPage.getLastNameColumn(maxNumberOfRow).shouldHave(
+                        exactText(lastName));
+                userManagementPage.getFirstNameColumn(maxNumberOfRow)
+                        .shouldHave(exactText(firstName));
+
+                // 証跡取得
+                screenshot("testRDRP0101002");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 }

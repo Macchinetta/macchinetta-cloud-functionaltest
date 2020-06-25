@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,20 @@
 package jp.co.ntt.cloud.functionaltest.app.error;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
 
 /**
  * セッションが無効なときにエラーページを返却するコントローラ
  * @author NTT 電電太郎
  */
 @Controller
-@RequestMapping("error")
 public class SessionInvalidController {
 
-    @RequestMapping("invalidSession")
+    @GetMapping(value = WebPagePathConstants.ERROR_INVALIDSESSION)
     public String sessionInvalidErrorView() {
-        return "common/error/sessionInvalidError";
+        return WebPagePathConstants.COMMON_ERROR_SESSIONINVALIDERROR;
     }
 
 }

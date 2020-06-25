@@ -10,7 +10,7 @@
 <body>
     <div id="wrapper">
         <h1>User Management</h1>
-        <p><a href="/rdrp/" >reload</a></p>
+        <p><a href="/rdrp/list" >reload</a></p>
         <div id="userRegister">
         <h2>Register Form</h2>
         <form:form action="${pageContext.request.contextPath}/register"  modelAttribute="userForm">

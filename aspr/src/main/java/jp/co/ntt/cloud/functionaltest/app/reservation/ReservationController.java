@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,25 @@
  */
 package jp.co.ntt.cloud.functionaltest.app.reservation;
 
-import jp.co.ntt.cloud.functionaltest.domain.model.Reservation;
-import jp.co.ntt.cloud.functionaltest.domain.service.reservation.ReservationService;
-import org.springframework.jms.config.JmsListenerEndpointRegistry;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import javax.inject.Inject;
+
+import org.springframework.jms.config.JmsListenerEndpointRegistry;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import jp.co.ntt.cloud.functionaltest.app.common.constants.AsprConstants;
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
+import jp.co.ntt.cloud.functionaltest.domain.model.Reservation;
+import jp.co.ntt.cloud.functionaltest.domain.service.reservation.ReservationService;
 
 @Controller
 public class ReservationController {
@@ -45,23 +48,23 @@ public class ReservationController {
     @Inject
     ReservationService reservationService;
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @GetMapping(value = WebPagePathConstants.ROOT_HOME)
     public String home(Model model) {
-        model.addAttribute("status", "init");
-        return "reservation/home";
+        model.addAttribute(AsprConstants.STATUS, "init");
+        return WebPagePathConstants.RESERVATION_HOME;
     }
 
-    @RequestMapping(value = "/send/{message}", method = RequestMethod.GET)
+    @GetMapping(value = WebPagePathConstants.SEND_MESSAGE)
     public String sendMessage(@PathVariable("message") String message,
             Model model) {
         final Reservation reservation = new Reservation();
         reservation.setReserveNo(message);
         reservationService.sendMessage(reservation);
-        model.addAttribute("status", "send:" + message);
-        return "reservation/home";
+        model.addAttribute(AsprConstants.STATUS, "send:" + message);
+        return WebPagePathConstants.RESERVATION_HOME;
     }
 
-    @RequestMapping(value = "/receive/{count}", method = RequestMethod.GET)
+    @GetMapping(value = WebPagePathConstants.RECEIVE_COUNT)
     public String receiveMessage(@PathVariable("count") int count,
             Model model) throws InterruptedException, TimeoutException {
 
@@ -84,47 +87,47 @@ public class ReservationController {
                 builder.append(",");
             }
         }
-        model.addAttribute("status", builder.toString());
-        return "reservation/home";
+        model.addAttribute(AsprConstants.STATUS, builder.toString());
+        return WebPagePathConstants.RESERVATION_HOME;
     }
 
-    @RequestMapping(value = "/receiveSync", method = RequestMethod.GET)
+    @GetMapping(value = WebPagePathConstants.RECEIVESYNC)
     public String receiveSync(Model model) {
         Reservation reservation = reservationService.receiveMessageSync();
-        model.addAttribute("status", reservation.getReserveNo());
-        return "reservation/home";
+        model.addAttribute(AsprConstants.STATUS, reservation.getReserveNo());
+        return WebPagePathConstants.RESERVATION_HOME;
     }
 
-    @RequestMapping(value = "/clear", method = RequestMethod.GET)
+    @GetMapping(value = WebPagePathConstants.CLEAR)
     public String clear(Model model) {
         reservations.clear();
-        model.addAttribute("status", "cleared");
-        return "reservation/home";
+        model.addAttribute(AsprConstants.STATUS, "cleared");
+        return WebPagePathConstants.RESERVATION_HOME;
     }
 
-    @RequestMapping(value = "/stopListener", method = RequestMethod.GET)
+    @GetMapping(value = WebPagePathConstants.STOPLISTENER)
     public String stopListener(Model model) {
         jmsListenerEndpointRegistry.stop();
         awaitStoppingListener();
-        model.addAttribute("status", "stopped");
-        return "reservation/home";
+        model.addAttribute(AsprConstants.STATUS, "stopped");
+        return WebPagePathConstants.RESERVATION_HOME;
     }
 
-    @RequestMapping(value = "/startListener", method = RequestMethod.GET)
+    @GetMapping(value = WebPagePathConstants.STARTLISTENER)
     public String startListener(Model model) {
         jmsListenerEndpointRegistry.start();
         awaitStartingListener();
-        model.addAttribute("status", "started");
-        return "reservation/home";
+        model.addAttribute(AsprConstants.STATUS, "started");
+        return WebPagePathConstants.RESERVATION_HOME;
     }
 
-    @RequestMapping(value = "/count", method = RequestMethod.GET)
+    @GetMapping(value = WebPagePathConstants.COUNT)
     public String messageCount(Model model) {
-        model.addAttribute("status", reservations.size());
-        return "reservation/home";
+        model.addAttribute(AsprConstants.STATUS, reservations.size());
+        return WebPagePathConstants.RESERVATION_HOME;
     }
 
-    @RequestMapping(value = "/browse/{queueName}", method = RequestMethod.GET)
+    @GetMapping(value = WebPagePathConstants.BROWSE_QUEUENAME)
     public String browseMessageId(Model model,
             @PathVariable("queueName") String queueName,
             @RequestParam("delete") boolean delete) {
@@ -136,16 +139,16 @@ public class ReservationController {
         } else {
             messageId = "EMPTY";
         }
-        model.addAttribute("status", messageId);
-        return "reservation/home";
+        model.addAttribute(AsprConstants.STATUS, messageId);
+        return WebPagePathConstants.RESERVATION_HOME;
     }
 
-    @RequestMapping(value = "/deleteAll/{queueName}", method = RequestMethod.GET)
+    @GetMapping(value = WebPagePathConstants.DELETEALL_QUEUENAME)
     public String deleteAllMessages(Model model,
             @PathVariable("queueName") String queueName) {
         reservationService.deleteAllMessages(queueName);
-        model.addAttribute("status", "all-cleared");
-        return "reservation/home";
+        model.addAttribute(AsprConstants.STATUS, "all-cleared");
+        return WebPagePathConstants.RESERVATION_HOME;
     }
 
     private void awaitListenerState(boolean start) {

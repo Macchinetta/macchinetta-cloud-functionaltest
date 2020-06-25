@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+
+import jp.co.ntt.cloud.functionaltest.app.common.constants.EvemConstants;
 
 /**
  * Config Serverを終了するタスク
@@ -139,69 +141,85 @@ public class ConfigServerShutdownTask extends Task {
                 .setDefaultRequestConfig(requestConfig).build();
 
         long start = System.currentTimeMillis();
-        long timeDiff = 0;
-        boolean postConfigServerShutdownEndPointFlag = false;
-        while (true) {
-            try (CloseableHttpResponse response = client.execute(
-                    new HttpPost(configServerShutdownUrl))) {
-                if (200 == response.getStatusLine().getStatusCode()) {
-                    System.out.println(
-                            "*********************** Config Server を終了するエンドポイントへPOSTしました。 ***********************");
-                    postConfigServerShutdownEndPointFlag = true;
-                }
-            } catch (ClientProtocolException e) {
-            } catch (IOException e) {
-            }
+        boolean configServerStopOrderPostFlag = false;
+        while (!configServerStopOrderPostFlag) {
 
-            if (postConfigServerShutdownEndPointFlag) {
-                break;
-            }
+            // タイムアウト時間を超過していた場合、待機処理及びタイムアウトメッセージを出力する
+            long end = System.currentTimeMillis();
+            if ((end - start) >= timeout)
+                throw new BuildException(EvemConstants.CONFIG_SERVER_POST_TIMEOUT
+                        + timeout + " ms");
 
+            // 100ミリ秒Sleepする
             try {
-                Thread.sleep(100); // 100ミリ秒Sleepする
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
 
-            long end = System.currentTimeMillis();
-            timeDiff = end - start;
-            if (timeDiff >= timeout) {
-                throw new BuildException("Config Server を終了するエンドポイントへのPOSTがタイムアウトしました。 timeout="
-                        + timeout + " ms");
-            }
+            // Config Serverを終了させる
+            configServerStopOrderPostFlag = postConfigServer(client);
         }
 
         start = System.currentTimeMillis();
-        timeDiff = 0;
-        boolean shutdownConfigServerCompleteFlag = false;
-        while (true) {
-            try (CloseableHttpResponse response = client.execute(
-                    new HttpGet(configServerPingUrl))) {
-            } catch (ClientProtocolException e) {
-            } catch (IOException e) {
-                System.out.println(
-                        "*********************** Config Server が終了しました。 ***********************");
-                shutdownConfigServerCompleteFlag = true;
-            }
+        boolean configServerShutdownFlag = false;
+        while (!configServerShutdownFlag) {
+            // タイムアウト時間を超過していた場合、待機処理及びタイムアウトメッセージを出力する
+            long end = System.currentTimeMillis();
+            if ((end - start) >= timeout)
+                throw new BuildException(EvemConstants.CONFIG_SERVER_SHUTDOWN_TIMEOUT
+                        + timeout + " ms");
 
-            if (shutdownConfigServerCompleteFlag) {
-                break;
-            }
-
+            // 100ミリ秒Sleepする
             try {
-                Thread.sleep(100); // 100ミリ秒Sleepする
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
 
-            long end = System.currentTimeMillis();
-            timeDiff = end - start;
-            if (timeDiff >= timeout) {
-                throw new BuildException("Config Server を終了できませんでした。タイムアウトしました。 timeout="
-                        + timeout + " ms");
-            }
+            // Config Serverが終了したかを確認する
+            configServerShutdownFlag = checkShutdownConfigServer(client);
         }
 
+    }
+
+    /**
+     * Config Serverを終了させる命令をPOSTする
+     * @param client 対象サーバ
+     * @return Config Server終了命令送信フラグ
+     */
+    private boolean postConfigServer(CloseableHttpClient client) {
+        boolean configServerStopOrderPostFlag = false;
+        try (CloseableHttpResponse response = client.execute(
+                new HttpPost(configServerShutdownUrl))) {
+            if (200 == response.getStatusLine().getStatusCode()) {
+                System.out.println(
+                        "*********************** Config Server を終了するエンドポイントへPOSTしました。 ***********************");
+                configServerStopOrderPostFlag = true;
+            }
+        } catch (IOException e) {
+            // IOExceptionnのときは処理しない
+        }
+        return configServerStopOrderPostFlag;
+    }
+
+    /**
+     * Config Serverが終了したかを確認する
+     * @param client 対象サーバ
+     * @return Config Server終了フラグ
+     */
+    private boolean checkShutdownConfigServer(CloseableHttpClient client) {
+        boolean configServerShutdownFlag = false;
+        try (CloseableHttpResponse response = client.execute(
+                new HttpGet(configServerPingUrl))) {
+        } catch (ClientProtocolException e) {
+            // ClientProtocolExceptionのときは処理されない。
+        } catch (IOException e) {
+            System.out.println(
+                    "*********************** Config Server が終了しました。 ***********************");
+            configServerShutdownFlag = true;
+        }
+        return configServerShutdownFlag;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import jp.co.ntt.cloud.functionaltest.domain.directupload.DirectUploadHelper;
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
 import jp.co.ntt.cloud.functionaltest.domain.directupload.DirectUploadAuthInfo;
+import jp.co.ntt.cloud.functionaltest.domain.directupload.DirectUploadHelper;
 import jp.co.ntt.cloud.functionaltest.domain.service.login.SampleUserDetails;
 
 /**
@@ -35,7 +35,6 @@ import jp.co.ntt.cloud.functionaltest.domain.service.login.SampleUserDetails;
  * @author NTT 電電太郎
  */
 @Controller
-@RequestMapping("upload")
 public class DirectUploadController {
 
     /**
@@ -54,9 +53,9 @@ public class DirectUploadController {
      * アップロード画面を表示する。
      * @return View論理名
      */
-    @GetMapping
+    @GetMapping(value = WebPagePathConstants.UPLOAD)
     public String upload() {
-        return "upload/index";
+        return WebPagePathConstants.UPLOAD_INDEX;
     }
 
     /**
@@ -64,7 +63,7 @@ public class DirectUploadController {
      * @param fileName ファイル名
      * @return ダイレクトアップロード用認証情報
      */
-    @GetMapping(params = "info")
+    @GetMapping(value = WebPagePathConstants.UPLOAD, params = "info")
     @ResponseBody
     public DirectUploadAuthInfo getInfoForDirectUpload(
             @RequestParam("filename") String fileName,

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>evem-dir-traversal</artifactId>
+    <packaging>war</packaging>
+    <parent>
+        <groupId>jp.co.ntt.cloud.functionaltest</groupId>
+        <artifactId>macchinetta-cloud-functionaltest</artifactId>
+        <version>1.2.0.RELEASE</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <name>Functional test for Macchinetta cloud guideline (${project.artifactId})</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>start-container</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <configuration>
+                            <timeout>130000</timeout>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop-container</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <configuration>
+                        <type>standalone</type>
+                        <properties>
+                            <cargo.servlet.port>${cargo.servlet.port}</cargo.servlet.port>
+                            <cargo.rmi.port>${cargo.rmi.port}</cargo.rmi.port>
+                            <cargo.tomcat.ajp.port>${cargo.tomcat.ajp.port}</cargo.tomcat.ajp.port>
+                            <cargo.jvmargs>
+                                ${cargo.jvmargs}
+                            </cargo.jvmargs>
+                            <cargo.logging>low</cargo.logging>
+                        </properties>
+                    </configuration>
+                    <deployables>
+                        <deployable>
+                            <location>${project.build.directory}/${project.artifactId}.war</location>
+                            <type>war</type>
+                            <pingURL><![CDATA[http://localhost:${cargo.servlet.port}/${project.artifactId}/]]></pingURL>
+                            <pingTimeout>360000</pingTimeout>
+                        </deployable>
+                    </deployables>
+                    <wait>false</wait>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>configServerStartUp</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <tasks>
+                                <taskdef name="configServerStartUpTask"
+                                    classname="jp.co.ntt.cloud.functionaltest.task.configserver.ConfigServerStartUpTask"
+                                    classpathref="maven.compile.classpath" />
+                                <configServerStartUpTask
+                                    configServerProjectDir="${project.basedir}/../${config.server.project.name}"
+                                    configServerProfile="${config.server.profile}"
+                                    configServerPingUrl="${config.server.ping.test.url}"
+                                    configServerUser="${config.server.user}"
+                                    configServerPassword="${config.server.password}"
+                                    timeout="${config.server.start.up.timeout}"
+                                    mvnPath="${mvn.command.path}"
+                                     />
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>configServerShutdown</id>
+                        <phase>post-integration-test</phase>
+                        <configuration>
+                            <tasks>
+                                <taskdef name="configServerShutdownTask"
+                                    classname="jp.co.ntt.cloud.functionaltest.task.configserver.ConfigServerShutdownTask"
+                                    classpathref="maven.compile.classpath" />
+                                <configServerShutdownTask
+                                    configServerShutdownUrl="${config.server.shutdown.url}"
+                                    configServerPingUrl="${config.server.ping.test.url}"
+                                    configServerUser="${config.server.user}"
+                                    configServerPassword="${config.server.password}"
+                                    timeout="${config.server.start.up.timeout}"
+                                     />
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+
+    <properties>
+        <!-- == Maven Plugin Versions == -->
+        <!-- == Dependency Versions == -->
+        <!-- == Project Properties == -->
+
+        <project.root.basedir>${project.parent.basedir}</project.root.basedir>
+        <config.server.project.name>evem-config</config.server.project.name>
+        <config.server.user>user</config.server.user>
+        <config.server.password>user</config.server.password>
+        <config.server.ping.test.url>http://localhost:8888/health</config.server.ping.test.url>
+        <config.server.shutdown.url>http://localhost:8888/shutdown</config.server.shutdown.url>
+        <config.server.start.up.timeout>120000</config.server.start.up.timeout>
+    </properties>
+    <profiles>
+        <profile>
+            <id>local</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <cargo.servlet.port>8082</cargo.servlet.port>
+                <cargo.rmi.port>58091</cargo.rmi.port>
+                <cargo.tomcat.ajp.port>58092</cargo.tomcat.ajp.port>
+                <cargo.jvmargs>
+                  -Dspring.profiles.active=default
+                  -Dcloud.aws.region.static=ap-northeast-1
+                  -Dcloud.aws.region.auto=false
+                </cargo.jvmargs>
+                <mvn.command.path><![CDATA[C:\apache-maven-3.5.0\bin\mvn.cmd]]></mvn.command.path>
+                <config.server.profile>dirsuccess</config.server.profile>
+            </properties>
+        </profile>
+        <profile>
+            <id>ci</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <cargo.servlet.port>8082</cargo.servlet.port>
+                <cargo.rmi.port>58091</cargo.rmi.port>
+                <cargo.tomcat.ajp.port>58092</cargo.tomcat.ajp.port>
+                <cargo.jvmargs>-Dspring.profiles.active=ci</cargo.jvmargs>
+                <mvn.command.path><![CDATA[/opt/maven/apache-maven-3.3.9/bin/mvn]]></mvn.command.path>
+                <config.server.profile>dirsuccess</config.server.profile>
+            </properties>
+        </profile>
+    </profiles>
+</project>

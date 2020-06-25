@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.terasoluna.gfw.common.exception.BusinessException;
 import org.terasoluna.gfw.common.message.ResultMessages;
 
+import jp.co.ntt.cloud.functionaltest.domain.common.constants.LogMessageConstants;
 import jp.co.ntt.cloud.functionaltest.domain.model.Product;
 import jp.co.ntt.cloud.functionaltest.domain.repository.product.ProductRepository;
 
@@ -57,7 +58,7 @@ public class ProductService {
 
         if (Objects.isNull(product)) {
             ResultMessages messages = ResultMessages.error();
-            messages.add("e.xx.fw.8001", productId);
+            messages.add(LogMessageConstants.MSG_ID_8001, productId);
             throw new BusinessException(messages);
         }
         return product;

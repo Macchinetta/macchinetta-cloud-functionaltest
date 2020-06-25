@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,11 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
 import jp.co.ntt.cloud.functionaltest.domain.model.User;
 import jp.co.ntt.cloud.functionaltest.domain.model.UserInfo;
 import jp.co.ntt.cloud.functionaltest.domain.service.userregister.UserRegisterService;
@@ -46,7 +48,7 @@ public class UserController {
     @Inject
     UserRegisterService userRegiserService;
 
-    @RequestMapping(value = "/")
+    @GetMapping(value = WebPagePathConstants.LIST)
     public String userlist(Model model) {
 
         List<User> userList = userSearchService.userSearchAll();
@@ -61,17 +63,17 @@ public class UserController {
         }
         model.addAttribute("userInfoList", userInfoList);
 
-        return "user/userManagement";
+        return WebPagePathConstants.USER_USERMANAGEMENT;
     }
 
-    @RequestMapping(value = "register")
+    @PostMapping(value = WebPagePathConstants.REGISTER)
     public String userRegister(UserForm form) {
         UserInfo userInfo = new UserInfo();
         userInfo.setLastName(form.getInputLastName());
         userInfo.setFirstName(form.getInputFirstName());
 
         userRegiserService.registerUser(userInfo);
-        return "redirect:/";
+        return WebPagePathConstants.REDIRECT_LIST;
     }
 
 }

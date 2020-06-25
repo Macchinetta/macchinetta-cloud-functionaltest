@@ -18,10 +18,8 @@ functionaltest:
       protocol: https
       secure: true
       domain: tera-ci.net
-      cookiePath: /prcd
       distributionDomain: www.tera-ci.net
       privateKeyFilePath: ${user.home}/private-key.der
-      resourcePath: prcd/paid/*
       keyPairId: APKAI5K77TUXVDZ7KYZQ
       timeToActive: -10
       timeToExpire: 10

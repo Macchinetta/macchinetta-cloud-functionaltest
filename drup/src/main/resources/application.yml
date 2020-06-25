@@ -13,7 +13,6 @@ cloud:
       
 functionaltest:
     upload:
-      bucketName: functionaltest-direct-upload
       roleName: s3-direct
       roleSessionName: s3-direct01
       durationseconds: 5

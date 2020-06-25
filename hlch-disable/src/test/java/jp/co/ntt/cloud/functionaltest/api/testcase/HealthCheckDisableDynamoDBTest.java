@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,12 +31,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.codeborne.selenide.Configuration;
 
 import io.restassured.RestAssured;
-import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
-public class HealthCheckDisableDynamoDBTest extends TestCase {
+public class HealthCheckDisableDynamoDBTest {
 
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
@@ -58,7 +57,7 @@ public class HealthCheckDisableDynamoDBTest extends TestCase {
     }
 
     /**
-     * HLCH0103 001 カスタムヘルスインジケータを無効化できること
+     * HLCH0102 001 カスタムヘルスインジケータを無効化できること
      */
     @Test
     public void disableDynamoDBHealthCheckTest() {
@@ -66,10 +65,10 @@ public class HealthCheckDisableDynamoDBTest extends TestCase {
         // アサート:DynamoDBのヘルスチェック結果が取得できないこと
         given().get("/management/health").then().body("status", equalTo("UP"))
                 .body("$", not(hasItem("dynamodb"))).body(
-                        "details.diskSpace.status", equalTo("UP")).body(
-                                "details.db.status", equalTo("UP")).body(
-                                        "details.refreshScope.status", equalTo(
-                                                "UP"));
+                        "components.diskSpace.status", equalTo("UP")).body(
+                                "components.db.status", equalTo("UP")).body(
+                                        "components.refreshScope.status",
+                                        equalTo("UP"));
 
     }
 }

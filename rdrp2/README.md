@@ -20,7 +20,7 @@
 | エンジンのオプション | PostgreSQL | - |
 | ユースケース | 開発/テスト| - |
 | DBインスタンスのクラス| `db.t2.micro`|-|
-| DBインスタンス識別子| `ci-functionaltest` |
+| DBインスタンス識別子| `func-master` |
 | マスターユーザの名前 | (任意) | - |
 | マスターパスワード | (任意) | - |
 
@@ -29,6 +29,6 @@
 |設定項目| 値 | 備考
 |------|----|----|
 | 送信先リージョン | Asia Pacific(Tokyo) | - |
-| リードレプリカのソース | `ci-functionaltest` | - |
-| DB インスタンス識別子 | `ci-functionaltest-replica` | - |
+| リードレプリカのソース | `func-master` | - |
+| DB インスタンス識別子 | `func-replica` | - |
 

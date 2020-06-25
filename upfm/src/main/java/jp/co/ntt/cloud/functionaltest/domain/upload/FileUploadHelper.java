@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,8 @@ import org.terasoluna.gfw.common.exception.SystemException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
+
+import jp.co.ntt.cloud.functionaltest.domain.common.constants.LogMessageConstants;
 
 /**
  * ファイルアップロード処理を行うヘルパークラス
@@ -92,7 +94,7 @@ public class FileUploadHelper {
                 OutputStream outputStream = resource.getOutputStream()) {
             IOUtils.copy(inputStream, outputStream);
         } catch (IOException e) {
-            throw new SystemException("e.xx.fw.9001", "i/o errors occurred.", e);
+            throw new SystemException(LogMessageConstants.MSG_ID_9001, "i/o errors occurred.", e);
         }
         return objectKey;
     }
@@ -139,7 +141,7 @@ public class FileUploadHelper {
             return resourcePatternResolver.getResources("s3://" + bucketName
                     + "/" + pattern);
         } catch (IOException e) {
-            throw new SystemException("e.xx.fw.9001", "i/o errors occurred.", e);
+            throw new SystemException(LogMessageConstants.MSG_ID_9001, "i/o errors occurred.", e);
         }
     }
 }

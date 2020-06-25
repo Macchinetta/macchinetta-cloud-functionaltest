@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,18 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
 import jp.co.ntt.cloud.functionaltest.domain.model.Member;
 import jp.co.ntt.cloud.functionaltest.domain.service.caab.MemberUpdateService;
 
 @RestController
-@RequestMapping("Member/update")
 public class MemberUpdateRestController {
 
     @Inject
@@ -47,7 +47,7 @@ public class MemberUpdateRestController {
      * <li>検索条件に一致するMemberリソースの検索。</li>
      * </ul>
      */
-    @RequestMapping(method = RequestMethod.GET, value = "{customerNo}")
+    @GetMapping(value = WebPagePathConstants.MEMBER_UPDATE_CUSTOMERNO)
     @ResponseStatus(HttpStatus.OK)
     public MemberResource findMember(
             @PathVariable("customerNo") String customerNo,
@@ -68,7 +68,7 @@ public class MemberUpdateRestController {
      * <li>特定のMemberリソースの更新。</li>
      * </ul>
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "{customerNo}")
+    @PutMapping(value = WebPagePathConstants.MEMBER_UPDATE_CUSTOMERNO)
     @ResponseStatus(HttpStatus.OK)
     public MemberResource updateMember(
             @PathVariable("customerNo") String customerNo,

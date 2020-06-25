@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,20 +28,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
 import jp.co.ntt.cloud.functionaltest.domain.helper.S3Helper;
 
 @Controller
-@RequestMapping("download")
 public class DownloadController {
 
     @Value("${functionaltest.download.bucketName}")
     private String bucketName;
+
+    @Value("${functionaltest.download.prefix}")
+    private String prefix;
 
     @Value("${functionaltest.download.expiration:30}")
     private int seconds;
@@ -54,12 +56,12 @@ public class DownloadController {
      * @param model {@link Model} オブジェクト
      * @return 画面テンプレートパス
      */
-    @GetMapping
+    @GetMapping(value = WebPagePathConstants.DOWNLOAD)
     public String index(Model model) {
 
         List<String> keys = new ArrayList<>();
 
-        for (S3ObjectSummary object : s3Helper.listFiles(bucketName)) {
+        for (S3ObjectSummary object : s3Helper.listFiles(bucketName, prefix)) {
             String key = object.getKey();
             if (!key.endsWith(S3Helper.DELIMITER)) {
                 keys.add(key);
@@ -71,7 +73,7 @@ public class DownloadController {
 
         model.addAttribute("keys", keys);
 
-        return "download/index";
+        return WebPagePathConstants.DOWNLOAD_INDEX;
     }
 
     /**
@@ -79,7 +81,7 @@ public class DownloadController {
      * @param key ダウンロード対象ファイルキー文字列
      * @return 署名付き URL
      */
-    @GetMapping("url")
+    @GetMapping(value = WebPagePathConstants.DOWNLOAD_URL)
     @ResponseBody
     public DirectUrlResponse getDownloadUrl(@RequestParam("key") String key) {
 

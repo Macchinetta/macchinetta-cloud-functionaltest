@@ -7,6 +7,8 @@ spring:
     name: caab2
   session:
     store-type: redis
+    redis:
+      configure-action: NONE
 
 cloud:
   aws:

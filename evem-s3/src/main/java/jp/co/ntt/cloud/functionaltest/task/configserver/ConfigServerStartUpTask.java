@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.nio.file.Paths;
 
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -172,37 +171,57 @@ public class ConfigServerStartUpTask extends Task {
                 .setDefaultCredentialsProvider(credentialsProvider).build();
 
         long start = System.currentTimeMillis();
-        long timeDiff = 0;
-        boolean configServerStartUpFlag = false;
-        while (true) {
-            try (CloseableHttpResponse response = client.execute(
-                    new HttpGet(configServerPingUrl))) {
-                if (200 == response.getStatusLine().getStatusCode()) {
-                    System.out.println(
-                            "*********************** Config Server が起動しました。 ***********************");
-                    configServerStartUpFlag = true;
+        boolean configServerTurnOnFlag = false;
+        while (!configServerTurnOnFlag) {
+
+            // Config Serverが起動したかを確認する
+            configServerTurnOnFlag = checkStartUpConfigServer(client);
+
+            // Config Server起動完了フラグが変更されなかった場合、待機処理及びタイムアウトメッセージを出力する
+            if (!configServerTurnOnFlag) {
+
+                // 100ミリ秒Sleepする
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
-            } catch (ClientProtocolException e) {
-            } catch (IOException e) {
-            }
 
-            if (configServerStartUpFlag) {
-                break;
-            }
-
-            try {
-                Thread.sleep(100); // 100ミリ秒Sleepする
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-
-            long end = System.currentTimeMillis();
-            timeDiff = end - start;
-            if (timeDiff >= timeout) {
-                throw new BuildException("Config Server の起動がタイムアウトしました。 timeout="
-                        + timeout + " ms");
+                checkStartUpTimeout(start);
             }
         }
+    }
+
+    /**
+     * Config Serverが起動したかを確認する
+     * @param client 対象サーバ
+     * @return Config Server起動完了フラグ
+     */
+    private boolean checkStartUpConfigServer(CloseableHttpClient client) {
+        boolean configServerTurnOnFlag = false;
+        try (CloseableHttpResponse response = client.execute(
+                new HttpGet(configServerPingUrl))) {
+            if (200 == response.getStatusLine().getStatusCode()) {
+                System.out.println(
+                        "*********************** Config Server が起動しました。 ***********************");
+                configServerTurnOnFlag = true;
+            }
+        } catch (IOException e) {
+            // IOExceptionのときは処理されない。
+        }
+        return configServerTurnOnFlag;
+    }
+
+    /**
+     * 時間差分がタイムアウト値を超えていた場合、タイムアウトしたメッセージを出力する
+     * @param timeDiff 時間差分
+     * @param start 開始時間
+     */
+    private void checkStartUpTimeout(long start) {
+        long end = System.currentTimeMillis();
+        if ((end - start) >= timeout)
+            throw new BuildException("Config Server の起動がタイムアウトしました。 timeout="
+                    + timeout + " ms");
     }
 
     /**

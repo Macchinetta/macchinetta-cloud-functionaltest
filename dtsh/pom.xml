@@ -7,7 +7,7 @@
     <parent>
         <groupId>jp.co.ntt.cloud.functionaltest</groupId>
         <artifactId>macchinetta-cloud-functionaltest</artifactId>
-        <version>1.1.1.RELEASE</version>
+        <version>1.2.0.RELEASE</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -27,7 +27,7 @@
         <sql.script.folder>${project.basedir}/src/main/resources/sqls</sql.script.folder>
         <shard.db.data.source.keys>shard1,shard2</shard.db.data.source.keys>
         <dynamo.db.region>ap-northeast-1</dynamo.db.region>
-        <dynamo.db.tablename>functionaltestShardAccount</dynamo.db.tablename>
+        <dynamo.db.tablename>FuncShardAccount</dynamo.db.tablename>
         <dynamo.db.tableidname>user_id</dynamo.db.tableidname>
         <dynamo.db.tablevaluename>data_source_key</dynamo.db.tablevaluename>
     </properties>
@@ -220,13 +220,13 @@
             <artifactId>tomcat-jdbc</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.derjust</groupId>
-            <artifactId>spring-data-dynamodb</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-dynamodb</artifactId>
         </dependency>
     </dependencies>
 
@@ -256,9 +256,9 @@
                 <cargo.rmi.port>58091</cargo.rmi.port>
                 <cargo.tomcat.ajp.port>58092</cargo.tomcat.ajp.port>
                 <cargo.jvmargs>-Dspring.profiles.active=ci</cargo.jvmargs>
-                <db.url.default>jdbc:postgresql://ci-functionaltest-1-1-x.xxxxxxxxxxxx.ap-northeast-1.rds.amazonaws.com:5432/functionaltest</db.url.default>
-                <db.url.shard1>jdbc:postgresql://ci-functionaltest-1-1-x.xxxxxxxxxxxx.ap-northeast-1.rds.amazonaws.com:5432/functionaltest_shard1</db.url.shard1>
-                <db.url.shard2>jdbc:postgresql://ci-functionaltest-1-1-x.xxxxxxxxxxxx.ap-northeast-1.rds.amazonaws.com:5432/functionaltest_shard2</db.url.shard2>
+                <db.url.default>jdbc:postgresql://func-master-12x.xxxxxxxxxxxx.ap-northeast-1.rds.amazonaws.com:5432/functionaltest</db.url.default>
+                <db.url.shard1>jdbc:postgresql://func-master-12x.xxxxxxxxxxxx.ap-northeast-1.rds.amazonaws.com:5432/functionaltest_shard1</db.url.shard1>
+                <db.url.shard2>jdbc:postgresql://func-master-12x.xxxxxxxxxxxx.ap-northeast-1.rds.amazonaws.com:5432/functionaltest_shard2</db.url.shard2>
             </properties>
         </profile>
     </profiles>

@@ -9,8 +9,9 @@
 
 ## Fix Version/s
 (To be written later by project member)
-- [ ] 1.1.0 (master)
-- [ ] 1.0.2 (1.0.x)
+- [ ] 1.2.0 (master)
+- [ ] 1.1.2 (1.1.x)
+- [ ] 1.0.3 (1.0.x)　※試験環境刷新のため
 
 ## Final Solution
 (To be written later by project member)

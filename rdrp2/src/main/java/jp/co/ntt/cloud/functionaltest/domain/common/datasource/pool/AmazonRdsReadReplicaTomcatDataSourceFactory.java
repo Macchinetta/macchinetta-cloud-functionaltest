@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,17 +55,17 @@ public class AmazonRdsReadReplicaTomcatDataSourceFactory extends
     /**
      * ドライバURLオプション
      */
-    private static final String driverUrlOptionKey = "driverUrlOption";
+    private static final String DRIVER_URL_OPTION_KEY = "driverUrlOption";
 
     /**
      * リードレプリカデータベースのリージョン
      */
-    private static final String replicaRegionKey = "replicaRegion";
+    private static final String REPLICA_REGION_KEY = "replicaRegion";
 
     /**
      * ドライバクラス名
      */
-    private static final String driverClassNameKey = "driverClassName";
+    private static final String DRIVER_CLASS_NAME_KEY = "driverClassName";
 
     /**
      * {@link StaticDatabasePlatformSupport}
@@ -83,14 +83,14 @@ public class AmazonRdsReadReplicaTomcatDataSourceFactory extends
     protected DataSource createReadReplicaDataSource(
             Properties properties) throws Exception {
         String region = defaultRegion;
-        if (!StringUtils.isEmpty(properties.getProperty(replicaRegionKey))) {
-            region = properties.getProperty(replicaRegionKey);
+        if (!StringUtils.isEmpty(properties.getProperty(REPLICA_REGION_KEY))) {
+            region = properties.getProperty(REPLICA_REGION_KEY);
         }
         AmazonRDS amazonRds = AmazonRDSClientBuilder.standard().withRegion(
                 region).build();
 
         String dbInstanceIdentifier = (String) properties.get(
-                dbInstanceIdentifierKey);
+                DB_INSTANCE_IDENTIFIER_KEY);
         DBInstance dbInstance = getDbInstance(amazonRds, dbInstanceIdentifier);
 
         if (dbInstance.getReadReplicaDBInstanceIdentifiers().isEmpty()) {
@@ -162,8 +162,8 @@ public class AmazonRdsReadReplicaTomcatDataSourceFactory extends
     private DataSource createDataSourceInstance(DBInstance instance,
             Properties properties) throws Exception {
         properties.setProperty("url", createUrl(instance, properties));
-        if (!properties.containsKey(driverClassNameKey)) {
-            properties.setProperty(driverClassNameKey, getDriverClassName(
+        if (!properties.containsKey(DRIVER_CLASS_NAME_KEY)) {
+            properties.setProperty(DRIVER_CLASS_NAME_KEY, getDriverClassName(
                     instance));
         }
         return factory.createDataSource(properties);
@@ -182,8 +182,9 @@ public class AmazonRdsReadReplicaTomcatDataSourceFactory extends
                         .getEndpoint().getAddress(), instance.getEndpoint()
                                 .getPort(), instance.getDBName());
         sb.append(url);
-        if (properties.containsKey(driverUrlOptionKey)) {
-            sb.append("?").append(properties.getProperty(driverUrlOptionKey));
+        if (properties.containsKey(DRIVER_URL_OPTION_KEY)) {
+            sb.append("?").append(properties.getProperty(
+                    DRIVER_URL_OPTION_KEY));
         }
         return sb.toString();
     }

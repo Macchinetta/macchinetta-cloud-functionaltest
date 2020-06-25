@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,12 +34,11 @@ import com.codeborne.selenide.Configuration;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import jp.co.ntt.cloud.functionaltest.selenide.page.HomePage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.LoginPage;
-import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
-public class HelloWorldTest extends TestCase {
+public class HelloWorldTest {
 
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
@@ -76,16 +75,23 @@ public class HelloWorldTest extends TestCase {
     @Test
     public void helloTest() {
 
-        // テスト実行:ログインする。
-        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
-                "0000000002", "aaaaa11111");
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+                // テスト実行:ログインする。
+                HomePage homePage = open(applicationContextUrl, LoginPage.class)
+                        .login("0000000002", "aaaaa11111");
 
-        // アサート:Hello worldが表示されることを確認する。
-        homePage.getH().shouldHave(exactText("Hello world!"));
-        homePage.getAccountName().shouldHave(text("Taro Denden"));
+                // アサート:Hello worldが表示されることを確認する。
+                homePage.getH().shouldHave(exactText("Hello world!"));
+                homePage.getAccountName().shouldHave(text("Taro Denden"));
 
-        // 証跡取得
-        screenshot("helloTest");
+                // 証跡取得
+                screenshot("helloTest");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 
 }

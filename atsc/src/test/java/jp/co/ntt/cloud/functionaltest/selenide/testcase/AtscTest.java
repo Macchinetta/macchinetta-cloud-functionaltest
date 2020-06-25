@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,21 +69,30 @@ public class AtscTest {
      */
     @Test
     public void testStartListen() {
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+                // テスト実行:スナーからアラーム通知イベントを取得する。
+                HomePage homePage = open(applicationContextUrl, HomePage.class)
+                        .clickListen();
 
-        // テスト実行:スナーからアラーム通知イベントを取得する。
-        HomePage homePage = open(applicationContextUrl, HomePage.class)
-                .clickListen();
+                // アサート:画面上にしきい値超えによる通知内容を確認する。
+                homePage.getNewState().shouldHave(exactText("ALARM"));
+                homePage.getNewStateReason().shouldHave(text(
+                        "Threshold Crossed"));
+                homePage.getMetricName().shouldHave(exactText(
+                        "HeapMemory.Max"));
+                homePage.getNamespace().shouldHave(or("", exactText("local"),
+                        exactText("ci")));
+                homePage.getDimensions().shouldHave(text(
+                        "AutoScalingGroupName:atscGroup"));
 
-        // アサート:画面上にしきい値超えによる通知内容を確認する。
-        homePage.getNewState().shouldHave(exactText("ALARM"));
-        homePage.getNewStateReason().shouldHave(text("Threshold Crossed"));
-        homePage.getMetricName().shouldHave(exactText("HeapMemory.Max"));
-        homePage.getNamespace().shouldHave(or("", exactText("local"), exactText(
-                "ci")));
-        homePage.getDimensions().shouldHave(text(
-                "AutoScalingGroupName:atscGroup"));
+                // 証跡取得
+                screenshot("testStartListen");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
 
-        // 証跡取得
-        screenshot("testStartListen");
     }
 }

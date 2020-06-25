@@ -56,6 +56,10 @@
         <level value="info" />
     </logger>
 
+    <logger name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <level value="trace" />
+    </logger>
+
     <root level="info">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="APPLICATION_LOG_FILE" />

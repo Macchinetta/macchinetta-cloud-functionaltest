@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,38 +82,69 @@ public class ShardAccountHelper {
                 // 引数が1つ
                 obj = arguments[0];
             } else {
-                // 引数が複数
-                ShardAccountParam shardAccountParam = null;
-                Parameter[] parameters = method.getParameters();
-                for (Parameter parameter : parameters) {
-                    // 引数からShardParamアノテーションを取得
-                    shardAccountParam = AnnotationUtils.findAnnotation(
-                            parameter, ShardAccountParam.class);
-                    if (Objects.nonNull(shardAccountParam)) {
-                        // ShardParamアノテーションが付与されている引数のオブジェクトを使用
-                        obj = arguments[argumentsLength];
-                        break;
-                    }
-                    argumentsLength++;
-                }
-                if (Objects.isNull(shardAccountParam) && values.length > 1) {
-                    throw new IllegalArgumentException("メソッド引数が複数あり ShardWithAccount アノテーションに値を設定した時に、メソッド引数へ ShardAccountParam アノテーションの付与は必須です。");
-                }
+                obj = getObjectAtShardAccountParam(method, arguments, values);
             }
             if (Objects.isNull(obj)) {
                 throw new IllegalArgumentException(String.format(
                         "第[ %d ]引数の値がNULLです。", (argumentsLength + 1)));
             }
             // 対象シャードキー値を取得
-            if (values.length == 1) {
-                ret = obj.toString();
-            } else {
-                String exp = value.substring(value.indexOf(".") + 1);
-                ExpressionParser expressionParser = new SpelExpressionParser();
-                Expression expression = expressionParser.parseExpression(exp);
-                ret = expression.getValue(obj, String.class);
-            }
+            ret = getAccountAtShardWithAccount(value, values, obj);
         }
         return ret;
     }
+
+    /**
+     * メソッド引数が複数ある場合、ShardAccountParamアノテーションが付与されている引数のオブジェクトを取得する
+     * @param method 実行対象のメソッド
+     * @param arguments 実行対象の引数
+     * @param splitValues valueを分割した属性値
+     * @return ShardAccountParamアノテーションが付与されている引数のオブジェクト
+     */
+    private Object getObjectAtShardAccountParam(Method method,
+            Object[] arguments, String[] splitValues) {
+        Object obj = null;
+        int argumentsLength = 0;
+
+        // 引数が複数
+        ShardAccountParam shardAccountParam = null;
+        Parameter[] parameters = method.getParameters();
+        for (Parameter parameter : parameters) {
+            // 引数からShardParamアノテーションを取得
+            shardAccountParam = AnnotationUtils.findAnnotation(parameter,
+                    ShardAccountParam.class);
+            if (Objects.nonNull(shardAccountParam)) {
+                // ShardParamアノテーションが付与されている引数のオブジェクトを使用
+                obj = arguments[argumentsLength];
+                break;
+            }
+            argumentsLength++;
+        }
+        if (Objects.isNull(shardAccountParam) && splitValues.length > 1) {
+            throw new IllegalArgumentException("メソッド引数が複数あり ShardWithAccount アノテーションに値を設定した時に、メソッド引数へ ShardAccountParam アノテーションの付与は必須です。");
+        }
+        return obj;
+    }
+
+    /**
+     * 対象シャードキー値を取得
+     * @param value ShardKeyアノテーションの属性valueの値
+     * @param splitValues valueをセパレータで分割したもの
+     * @param obj 引数のオブジェクト
+     * @return シャードキー値
+     */
+    private String getAccountAtShardWithAccount(String value,
+            String[] splitValues, Object obj) {
+        String ret = null;
+        if (splitValues.length == 1) {
+            ret = obj.toString();
+        } else {
+            String exp = value.substring(value.indexOf(".") + 1);
+            ExpressionParser expressionParser = new SpelExpressionParser();
+            Expression expression = expressionParser.parseExpression(exp);
+            ret = expression.getValue(obj, String.class);
+        }
+        return ret;
+    }
+
 }

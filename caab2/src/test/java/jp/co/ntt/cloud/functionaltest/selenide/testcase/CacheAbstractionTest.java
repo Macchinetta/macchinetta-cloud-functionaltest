@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -39,7 +40,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.co.ntt.cloud.functionaltest.domain.model.Member;
 import jp.co.ntt.cloud.functionaltest.rest.api.member.MemberResource;
-import junit.framework.TestCase;
 
 /**
  * キャッシュとセッションの格納先Redisを別に設定する場合のテスト。 本テストはdefaultプロファイルでは実行されない。 <br>
@@ -51,7 +51,17 @@ import junit.framework.TestCase;
         "classpath:META-INF/spring/selenideContext.xml" })
 @IfProfileValue(name = "spring.profiles.active", values = { "multiredis",
         "ci" })
-public class CacheAbstractionTest extends TestCase {
+public class CacheAbstractionTest {
+
+    /**
+     * URLパスパラメータ：会員番号
+     */
+    private static final String CUSTOMER_NO = "/0000000001";
+
+    /**
+     * View論理名：メンバリソース更新画面
+     */
+    public static final String API_VER_MEMBER_UPDATE = "api/v1/member/update";
 
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
@@ -93,7 +103,7 @@ public class CacheAbstractionTest extends TestCase {
         // テスト実行:@Cacheableを付与したサービスクラスのメソッドを実行する。
         // サスペンド:指定したcustomerNoに対するデータが取得できること。
         given().contentType("application/json; charset=UTF-8").when().get(
-                applicationContextUrl + "api/v1/Member/update/0000000001")
+                applicationContextUrl + API_VER_MEMBER_UPDATE + CUSTOMER_NO)
                 .then().statusCode(200).body("kanjiFamilyName", equalTo("電電"))
                 .body("kanjiGivenName", equalTo("花子"));
 
@@ -127,10 +137,11 @@ public class CacheAbstractionTest extends TestCase {
         // サスペンド:指定したcustomerNoに対するデータが取得できること。
         given().contentType("application/json; charset=UTF-8").body(objectMapper
                 .writeValueAsString(requestMember)).when().put(
-                        applicationContextUrl
-                                + "api/v1/Member/update/0000000001").then()
-                .statusCode(200).body("kanjiFamilyName", equalTo("日電")).body(
-                        "kanjiGivenName", equalTo("花子"));
+                        applicationContextUrl + API_VER_MEMBER_UPDATE
+                                + CUSTOMER_NO).then().statusCode(200).body(
+                                        "kanjiFamilyName", equalTo("日電")).body(
+                                                "kanjiGivenName", equalTo(
+                                                        "花子"));
 
         // アサート:実行したメソッドの引数に対応するRedis上のキャッシュが削除されること。
         assertNull(redisTemplateForCache.opsForValue().get(

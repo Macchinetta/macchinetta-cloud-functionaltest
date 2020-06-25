@@ -10,8 +10,8 @@
         location="classpath*:META-INF/spring/*.properties" />
     
     <!-- DBの接続情報を取得するクラス -->
-    <bean id="dbUtil" class="jp.co.ntt.cloud.functionaltest.db.DBUtil" />
+    <bean id="dbUtil" class="jp.co.ntt.cloud.functionaltest.infra.rdb.RDBUtil" />
     
     <!-- DBのテストヘルパークラス -->
-    <bean id="shardDbTestHelper" class="jp.co.ntt.cloud.functionaltest.selenide.common.ShardDBAssertUtil" />
+    <bean id="shardDbTestHelper" class="jp.co.ntt.cloud.functionaltest.infra.common.ShardDBAssertUtil" />
 </beans>

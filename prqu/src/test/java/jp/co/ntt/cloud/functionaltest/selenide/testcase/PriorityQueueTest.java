@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.Selenide.screenshot;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.Before;
@@ -32,14 +34,13 @@ import org.springframework.util.StringUtils;
 import com.codeborne.selenide.Configuration;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import jp.co.ntt.cloud.functionaltest.selenide.page.LoginPage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.HomePage;
-import junit.framework.TestCase;
+import jp.co.ntt.cloud.functionaltest.selenide.page.LoginPage;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
-public class PriorityQueueTest extends TestCase {
+public class PriorityQueueTest {
 
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
@@ -82,19 +83,28 @@ public class PriorityQueueTest extends TestCase {
     @Test
     public void highPriorityQueueTest() {
 
-        // テスト実行:プレミアム会員でログインする。
-        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
-                "0000000001", "aaaaa11111");
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
 
-        // サスペンド:画面遷移確認
-        homePage.getAccountName().shouldHave(text("Hanako Denden"));
+                // テスト実行:プレミアム会員でログインする。
+                HomePage homePage = open(applicationContextUrl, LoginPage.class)
+                        .login("0000000001", "aaaaa11111");
 
-        // アサート:メッセージの処理時間は、優先度低の遅延キューに設定した10秒未満で終わることを確認する。
-        String val = homePage.getProcesstime().getValue();
-        assertTrue("プレミアム会員のため、メッセージを遅延なく処理される。", Long.valueOf(val) < 10);
+                // サスペンド:画面遷移確認
+                homePage.getAccountName().shouldHave(text("Hanako Denden"));
 
-        // 証跡取得
-        screenshot("highPriorityQueueTest");
+                // アサート:メッセージの処理時間は、優先度低の遅延キューに設定した10秒未満で終わることを確認する。
+                String val = homePage.getProcesstime().getValue();
+                assertTrue("プレミアム会員のため、メッセージを遅延なく処理される。", Long.valueOf(
+                        val) < 10);
+
+                // 証跡取得
+                screenshot("highPriorityQueueTest");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 
     /**
@@ -103,23 +113,32 @@ public class PriorityQueueTest extends TestCase {
     @Test
     public void lowPriorityQueueTest() {
 
-        // テスト実行:通常会員でログインする。
-        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
-                "0000000002", "aaaaa11111");
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
 
-        // サスペンド:画面遷移確認
-        homePage.getAccountName().shouldHave(text("Taro Denden"));
+                // テスト実行:通常会員でログインする。
+                HomePage homePage = open(applicationContextUrl, LoginPage.class)
+                        .login("0000000002", "aaaaa11111");
 
-        // アサート:メッセージの処理時間は、優先度低の遅延キューに設定した10秒以上で終わることを確認する。
-        String val = homePage.getProcesstime().getValue();
-        if (StringUtils.isEmpty(val)) {
-            fail("規定の時間を越えたため処理時間が取得できませんでした。");
-        } else {
-            assertTrue("通常会員のため、メッセージは10秒遅延処理される。", Long.valueOf(val) >= 10);
+                // サスペンド:画面遷移確認
+                homePage.getAccountName().shouldHave(text("Taro Denden"));
+
+                // アサート:メッセージの処理時間は、優先度低の遅延キューに設定した10秒以上で終わることを確認する。
+                String val = homePage.getProcesstime().getValue();
+                if (StringUtils.isEmpty(val)) {
+                    fail("規定の時間を越えたため処理時間が取得できませんでした。");
+                } else {
+                    assertTrue("通常会員のため、メッセージは10秒遅延処理される。", Long.valueOf(
+                            val) >= 10);
+                }
+
+                // 証跡取得
+                screenshot("lowPriorityQueueTest");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
         }
-
-        // 証跡取得
-        screenshot("lowPriorityQueueTest");
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
 import jp.co.ntt.cloud.functionaltest.domain.upload.FileUploadHelper;
 
 /**
@@ -63,7 +64,7 @@ public class FileUploadController {
      * @param multipartFile アップロードするファイル
      * @return オブジェクトキー
      */
-    @PostMapping
+    @PostMapping(value = WebPagePathConstants.FILE)
     public String uploadFile(
             @RequestParam("file") MultipartFile multipartFile) {
         return helper.uploadTempFile(multipartFile, bucketName, tmpDirectory);
@@ -73,7 +74,7 @@ public class FileUploadController {
      * ファイルを削除する
      * @param objectKey 削除対象オブジェクトキー
      */
-    @DeleteMapping(params = "objectkey")
+    @DeleteMapping(value = WebPagePathConstants.FILE, params = "objectkey")
     public void deleteFile(@RequestParam("objectkey") String objectKey) {
         helper.deleteObject(bucketName, objectKey);
     }
@@ -82,7 +83,7 @@ public class FileUploadController {
      * 複数ファイルを削除する
      * @param objectKeys 削除対象オブジェクトキー配列
      */
-    @DeleteMapping(params = "objectkeys")
+    @DeleteMapping(value = WebPagePathConstants.FILE, params = "objectkeys")
     public void deleteFiles(@RequestParam("objectkeys") String[] objectKeys) {
         helper.deleteObjects(bucketName, Arrays.asList(objectKeys));
     }
@@ -92,7 +93,7 @@ public class FileUploadController {
      * @param pattern 検索パターン文字列
      * @return 検索結果配列
      */
-    @GetMapping
+    @GetMapping(value = WebPagePathConstants.FILE)
     public String[] searchFiles(@RequestParam("pattern") String pattern) {
         Resource[] resources = helper.searchResource(bucketName, pattern);
 

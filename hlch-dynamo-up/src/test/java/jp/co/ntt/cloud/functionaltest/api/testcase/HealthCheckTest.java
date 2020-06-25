@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,12 +30,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.codeborne.selenide.Configuration;
 
 import io.restassured.RestAssured;
-import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
-public class HealthCheckTest extends TestCase {
+public class HealthCheckTest {
 
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
@@ -57,18 +56,19 @@ public class HealthCheckTest extends TestCase {
     }
 
     /**
-     * HLCH0102 001 DynamoDBが正常のときにヘルスチェックのdynamoDBのstatusが「UP」になること
+     * HLCH0101 001 DynamoDBが正常のときにヘルスチェックのdynamoDBのstatusが「UP」になること
      */
     @Test
     public void upDynamoDBhealthCheckTest() {
 
         // アサート:DynamoDBのヘルスチェック結果のstatusが「UP」になっていること、DynamoDBのヘルスチェック結果のキーにamazonDynamoDBがあること
         given().get("/management/health").then().assertThat().body("status",
-                equalTo("UP")).body("details.dynamodb.status", equalTo("UP"))
-                .body("details.dynamodb.details", hasKey("amazonDynamoDB"))
-                .body("details.diskSpace.status", equalTo("UP")).body(
-                        "details.db.status", equalTo("UP")).body(
-                                "details.refreshScope.status", equalTo("UP"));
+                equalTo("UP")).body("components.dynamodb.status", equalTo("UP"))
+                .body("components.dynamodb.details", hasKey("amazonDynamoDB"))
+                .body("components.diskSpace.status", equalTo("UP")).body(
+                        "components.db.status", equalTo("UP")).body(
+                                "components.refreshScope.status", equalTo(
+                                        "UP"));
 
     }
 }

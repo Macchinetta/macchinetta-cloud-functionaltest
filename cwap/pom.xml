@@ -8,11 +8,11 @@
     <parent>
         <groupId>jp.co.ntt.cloud.functionaltest</groupId>
         <artifactId>macchinetta-cloud-functionaltest</artifactId>
-        <version>1.1.1.RELEASE</version>
+        <version>1.2.0.RELEASE</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <name>Functional test for Macchinetta cloud guideline(${project.artifactId})</name>
+    <name>Functional test for Macchinetta cloud guideline (${project.artifactId})</name>
 
     <build>
         <plugins>

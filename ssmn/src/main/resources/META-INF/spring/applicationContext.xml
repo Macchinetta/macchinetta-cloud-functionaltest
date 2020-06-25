@@ -11,12 +11,27 @@
 
     <import resource="classpath:/META-INF/spring/functionaltest-domain.xml" />
 
-    <bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+    <bean id="passwordEncoder" class="org.springframework.security.crypto.password.DelegatingPasswordEncoder">
+        <constructor-arg name="idForEncode" value="pbkdf2" />
+        <constructor-arg name="idToPasswordEncoder">
+            <map>
+                <entry key="pbkdf2">
+                    <bean class="org.springframework.security.crypto.password.Pbkdf2PasswordEncoder" />
+                </entry>
+                <entry key="bcrypt">
+                    <bean class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+                </entry>
+                <entry key="argon2">
+                    <bean class="org.springframework.security.crypto.argon2.Argon2PasswordEncoder" />
+                </entry>
+                <entry key="scrypt">
+                    <bean class="org.springframework.security.crypto.scrypt.SCryptPasswordEncoder" />
+                </entry>
+            </map>
+        </constructor-arg>
+    </bean>
     
     <context:annotation-config/>
-    <bean class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">
-        <property name="maxInactiveIntervalInSeconds" value="${spring.session.timeoutSecond}"/>
-    </bean>
 
     <context:property-placeholder
         location="classpath*:/META-INF/spring/*.properties" />
@@ -69,7 +84,4 @@
 
     <!-- Enable HttpSessionListener. -->
     <bean class="org.springframework.security.web.session.HttpSessionEventPublisher"/>
-
-    <!-- Disable Redis CONFIG Command. -->
-    <util:constant static-field="org.springframework.session.data.redis.config.ConfigureRedisAction.NO_OP"/>
 </beans>

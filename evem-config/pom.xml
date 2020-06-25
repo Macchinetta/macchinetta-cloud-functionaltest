@@ -7,7 +7,7 @@
     <parent>
         <groupId>jp.co.ntt.cloud.functionaltest</groupId>
         <artifactId>macchinetta-cloud-functionaltest</artifactId>
-        <version>1.1.1.RELEASE</version>
+        <version>1.2.0.RELEASE</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     
@@ -71,7 +71,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <jvmargs.profiles>-Dspring.profiles.active=gitlocal</jvmargs.profiles>
+                <jvmargs.profiles>-Dspring.profiles.active=gitlocal,s3</jvmargs.profiles>
                 <jvmargs.location></jvmargs.location>
                 <jvmargs.region>-Dcloud.aws.region.static=ap-northeast-1</jvmargs.region>
                 <jvmargs.region.auto>-Dcloud.aws.region.auto=false</jvmargs.region.auto>
@@ -81,7 +81,7 @@
         <profile>
             <id>gitci</id>
             <properties>
-                <jvmargs.profiles>-Dspring.profiles.active=gitci</jvmargs.profiles>
+                <jvmargs.profiles>-Dspring.profiles.active=gitci,s3</jvmargs.profiles>
                 <jvmargs.location></jvmargs.location>
                 <jvmargs.region></jvmargs.region>
                 <jvmargs.region.auto>-Dcloud.aws.region.auto=true</jvmargs.region.auto>
@@ -105,6 +105,26 @@
                 <jvmargs.location></jvmargs.location>
                 <jvmargs.region></jvmargs.region>
                 <jvmargs.region.auto>-Dcloud.aws.region.auto=true</jvmargs.region.auto>
+                <jvmargs.logging>-Dlogging.file=/var/log/config-server.log</jvmargs.logging>
+            </properties>
+        </profile>
+        <profile>
+            <id>dirsuccess</id>
+            <properties>
+                <jvmargs.profiles>-Dspring.profiles.active=native</jvmargs.profiles>
+                <jvmargs.location>-Dspring.cloud.config.server.native.searchLocations=file:${project.parent.basedir}/evem-dir-traversal/src/main/resources/configserver/</jvmargs.location>
+                <jvmargs.region>-Dcloud.aws.region.static=ap-northeast-1</jvmargs.region>
+                <jvmargs.region.auto>-Dcloud.aws.region.auto=false</jvmargs.region.auto>
+                <jvmargs.logging>-Dlogging.file=/var/log/config-server.log</jvmargs.logging>
+            </properties>
+        </profile>
+        <profile>
+            <id>dirfalure</id>
+            <properties>
+                <jvmargs.profiles>-Dspring.profiles.active=native</jvmargs.profiles>
+                <jvmargs.location>-Dspring.cloud.config.server.native.searchLocations=file:${project.basedir}/../evem-dir-traversal/src/main/resources/configserver/</jvmargs.location>
+                <jvmargs.region>-Dcloud.aws.region.static=ap-northeast-1</jvmargs.region>
+                <jvmargs.region.auto>-Dcloud.aws.region.auto=false</jvmargs.region.auto>
                 <jvmargs.logging>-Dlogging.file=/var/log/config-server.log</jvmargs.logging>
             </properties>
         </profile>

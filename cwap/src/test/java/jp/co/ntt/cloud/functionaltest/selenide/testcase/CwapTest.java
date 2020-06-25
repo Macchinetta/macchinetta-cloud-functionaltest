@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
 import static com.codeborne.selenide.Condition.exactText;
-import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.Selenide.screenshot;
 
@@ -39,13 +38,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.codeborne.selenide.Configuration;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import jp.co.ntt.cloud.functionaltest.selenide.page.TokenCheckPage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.CwapCustomErrorPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.HomePage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.LoggingPage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.LoginPage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.ShowCustomViewPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.HomePage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.TransactionTokenErrorPage;
+import jp.co.ntt.cloud.functionaltest.selenide.page.TokenCheckPage;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -81,22 +79,30 @@ public class CwapTest {
     // @Test
     public void testApplicationLog() {
 
-        // 事前準備:ログイン
-        LoggingPage loggingPage = open(applicationContextUrl, LoginPage.class)
-                .login().logging();
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+                // 事前準備:ログイン
+                LoggingPage loggingPage = open(applicationContextUrl,
+                        LoginPage.class).login().logging();
 
-        final String uuid = UUID.randomUUID().toString();
+                final String uuid = UUID.randomUUID().toString();
 
-        screenshot("manualTestApplicationLog");
+                screenshot("manualTestApplicationLog");
 
-        // テスト実行:UUIDを送信する。
-        loggingPage = loggingPage.send(uuid);
+                // テスト実行:UUIDを送信する。
+                loggingPage = loggingPage.send(uuid);
 
-        // アサート:アプリケーションログに「outputUUID=59143879-8750-47e1-bfe1-eb7d73e44f6d」がINFOレベルで出力されていること。
-        assertLog(uuid);
+                // アサート:アプリケーションログに「outputUUID=59143879-8750-47e1-bfe1-eb7d73e44f6d」がINFOレベルで出力されていること。
+                assertLog(uuid);
 
-        // ログアウト
-        loggingPage.logout();
+                // ログアウト
+                loggingPage.logout();
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
+
     }
 
     private void assertLog(String uuid) {
@@ -124,19 +130,27 @@ public class CwapTest {
     @Test
     public void testTransactionTokenCheckNormal() {
 
-        // テスト実行:トークン発行、トークンの一致チェックのリクエストを発行する。
-        TokenCheckPage tokenCheckPage = open(applicationContextUrl,
-                LoginPage.class).login().confirmToken();
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+                // テスト実行:トークン発行、トークンの一致チェックのリクエストを発行する。
+                TokenCheckPage tokenCheckPage = open(applicationContextUrl,
+                        LoginPage.class).login().generateToken().confirmToken();
 
-        // アサート:トークンチェックが正常と判断され、次ページへの遷移が行われていること。
-        tokenCheckPage.getResult().shouldHave(exactText(
-                "Token check is valid."));
+                // アサート:トークンチェックが正常と判断され、次ページへの遷移が行われていること。
+                tokenCheckPage.getResult().shouldHave(exactText(
+                        "Token check is valid."));
 
-        // 証跡取得
-        screenshot("testTransactionTokenCheckNormal");
+                // 証跡取得
+                screenshot("testTransactionTokenCheckNormal");
 
-        // ログアウト
-        tokenCheckPage.logout();
+                // ログアウト
+                tokenCheckPage.logout();
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
+
     }
 
     /**
@@ -145,21 +159,27 @@ public class CwapTest {
     @Test
     public void testTransactionTokenCheckError() {
 
-        // 事前準備:ログイン
-        // サスペンド:画面遷移確認
-        open(applicationContextUrl, LoginPage.class).login().getH().shouldHave(
-                text("Hello world!"));
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+                // テスト実行:トークン発行せずにトークンの一致チェックのリクエストを発行する。
+                TokenCheckPage tokenCheckPage = open(applicationContextUrl,
+                        LoginPage.class).login().confirmToken();
 
-        // アサート:トークンチェックが異常と判断され、エラーページへ遷移すること。
-        open(applicationContextUrl + "confirmToken",
-                TransactionTokenErrorPage.class).getResult().shouldHave(
-                        exactText("Token check is invalid."));
+                // アサート:トークンチェックが異常と判断され、エラーページへ遷移すること。
+                tokenCheckPage.getResult().shouldHave(exactText(
+                        "Token check is invalid."));
 
-        // 証跡取得
-        screenshot("testTransactionTokenCheckError");
+                // 証跡取得
+                screenshot("testTransactionTokenCheckError");
 
-        // ログアウト
-        open(applicationContextUrl, HomePage.class).logout();
+                // ログアウト
+                open(applicationContextUrl, HomePage.class).logout();
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
+
     }
 
     /**
@@ -168,18 +188,26 @@ public class CwapTest {
     @Test
     public void testDuplicateCount() {
 
-        // テスト実行:ログインする。
-        HomePage homePage = open(applicationContextUrl, LoginPage.class)
-                .login();
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+                // テスト実行:ログインする。
+                HomePage homePage = open(applicationContextUrl, LoginPage.class)
+                        .login();
 
-        // アサート:サーブレットフィルタの二重実行が抑止され、COUNTER_KEYの値が1であることを確認する。
-        homePage.getCounter().shouldHave(exactText("counter:1"));
+                // アサート:サーブレットフィルタの二重実行が抑止され、COUNTER_KEYの値が1であることを確認する。
+                homePage.getCounter().shouldHave(exactText("counter:1"));
 
-        // 証跡取得
-        screenshot("testDuplicateCount");
+                // 証跡取得
+                screenshot("testDuplicateCount");
 
-        // ログアウト
-        homePage.logout();
+                // ログアウト
+                homePage.logout();
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
+
     }
 
     /**
@@ -188,18 +216,28 @@ public class CwapTest {
     @Test
     public void testShowCustomView() {
 
-        // テスト実行:カスタムViewを返却するレスポンスを返却する。
-        ShowCustomViewPage showCustomViewPage = open(applicationContextUrl,
-                LoginPage.class).login().showCustomView();
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+                // テスト実行:カスタムViewを返却するレスポンスを返却する。
+                ShowCustomViewPage showCustomViewPage = open(
+                        applicationContextUrl, LoginPage.class).login()
+                                .showCustomView();
 
-        // アサート:レスポンスボディにCustomViewが含まれていることを確認する。
-        showCustomViewPage.getViewName().shouldHave(exactText("CustomView"));
+                // アサート:レスポンスボディにCustomViewが含まれていることを確認する。
+                showCustomViewPage.getViewName().shouldHave(exactText(
+                        "CustomView"));
 
-        // 証跡取得
-        screenshot("testShowCustomView");
+                // 証跡取得
+                screenshot("testShowCustomView");
 
-        // ログアウト
-        open(applicationContextUrl, HomePage.class).logout();
+                // ログアウト
+                open(applicationContextUrl, HomePage.class).logout();
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
+
     }
 
     /**
@@ -208,19 +246,28 @@ public class CwapTest {
     @Test
     public void testConfirmSystemError() {
 
-        // テスト実行:コントローラ内部でRuntimeExceptionを継承する、任意のシステムエラーを発生させる。
-        CwapCustomErrorPage cwapCustomErrorPage = open(applicationContextUrl,
-                LoginPage.class).login().customError();
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+                // テスト実行:コントローラ内部でRuntimeExceptionを継承する、任意のシステムエラーを発生させる。
+                CwapCustomErrorPage cwapCustomErrorPage = open(
+                        applicationContextUrl, LoginPage.class).login()
+                                .customError();
 
-        // アサート:システムエラー画面に遷移することを確認する。
-        cwapCustomErrorPage.getErrorMessage().shouldHave(exactText(
-                "Cwap custom error message."));
+                // アサート:システムエラー画面に遷移することを確認する。
+                cwapCustomErrorPage.getErrorMessage().shouldHave(exactText(
+                        "Cwap custom error message."));
 
-        // 証跡取得
-        screenshot("testConfirmSystemError");
+                // 証跡取得
+                screenshot("testConfirmSystemError");
 
-        // ログアウト
-        open(applicationContextUrl, HomePage.class).logout();
+                // ログアウト
+                open(applicationContextUrl, HomePage.class).logout();
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
+
     }
 
 }

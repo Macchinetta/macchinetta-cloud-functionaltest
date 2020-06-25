@@ -56,6 +56,10 @@
     <logger name="org.springframework.web.servlet">
         <level value="info" />
     </logger>
+
+    <logger name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <level value="trace" />
+    </logger>
     
     <logger name="org.springframework.jdbc.datasource">
         <level value="debug" />

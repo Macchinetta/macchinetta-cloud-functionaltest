@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ public class RequestDataValueProcessorPostProcessor implements
     @Override
     public void postProcessBeanFactory(
             ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        // 未使用のデフォルト実装
     }
 
     @Override

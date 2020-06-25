@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,11 @@
  */
 package jp.co.ntt.cloud.functionaltest.app.fileupload;
 
-import java.io.Serializable;
-
 import javax.validation.constraints.Size;
 
 import org.springframework.web.multipart.MultipartFile;
 
-public class MaintenanceForm implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class MaintenanceForm {
 
     /** 登録：ファイル */
     private MultipartFile uFile;

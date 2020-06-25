@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
  */
 package jp.co.ntt.cloud.functionaltest.app.common;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
@@ -26,9 +29,6 @@ import org.springframework.security.web.servlet.support.csrf.CsrfRequestDataValu
 import org.springframework.web.servlet.support.RequestDataValueProcessor;
 import org.terasoluna.gfw.web.mvc.support.CompositeRequestDataValueProcessor;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenRequestDataValueProcessor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * トランザクショントークンチェック有効化用PostProcessor
@@ -43,6 +43,7 @@ public class RequestDataValueProcessorPostProcessor implements
     @Override
     public void postProcessBeanFactory(
             ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        // 未使用のデフォルト実装
     }
 
     /**

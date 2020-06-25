@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,19 @@
  */
 package jp.co.ntt.cloud.functionaltest.app.atsc;
 
-import jp.co.ntt.cloud.functionaltest.domain.service.NotificationParseService;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.TimeUnit;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
+import jp.co.ntt.cloud.functionaltest.domain.service.NotificationParseService;
 
 /**
  * オートスケーリング確認用コントローラクラス。
@@ -41,12 +44,12 @@ public class AtscController {
     @Inject
     NotificationParseService notificationParseService;
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @GetMapping(value = WebPagePathConstants.ROOT_HOME)
     public String home() {
-        return "atsc/home";
+        return WebPagePathConstants.ATSC_HOME;
     }
 
-    @RequestMapping(value = "/listen", method = RequestMethod.POST)
+    @PostMapping(value = WebPagePathConstants.LISTEN)
     public String listen(Model model) throws InterruptedException {
         String notification = messageQueue.poll(3L, TimeUnit.MINUTES);
         if (notification == null) {
@@ -54,6 +57,6 @@ public class AtscController {
         }
         model.addAttribute("notification", notificationParseService
                 .parseNotification(notification));
-        return "atsc/home";
+        return WebPagePathConstants.ATSC_HOME;
     }
 }

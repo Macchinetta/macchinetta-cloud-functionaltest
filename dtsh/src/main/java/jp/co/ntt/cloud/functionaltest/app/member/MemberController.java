@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,10 @@ import javax.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
 import jp.co.ntt.cloud.functionaltest.domain.model.Member;
 import jp.co.ntt.cloud.functionaltest.domain.service.member.Member0ArgService;
 import jp.co.ntt.cloud.functionaltest.domain.service.member.MemberService;
@@ -35,7 +35,6 @@ import jp.co.ntt.cloud.functionaltest.domain.service.member.MemberService;
  * @author NTT 電電太郎
  */
 @Controller
-@RequestMapping(value = "member")
 public class MemberController {
     @Inject
     private MemberService memberService;
@@ -49,8 +48,7 @@ public class MemberController {
      * @param model 出力情報を保持するクラス
      * @return View論理名
      */
-    @RequestMapping(value = "register", method = { RequestMethod.GET,
-            RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.MEMBER_REGISTER)
     public String register() {
         Member member = new Member();
 
@@ -74,65 +72,61 @@ public class MemberController {
         member.setFuriName("でんでんさおり");
         memberService.register(member);
 
-        return "redirect:/hello";
+        return WebPagePathConstants.REDIRECT_HELLO;
     }
 
     /**
      * 会員情報1件読み込み
-     * @return
+     * @return View論理名
      */
-    @RequestMapping(value = "get", method = { RequestMethod.GET,
-            RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.MEMBER_GET)
     public String read(Model model, RedirectAttributes redirectAttrs,
             @Valid MemberForm memberForm, BindingResult result) {
 
         if (result.hasErrors()) {
-            return "redirect:/";
+            return WebPagePathConstants.REDIRECT_ROOT_HOME;
         }
         Member member = memberService.findOne(memberForm.getCustomerNo());
 
         redirectAttrs.addFlashAttribute("member", member);
 
-        return "redirect:/hello";
+        return WebPagePathConstants.REDIRECT_HELLO;
     }
 
     /**
      * 会員情報更新
      */
-    @RequestMapping(value = "update", method = { RequestMethod.GET,
-            RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.MEMBER_UPDATE)
     public String update(Model model, RedirectAttributes redirectAttrs,
             @Valid MemberForm memberForm, BindingResult result) {
         if (result.hasErrors()) {
-            return "redirect:/";
+            return WebPagePathConstants.REDIRECT_ROOT_HOME;
         }
         Member member = memberService.findOne(memberForm.getCustomerNo());
         member.setFuriName("-");
         memberService.update(member);
-        return "redirect:/hello";
+        return WebPagePathConstants.REDIRECT_HELLO;
     }
 
     /**
      * 会員情報削除
      */
-    @RequestMapping(value = "delete", method = { RequestMethod.GET,
-            RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.MEMBER_DELETE)
     public String delete(Model model, @Valid MemberForm memberForm,
             BindingResult result) {
         if (result.hasErrors()) {
-            return "redirect:/hello";
+            return WebPagePathConstants.REDIRECT_HELLO;
         }
         memberService.delete(memberForm.getCustomerNo());
-        return "redirect:/hello";
+        return WebPagePathConstants.REDIRECT_HELLO;
     }
 
     /**
      * 会員情報全件削除
      */
-    @RequestMapping(value = "delete", params = "all", method = {
-            RequestMethod.GET, RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.MEMBER_DELETE, params = "all")
     public String deleteAll(Model model) {
         member0ArgService.deleteAll();
-        return "redirect:/hello";
+        return WebPagePathConstants.REDIRECT_HELLO;
     }
 }

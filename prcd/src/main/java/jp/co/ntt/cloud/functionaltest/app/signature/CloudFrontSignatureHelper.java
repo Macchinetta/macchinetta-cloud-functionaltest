@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ import org.terasoluna.gfw.common.exception.SystemException;
 import com.amazonaws.services.cloudfront.CloudFrontCookieSigner;
 import com.amazonaws.services.cloudfront.CloudFrontCookieSigner.CookiesForCustomPolicy;
 import com.amazonaws.services.cloudfront.util.SignerUtils.Protocol;
+
+import jp.co.ntt.cloud.functionaltest.app.common.constants.LogMessageConstants;
 
 /**
  * クラウドフロント署名ヘルパー
@@ -128,10 +130,9 @@ public class CloudFrontSignatureHelper {
                     signerUtilsProtocol, distributionDomain, privateKeyFile,
                     resourcePath, keyPairId, expiresOn, activeFrom,
                     allowedIpRange);
-        } catch (IOException e) {
-            throw new SystemException("e.xx.fw.9001", "I/O error occured.", e);
-        } catch (InvalidKeySpecException e) {
-            throw new SystemException("e.xx.fw.9001", "invalid key specification.", e);
+        } catch (IOException | InvalidKeySpecException e) {
+            throw new SystemException(LogMessageConstants.MSG_ID_9001, e
+                    .getMessage(), e);
         }
         return cookies;
     }

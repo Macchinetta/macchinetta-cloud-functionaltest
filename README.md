@@ -130,10 +130,10 @@ Default output format [None]:json
   * pass:postgres
 
 ### [Step 2] リポジトリクローン
-`macchinetta-cloud/macchinetta-cloud-functionaltest`リポジトリをローカルにクローンする。
+`Macchinetta/macchinetta-cloud-functionaltest`リポジトリをローカルにクローンする。
 
 ```console
-$ git clone https://{remote host url}/macchinetta-cloud/macchinetta-cloud-functionaltest.git
+$ git clone https://{remote host url}/Macchinetta/macchinetta-cloud-functionaltest.git
 ```
 
 ### [Step 3] 機能ごとの詳細設定・資材修正
@@ -156,7 +156,7 @@ $ mvn clean install
 
 ### [Step 2] Jenkinsでブランチ指定して実行
 
-[Jenkins](https://xxxxxx.ap-northeast-1.elb.amazonaws.com/jenkins/job/macchinetta-cloud-functionaltest/build?delay=0sec)
+Jenkins 
 BRANCHにブランチ名を入れてビルドボタンを押下すればよい。
 
 左ペインにあるビルド番号のリンク先でテスト結果を確認できる。

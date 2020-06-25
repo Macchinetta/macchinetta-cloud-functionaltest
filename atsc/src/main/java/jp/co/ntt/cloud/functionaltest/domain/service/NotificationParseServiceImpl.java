@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,12 @@
  */
 package jp.co.ntt.cloud.functionaltest.domain.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * アラーム通知JSON解析サービス。
@@ -31,6 +33,8 @@ public class NotificationParseServiceImpl implements NotificationParseService {
     @Override
     public Notification parseNotification(String notificationStr) {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                false);
         Notification notification;
         try {
             notification = mapper.readValue(notificationStr,

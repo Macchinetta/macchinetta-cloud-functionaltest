@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public class TomcatDataSourceFactory implements DataSourceFactory {
     /**
      * リードレプリカデータベースID
      */
-    protected static final String dbInstanceIdentifierKey = "dbInstanceIdentifier";
+    protected static final String DB_INSTANCE_IDENTIFIER_KEY = "dbInstanceIdentifier";
 
     /**
      * Tomcatのデータソースファクトリ。
@@ -58,7 +58,7 @@ public class TomcatDataSourceFactory implements DataSourceFactory {
         // 個別データソース設定を反映(共通データソース設定を上書き)
         properties.putAll(dataSourceProperties);
         try {
-            if (properties.containsKey(dbInstanceIdentifierKey)) {
+            if (properties.containsKey(DB_INSTANCE_IDENTIFIER_KEY)) {
                 ret = createReadReplicaDataSource(properties);
             } else {
                 ret = factory.createDataSource(properties);
@@ -80,7 +80,7 @@ public class TomcatDataSourceFactory implements DataSourceFactory {
             Properties properties) throws Exception {
         throw new SystemException(LogMessages.E_AR_A0_L9010
                 .getCode(), LogMessages.E_AR_A0_L9010.getMessage(
-                        dbInstanceIdentifierKey));
+                        DB_INSTANCE_IDENTIFIER_KEY));
     }
 
 }

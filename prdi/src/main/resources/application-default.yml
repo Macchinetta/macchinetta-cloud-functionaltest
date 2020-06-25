@@ -34,3 +34,9 @@ cp:
 logging:
   path: /var/log/applogs
 
+# S3バケット設定
+functionaltest:
+    download:
+      bucketName: func-bucket
+      prefix: 12x/dev/PRDI/
+      delimiter: /

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,10 @@ import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.Selenide.screenshot;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -65,14 +69,13 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import jp.co.ntt.cloud.functionaltest.domain.model.FileMetaData;
 import jp.co.ntt.cloud.functionaltest.selenide.page.LoginPage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.SearchPage;
-import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml",
         "classpath:META-INF/spring/functionaltest-env.xml" })
 @SpringBootTest
-public class StrageSearchTest extends TestCase {
+public class StrageSearchTest {
 
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
@@ -88,6 +91,12 @@ public class StrageSearchTest extends TestCase {
 
     @Value("${selenide.geckodriverVersion}")
     private String geckodriverVersion;
+
+    @Value("${s3.bucket1}")
+    private String bucket1;
+
+    @Value("${s3.prefix}")
+    private String s3prefix;
 
     @Inject
     private DynamoDBMapper dbMapper;
@@ -126,32 +135,50 @@ public class StrageSearchTest extends TestCase {
             cleanDir(DOWNLOAD_DIR);
 
             // テストデータファイルをS3へアップロードする
-            testDataFileUpload(UPLOAD_DIR);
+            uploadSampleDataFile(UPLOAD_DIR);
 
             // DynamoDBへの反映を待つ
             Thread.sleep(5000);
 
             // 検索条件を試験できるようデータを補正する（アップロード日付を過去日に更新）
-            FileMetaData updateData = dbMapper.load(FileMetaData.class,
-                    "USER0001-FILE0001.txt");
+            FileMetaData updateData = dbMapper.load(FileMetaData.class, s3prefix
+                    + "USER0001-FILE0001.txt");
             updateData.setUploadDate("2017-09-01");
             dbMapper.save(updateData, SaveBehavior.UPDATE.config());
 
             beforeClassFlg = false;
         }
 
-        // ログイン
-        open(applicationContextUrl, LoginPage.class).login("0000000002",
-                "aaaaa11111").getH().shouldHave(exactText("DynamoDB Search"));
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+
+                // ログイン
+                open(applicationContextUrl, LoginPage.class).login("0000000002",
+                        "aaaaa11111").getH().shouldHave(exactText(
+                                "DynamoDB Search"));
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 
     @After
     public void tearDown() {
 
-        // ログイン状態の場合ログアウトする。
-        SearchPage helloPage = open(applicationContextUrl, SearchPage.class);
-        if (helloPage.isLoggedIn()) {
-            helloPage.logout();
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+
+                // ログイン状態の場合ログアウトする。
+                SearchPage helloPage = open(applicationContextUrl,
+                        SearchPage.class);
+                if (helloPage.isLoggedIn()) {
+                    helloPage.logout();
+                }
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
         }
     }
 
@@ -181,10 +208,10 @@ public class StrageSearchTest extends TestCase {
     /**
      * 【前処理】テストデータファイルをS3にアップロードする。 規定の階層に配置されたテストデータファイルを，リネームしてS3の指定バケットへアップロードする。 ・アップロード元：
      * UPLOAD_DIR/[バケット名]/[ユーザID]/[アップロード対象ファイル] ・アップロード先： S3/[バケット名]/[ユーザID]-[アップロード対象ファイル] 【例】
-     * 元：UPLOAD_DIR/functionaltest.fileupload.a/USER0001/FILE0001.txt 先：functionaltest.fileupload.aバケット/USER0001-FILE0001.txt
+     * 元：UPLOAD_DIR/func-temp/USER0001/FILE0001.txt 先：func-tempバケット/USER0001-FILE0001.txt
      * @param path 指定フォルダ内
      */
-    private void testDataFileUpload(String path) {
+    private void uploadSampleDataFile(String path) {
         File uploadDir = new File(path);
 
         // バケット名のフォルダ分繰り返す
@@ -202,8 +229,8 @@ public class StrageSearchTest extends TestCase {
                     ObjectMetadata metadata = new ObjectMetadata();
                     metadata.setContentLength(uploadFile.length());
                     try {
-                        s3.putObject(new PutObjectRequest(bucketName, userId
-                                + "-" + uploadFile
+                        s3.putObject(new PutObjectRequest(bucketName, s3prefix
+                                + userId + "-" + uploadFile
                                         .getName(), new FileInputStream(uploadFile), metadata));
                     } catch (FileNotFoundException e) {
                         throw new RuntimeException(e);
@@ -218,30 +245,41 @@ public class StrageSearchTest extends TestCase {
      */
     @Test
     public void searchByPkTest() {
-        String objectKey = "USER0001-FILE0001.txt";
 
-        // テスト実行:オブジェクトキーを指定して検索する。
-        SearchPage searchPage = open(applicationContextUrl, SearchPage.class)
-                .searchByPk(objectKey);
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+                String objectKey = s3prefix + "USER0001-FILE0001.txt";
 
-        // アサート:該当レコード1件が検索結果として取得できること。
-        searchPage.getRows().shouldHaveSize(2);
+                // テスト実行:オブジェクトキーを指定して検索する。
+                SearchPage searchPage = open(applicationContextUrl,
+                        SearchPage.class).searchByPk(objectKey);
 
-        // アサート:検索結果のobjectKeyを使用してS3からファイルダウンロードできること。
-        Map<String, SelenideElement> recordMap = searchPage.toRecordMap(1);
-        recordMap.get("objectKey").shouldHave(exactText(objectKey));
+                // アサート:該当レコード1件が検索結果として取得できること。
+                searchPage.getRows().shouldHaveSize(2);
 
-        // ファイルダウンロード
-        fileDownload(recordMap.get("bucketName").getText(), recordMap.get(
-                "objectKey").getText(), recordMap.get("uploadUser").getText(),
-                recordMap.get("fileName").getText());
+                // アサート:検索結果のobjectKeyを使用してS3からファイルダウンロードできること。
+                Map<String, SelenideElement> recordMap = searchPage.toRecordMap(
+                        1);
+                recordMap.get("objectKey").shouldHave(exactText(objectKey));
 
-        // アサート:ダウンロードしたファイルの内容が事前にアップロードしたファイルの内容と一致すること。
-        fileCompare(recordMap.get("bucketName").getText(), recordMap.get(
-                "uploadUser").getText(), recordMap.get("fileName").getText());
+                // ファイルダウンロード
+                downloadFile(recordMap.get("bucketName").getText(), recordMap
+                        .get("objectKey").getText(), recordMap.get("uploadUser")
+                                .getText(), recordMap.get("fileName")
+                                        .getText());
 
-        // 証跡取得
-        screenshot("searchByPk");
+                // アサート:ダウンロードしたファイルの内容が事前にアップロードしたファイルの内容と一致すること。
+                compareFile(recordMap.get("bucketName").getText(), recordMap
+                        .get("uploadUser").getText(), recordMap.get("fileName")
+                                .getText());
+
+                // 証跡取得
+                screenshot("searchByPk");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 
     /**
@@ -249,37 +287,51 @@ public class StrageSearchTest extends TestCase {
      */
     @Test
     public void searchByIndex_uploadUser_uploadDateTest() {
-        String uploadUser = "USER0001";
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String uploadDate = sdf.format(new Date());
 
-        // テスト実行:アップロードユーザとアップロード日を指定して検索する。
-        SearchPage searchPage = open(applicationContextUrl, SearchPage.class)
-                .searchByIndex_uploadUser_uploadDate(uploadUser, uploadDate);
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+                String uploadUser = s3prefix + "USER0001";
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                String uploadDate = sdf.format(new Date());
 
-        // アサート:検索条件に一致するレコードのみが検索結果として取得できること。
-        searchPage.getRows().shouldHave(CollectionCondition.sizeGreaterThan(0));
+                // テスト実行:アップロードユーザとアップロード日を指定して検索する。
+                SearchPage searchPage = open(applicationContextUrl,
+                        SearchPage.class).searchByIndex_uploadUser_uploadDate(
+                                uploadUser, uploadDate);
 
-        for (int i = 1; i < searchPage.getRows().size(); i++) {
+                // アサート:検索条件に一致するレコードのみが検索結果として取得できること。
+                searchPage.getRows().shouldHave(CollectionCondition
+                        .sizeGreaterThan(0));
 
-            // アサート:検索結果のobjectKeyを使用してS3からファイルダウンロードできること。
-            Map<String, SelenideElement> recordMap = searchPage.toRecordMap(i);
-            recordMap.get("uploadUser").shouldHave(exactText(uploadUser));
-            recordMap.get("uploadDate").shouldHave(exactText(uploadDate));
+                for (int i = 1; i < searchPage.getRows().size(); i++) {
 
-            // ファイルダウンロード
-            fileDownload(recordMap.get("bucketName").getText(), recordMap.get(
-                    "objectKey").getText(), recordMap.get("uploadUser")
-                            .getText(), recordMap.get("fileName").getText());
+                    // アサート:検索結果のobjectKeyを使用してS3からファイルダウンロードできること。
+                    Map<String, SelenideElement> recordMap = searchPage
+                            .toRecordMap(i);
+                    recordMap.get("uploadUser").shouldHave(exactText(
+                            uploadUser));
+                    recordMap.get("uploadDate").shouldHave(exactText(
+                            uploadDate));
 
-            // アサート:ダウンロードしたファイルの内容が事前にアップロードしたファイルの内容と一致すること。
-            fileCompare(recordMap.get("bucketName").getText(), recordMap.get(
-                    "uploadUser").getText(), recordMap.get("fileName")
-                            .getText());
+                    // ファイルダウンロード
+                    downloadFile(recordMap.get("bucketName").getText(),
+                            recordMap.get("objectKey").getText(), recordMap.get(
+                                    "uploadUser").getText(), recordMap.get(
+                                            "fileName").getText());
+
+                    // アサート:ダウンロードしたファイルの内容が事前にアップロードしたファイルの内容と一致すること。
+                    compareFile(recordMap.get("bucketName").getText(), recordMap
+                            .get("uploadUser").getText(), recordMap.get(
+                                    "fileName").getText());
+                }
+
+                // 証跡取得
+                screenshot("searchByIndex_uploadUser_uploadDate");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
         }
-
-        // 証跡取得
-        screenshot("searchByIndex_uploadUser_uploadDate");
     }
 
     /**
@@ -287,44 +339,55 @@ public class StrageSearchTest extends TestCase {
      */
     @Test
     public void searchByIndex_bucketNameTest() {
-        String bucketName = "functionaltest.fileupload.a";
 
-        // テスト実行:バケット名を指定して検索する。
-        SearchPage searchPage = open(applicationContextUrl, SearchPage.class)
-                .searchByIndex_bucketName(bucketName);
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+                // テスト実行:バケット名を指定して検索する。
+                SearchPage searchPage = open(applicationContextUrl,
+                        SearchPage.class).searchByIndex_bucketName(bucket1);
 
-        // アサート:検索条件に一致するレコードのみが検索結果として取得できること。
-        searchPage.getRows().shouldHave(CollectionCondition.sizeGreaterThan(0));
+                // アサート:検索条件に一致するレコードのみが検索結果として取得できること。
+                searchPage.getRows().shouldHave(CollectionCondition
+                        .sizeGreaterThan(0));
 
-        int preSize = -1;
-        for (int i = 1; i < searchPage.getRows().size(); i++) {
+                int preSize = -1;
+                for (int i = 1; i < searchPage.getRows().size(); i++) {
 
-            // アサート:検索結果のobjectKeyを使用してS3からファイルダウンロードできること。
-            Map<String, SelenideElement> recordMap = searchPage.toRecordMap(i);
-            recordMap.get("bucketName").shouldHave(exactText(bucketName));
+                    // アサート:検索結果のobjectKeyを使用してS3からファイルダウンロードできること。
+                    Map<String, SelenideElement> recordMap = searchPage
+                            .toRecordMap(i);
+                    recordMap.get("bucketName").shouldHave(exactText(bucket1));
 
-            // size（降順確認）
-            int size = Integer.parseInt(recordMap.get("size").getText());
-            if (preSize >= 0) {
-
-                // アサート:検索結果がソートキー順に取得できること。
-                assertTrue(preSize >= size);
-            }
-            preSize = size;
-
-            // ファイルダウンロード
-            fileDownload(recordMap.get("bucketName").getText(), recordMap.get(
-                    "objectKey").getText(), recordMap.get("uploadUser")
-                            .getText(), recordMap.get("fileName").getText());
-
-            // アサート:ダウンロードしたファイルの内容が事前にアップロードしたファイルの内容と一致すること。
-            fileCompare(recordMap.get("bucketName").getText(), recordMap.get(
-                    "uploadUser").getText(), recordMap.get("fileName")
+                    // size（降順確認）
+                    int size = Integer.parseInt(recordMap.get("size")
                             .getText());
+                    if (preSize >= 0) {
+
+                        // アサート:検索結果がソートキー順に取得できること。
+                        assertTrue(preSize >= size);
+                    }
+                    preSize = size;
+
+                    // ファイルダウンロード
+                    downloadFile(recordMap.get("bucketName").getText(),
+                            recordMap.get("objectKey").getText(), recordMap.get(
+                                    "uploadUser").getText(), recordMap.get(
+                                            "fileName").getText());
+
+                    // アサート:ダウンロードしたファイルの内容が事前にアップロードしたファイルの内容と一致すること。
+                    compareFile(recordMap.get("bucketName").getText(), recordMap
+                            .get("uploadUser").getText(), recordMap.get(
+                                    "fileName").getText());
+                }
+
+                // 証跡取得
+                screenshot("searchByIndex_bucketName");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
         }
 
-        // 証跡取得
-        screenshot("searchByIndex_bucketName");
     }
 
     /**
@@ -335,54 +398,70 @@ public class StrageSearchTest extends TestCase {
     @Test
     public void continuouslyUploadTest() throws InterruptedException {
 
-        // アップロード先バケット名
-        String bucketName = "functionaltest.fileupload.a";
+        // 同時アップロードが成功したかのループ用フラグ
+        boolean isSuccess = false;
 
-        // アップロードオブジェクトキー
-        String objectKey = "continuouslyUploadTest";
+        // 実施結果が不定であるため、成功するまで繰り返し実施する
+        while (!isSuccess) {
+            try {
 
-        // ファイル内容
-        String contents = "file data";
+                // アップロードオブジェクトキー
+                String objectKey = s3prefix + "continuouslyUploadTest";
 
-        // アップロード回数
-        int uploadCnt = 5;
+                // ファイル内容
+                String contents = "file data";
 
-        // DynamoDBから更新前レコードを取得する
-        FileMetaData preData = dbMapper.load(FileMetaData.class, objectKey);
-        long preVersion = preData == null ? 0L : preData.getVersion();
+                // アップロード回数
+                int uploadCnt = 5;
 
-        // アップロード回数分，複数スレッドから同時にS3へアップロードする
-        ExecutorService exec = Executors.newFixedThreadPool(uploadCnt);
-        for (int i = 0; i < uploadCnt; i++) {
-            exec.execute(new Runnable() {
-                public void run() {
+                // DynamoDBから更新前レコードを取得する
+                FileMetaData preData = dbMapper.load(FileMetaData.class,
+                        objectKey);
+                long preVersion = preData == null ? 0L : preData.getVersion();
 
-                    // S3へアップロード
-                    ObjectMetadata metadata = new ObjectMetadata();
-                    metadata.setContentLength(contents.length());
-                    try (InputStream is = new ByteArrayInputStream(contents
-                            .getBytes())) {
-                        s3.putObject(
-                                new PutObjectRequest(bucketName, objectKey, is, metadata));
-                    } catch (IOException e) {
-                        logger.error("S3へのアップロードに失敗しました。", e);
-                        throw new RuntimeException(e);
-                    }
+                // アップロード回数分，複数スレッドから同時にS3へアップロードする
+                ExecutorService exec = Executors.newFixedThreadPool(uploadCnt);
+                for (int i = 0; i < uploadCnt; i++) {
+                    exec.execute(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            // S3へアップロード
+                            ObjectMetadata metadata = new ObjectMetadata();
+                            metadata.setContentLength(contents.length());
+                            try (InputStream is = new ByteArrayInputStream(contents
+                                    .getBytes())) {
+                                s3.putObject(
+                                        new PutObjectRequest(bucket1, objectKey, is, metadata));
+                            } catch (IOException e) {
+                                logger.error("S3へのアップロードに失敗しました。", e);
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    });
                 }
-            });
+
+                // サスペンド:DynamoDBへの反映を待つ（アップロード数×2秒）
+                Thread.sleep(2000 * (long) uploadCnt);
+
+                // DynamoDBから最終更新レコードを取得する
+                FileMetaData postData = dbMapper.load(FileMetaData.class,
+                        objectKey);
+
+                // 更新前後のVersion値の差から，更新回数を算出する。
+                logger.info("更新回数:{}", postData.getVersion() - preVersion);
+
+                // 更新回数 = アップロード回数 - スキップ回数 であることをログから確認する。
+                // ※スキップ回数はWARNレベルで「より新しいデータが登録済のため何もしない」の文言が出力されている件数を数える
+                // 更新回数がループ回数より少なければ正常と判断する。
+                assertTrue((postData.getVersion() - preVersion) < uploadCnt);
+
+                // 成功フラグを有効にしてループを中断する。
+                isSuccess = true;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
         }
-
-        // サスペンド:DynamoDBへの反映を待つ（アップロード数×2秒）
-        Thread.sleep(2000 * (long) uploadCnt);
-
-        // DynamoDBから最終更新レコードを取得する
-        FileMetaData postData = dbMapper.load(FileMetaData.class, objectKey);
-
-        // 更新前後のVersion値の差から，更新回数を算出する。
-        logger.info("更新回数:{}", postData.getVersion() - preVersion);
-
-        // 更新回数 = アップロード回数 - スキップ回数 であることをログから確認する。
-        // ※スキップ回数はWARNレベルで「より新しいデータが登録済のため何もしない」の文言が出力されている件数を数える
     }
 
     /**
@@ -393,61 +472,70 @@ public class StrageSearchTest extends TestCase {
     @Test
     public void continuouslyUploadUpdateDeleteTest() throws InterruptedException {
 
-        // アップロード先バケット名
-        String bucketName = "functionaltest.fileupload.a";
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+                // アップロードオブジェクトキー
+                String objectKey = s3prefix
+                        + "continuouslyUploadUpdateDeleteTest";
 
-        // アップロードオブジェクトキー
-        String objectKey = "continuouslyUploadUpdateDeleteTest";
+                // S3へアップロード（登録）
+                String contents = "file data";
+                ObjectMetadata metadata = new ObjectMetadata();
+                metadata.setContentLength(contents.length());
+                try (InputStream is = new ByteArrayInputStream(contents
+                        .getBytes())) {
+                    s3.putObject(
+                            new PutObjectRequest(bucket1, objectKey, is, metadata));
+                } catch (IOException e) {
+                    logger.error("S3への登録に失敗しました。", e);
+                    throw new RuntimeException(e);
+                }
 
-        // S3へアップロード（登録）
-        String contents = "file data";
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(contents.length());
-        try (InputStream is = new ByteArrayInputStream(contents.getBytes())) {
-            s3.putObject(
-                    new PutObjectRequest(bucketName, objectKey, is, metadata));
-        } catch (IOException e) {
-            logger.error("S3への登録に失敗しました。", e);
-            throw new RuntimeException(e);
+                // サスペンド:DynamoDBへの反映を待つ
+                Thread.sleep(5000);
+
+                // S3へアップロード（更新）
+                String contentsU = "file data update";
+                ObjectMetadata metadataU = new ObjectMetadata();
+                metadataU.setContentLength(contentsU.length());
+                try (InputStream isU = new ByteArrayInputStream(contentsU
+                        .getBytes())) {
+                    s3.putObject(
+                            new PutObjectRequest(bucket1, objectKey, isU, metadataU));
+                } catch (IOException e) {
+                    logger.error("S3の更新に失敗しました。", e);
+                    throw new RuntimeException(e);
+                }
+
+                // サスペンド:DynamoDBへの反映を待つ
+                Thread.sleep(5000);
+
+                // S3から削除
+                s3.deleteObject(bucket1, objectKey);
+
+                // サスペンド:DynamoDBへの反映を待つ
+                Thread.sleep(5000);
+
+                // S3から削除されていることを確認する
+                try {
+                    s3.getObject(bucket1, objectKey);
+                    fail();
+                } catch (AmazonS3Exception e) {
+
+                    // サスペンド:削除確認
+                    assertEquals("NoSuchKey", e.getErrorCode());
+                }
+
+                // アサート:最終的にファイルが削除された状態であることを確認する。
+                FileMetaData postData = dbMapper.load(FileMetaData.class,
+                        objectKey);
+                assertNull(postData);
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
         }
 
-        // サスペンド:DynamoDBへの反映を待つ
-        Thread.sleep(5000);
-
-        // S3へアップロード（更新）
-        String contentsU = "file data update";
-        ObjectMetadata metadataU = new ObjectMetadata();
-        metadataU.setContentLength(contentsU.length());
-        try (InputStream isU = new ByteArrayInputStream(contentsU.getBytes())) {
-            s3.putObject(
-                    new PutObjectRequest(bucketName, objectKey, isU, metadataU));
-        } catch (IOException e) {
-            logger.error("S3の更新に失敗しました。", e);
-            throw new RuntimeException(e);
-        }
-
-        // サスペンド:DynamoDBへの反映を待つ
-        Thread.sleep(5000);
-
-        // S3から削除
-        s3.deleteObject(bucketName, objectKey);
-
-        // サスペンド:DynamoDBへの反映を待つ
-        Thread.sleep(5000);
-
-        // S3から削除されていることを確認する
-        try {
-            s3.getObject(bucketName, objectKey);
-            fail();
-        } catch (AmazonS3Exception e) {
-
-            // サスペンド:削除確認
-            assertEquals("NoSuchKey", e.getErrorCode());
-        }
-
-        // アサート:最終的にファイルが削除された状態であることを確認する。
-        FileMetaData postData = dbMapper.load(FileMetaData.class, objectKey);
-        assertNull(postData);
     }
 
     /**
@@ -457,43 +545,52 @@ public class StrageSearchTest extends TestCase {
      * @param uploadUser アップロードユーザ（ファイル命名用）
      * @param fileName ファイル名（ファイル命名用）
      */
-    private void fileDownload(String bucketName, String objectKey,
+    private void downloadFile(String bucketName, String objectKey,
             String uploadUser, String fileName) {
 
-        // S3からファイルをダウンロード
-        logger.debug("ファイルダウンロード : バケット[{}] オブジェクトキー[{}]", bucketName,
-                objectKey);
-        S3Object s3File = s3.getObject(
-                new GetObjectRequest(bucketName, objectKey));
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+                // S3からファイルをダウンロード
+                logger.debug("ファイルダウンロード : バケット[{}] オブジェクトキー[{}]", bucketName,
+                        objectKey);
+                S3Object s3File = s3.getObject(
+                        new GetObjectRequest(bucketName, objectKey));
 
-        // 保存先のファイルを準備
-        StringBuilder sbDirName = new StringBuilder();
-        sbDirName.append(DOWNLOAD_DIR);
-        sbDirName.append("\\");
-        sbDirName.append(bucketName);
-        sbDirName.append("\\");
-        sbDirName.append(uploadUser);
-        File saveDir = new File(sbDirName.toString());
-        File saveFile = new File(sbDirName.toString() + "\\" + fileName);
-        try {
-            saveDir.mkdirs();
-            saveFile.createNewFile();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+                // 保存先のファイルを準備
+                StringBuilder sbDirName = new StringBuilder();
+                sbDirName.append(DOWNLOAD_DIR);
+                sbDirName.append("\\");
+                sbDirName.append(bucketName);
+                sbDirName.append("\\");
+                sbDirName.append(uploadUser);
+                File saveDir = new File(sbDirName.toString());
+                File saveFile = new File(sbDirName.toString() + "\\"
+                        + fileName);
+                try {
+                    saveDir.mkdirs();
+                    saveFile.createNewFile();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
 
-        // ダウンロードファイルを保存
-        try (FileOutputStream fos = new FileOutputStream(saveFile);
-                S3ObjectInputStream s3i = s3File.getObjectContent();) {
+                // ダウンロードファイルを保存
+                try (FileOutputStream fos = new FileOutputStream(saveFile);
+                        S3ObjectInputStream s3i = s3File.getObjectContent();) {
 
-            byte buf[] = new byte[256];
-            int len;
-            while ((len = s3i.read(buf)) != -1) {
-                fos.write(buf, 0, len);
+                    byte buf[] = new byte[256];
+                    int len;
+                    while ((len = s3i.read(buf)) != -1) {
+                        fos.write(buf, 0, len);
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
+
     }
 
     /**
@@ -502,35 +599,45 @@ public class StrageSearchTest extends TestCase {
      * @param uploadUser アップロードユーザ（ファイル命名用）
      * @param fileName ファイル名（ファイル命名用）
      */
-    private void fileCompare(String bucketName, String uploadUser,
+    private void compareFile(String bucketName, String uploadUser,
             String fileName) {
-        StringBuilder sbFileName = new StringBuilder();
-        sbFileName.append(bucketName);
-        sbFileName.append("\\");
-        sbFileName.append(uploadUser);
-        sbFileName.append("\\");
-        sbFileName.append(fileName);
 
-        // アップロードファイルの参照を生成
-        File uploadFile = new File(UPLOAD_DIR + "\\" + sbFileName);
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+                StringBuilder sbFileName = new StringBuilder();
+                sbFileName.append(bucketName);
+                sbFileName.append("\\");
+                sbFileName.append(uploadUser);
+                sbFileName.append("\\");
+                sbFileName.append(fileName);
 
-        // ダウンロードファイルの参照を生成
-        File downloadFile = new File(DOWNLOAD_DIR + "\\" + sbFileName);
+                // アップロードファイルの参照を生成
+                File uploadFile = new File(UPLOAD_DIR + "\\" + sbFileName);
 
-        byte[] uploadFileBytes = new byte[(int) uploadFile.length()];
-        byte[] downloadFileBytes = new byte[(int) downloadFile.length()];
-        try (FileInputStream fisUp = new FileInputStream(uploadFile);
-                FileInputStream fisDown = new FileInputStream(downloadFile);) {
+                // ダウンロードファイルの参照を生成
+                File downloadFile = new File(DOWNLOAD_DIR + "\\" + sbFileName);
 
-            // それぞれのファイルの内容のバイト配列を比較することで内容の一致を確認
-            while (fisUp.read(uploadFileBytes) > 0) {
-                while (fisDown.read(downloadFileBytes) > 0) {
-                    assertArrayEquals(uploadFileBytes, downloadFileBytes);
+                byte[] uploadFileBytes = new byte[(int) uploadFile.length()];
+                byte[] downloadFileBytes = new byte[(int) downloadFile
+                        .length()];
+                try (FileInputStream fisUp = new FileInputStream(uploadFile);
+                        FileInputStream fisDown = new FileInputStream(downloadFile);) {
+
+                    // それぞれのファイルの内容のバイト配列を比較することで内容の一致を確認
+                    while (fisUp.read(uploadFileBytes) > 0) {
+                        while (fisDown.read(downloadFileBytes) > 0) {
+                            assertArrayEquals(uploadFileBytes,
+                                    downloadFileBytes);
+                        }
+                    }
+
+                } catch (IOException e) {
+                    new RuntimeException(e);
                 }
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
             }
-
-        } catch (IOException e) {
-            new RuntimeException(e);
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,24 +17,24 @@
 package jp.co.ntt.cloud.functionaltest.app.transactiontoken;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenCheck;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenType;
 
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
+
 @Controller
-@RequestMapping("transactiontoken")
 public class TransactionTokenFlow6Controller {
 
-    @RequestMapping(value = "flow6", method = RequestMethod.POST, params = "confirm")
+    @PostMapping(value = WebPagePathConstants.TRANSACTIONTOKEN_FLOW6, params = "confirm")
     @TransactionTokenCheck(type = TransactionTokenType.BEGIN)
     public String flow6Step2() {
-        return "transactiontoken/transactionTokenDisplayStart";
+        return WebPagePathConstants.TRANSACTIONTOKEN_TRANSACTIONTOKENDISPLAYSTART;
     }
 
-    @RequestMapping(value = "flow6", method = RequestMethod.POST, params = "create")
+    @PostMapping(value = WebPagePathConstants.TRANSACTIONTOKEN_FLOW6, params = "create")
     @TransactionTokenCheck(type = TransactionTokenType.IN)
     public String flow6Step3() {
-        return "transactiontoken/transactionTokenDisplayFinish";
+        return WebPagePathConstants.TRANSACTIONTOKEN_TRANSACTIONTOKENDISPLAYFINISH;
     }
 }

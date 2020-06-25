@@ -3,5 +3,5 @@ spring:
     config:
       server:
         s3:
-          uri: s3://functionaltest.external.properties.config.repo
-          searchPaths: evem
+          uri: s3://func-bucket
+          searchPaths: 12x/ci/EVEM

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,11 +72,20 @@ public class HelloWorldTest {
     @After
     public void tearDown() {
 
-        // ログイン状態の場合ログアウトする。
-        HomePage homePage = open(applicationContextUrl, HomePage.class);
-        if (homePage.isLoggedIn()) {
-            homePage.logout();
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+
+                // ログイン状態の場合ログアウトする。
+                HomePage homePage = open(applicationContextUrl, HomePage.class);
+                if (homePage.isLoggedIn()) {
+                    homePage.logout();
+                }
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
         }
+
     }
 
     /**
@@ -85,207 +94,247 @@ public class HelloWorldTest {
     @Test
     public void testPRCD0101UPAY() {
 
-        // テスト実行:無償会員でログインする。
-        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
-                "0000000001", "aaaaa11111");
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
 
-        // サスペンド:課金コンテンツが有効になる1分後まで待機
-        homePage.getTimer().shouldHave(value("00:01:00"));
+                // テスト実行:無償会員でログインする。
+                HomePage homePage = open(applicationContextUrl, LoginPage.class)
+                        .login("0000000001", "aaaaa11111");
 
-        // 再取得クリック後、判定用のコンテンツ値表示
-        homePage.reload().loadVerificationContent();
+                // サスペンド:課金コンテンツが有効になる1分後まで待機
+                homePage.getTimer().shouldHave(value("00:01:00"));
 
-        // アサート:CloudFront上のファイルにアクセスできないこと
-        homePage.getAppResult().shouldNotHave(empty);
-        homePage.getCloudFrontResult().shouldHave(empty);
-        homePage.getReject().shouldHave(exactText("access denied"));
+                // 再取得クリック後、判定用のコンテンツ値表示
+                homePage.reload().loadVerificationContent();
 
-        // 証跡取得
-        screenshot("PRCD0101_001");
+                // アサート:CloudFront上のファイルにアクセスできないこと
+                homePage.getAppResult().shouldNotHave(empty);
+                homePage.getCloudFrontResult().shouldHave(empty);
+                homePage.getReject().shouldHave(exactText("access denied"));
+
+                // 証跡取得
+                screenshot("PRCD0101_001");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
 
     }
 
     /**
-     * PRCD0101 002 署名付きCookieの有効期限前で、アクセス制限が設定されているCloudFront上のファイルにアクセスできないことを確認する<br>
-     * PRCD0101 003 署名付きCookieを利用して、アクセス制限が設定されているCloudFront上のファイルにアクセスできることを確認する<br>
-     * PRCD0101 004 署名付きCookieの有効期限きれで、アクセス制限が設定されているCloudFront上のファイルにアクセスできないことを確認する<br>
-     * PRCD0101 005 署名付きCookieを利用して、アクセス制限が設定されているCloudFront上のファイルに、ポリシーで指定したリソースの範囲外にあるファイルにアクセスできないことを確認する。
+     * PRCD0101 002 アクセス制限が設定されているCloudFront上のファイルに対して、<br>
+     * 著名付きCookieの有効期限前と有効期限切れではアクセスできないこと、有効期限内ではアクセスできることを確認する<br>
+     * また、ポリシーで指定したリソースの範囲外にあるファイルには<br>
+     * 著名付きCookieの有効期限内であってもアクセスできないことを確認する
      */
     @Test
     public void testPRCD0101_PAID() {
 
-        // テスト実行:有償会員でログインする。
-        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
-                "0000000002", "aaaaa11111");
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
 
-        // サスペンド:5秒待機
-        homePage.getTimer().shouldHave(value("00:00:05"));
+                // テスト実行:有償会員でログインする。
+                HomePage homePage = open(applicationContextUrl, LoginPage.class)
+                        .login("0000000002", "aaaaa11111");
 
-        // 再取得クリック後、判定用のコンテンツ値表示
-        homePage.reload().loadVerificationContent();
+                // サスペンド:5秒待機
+                homePage.getTimer().shouldHave(value("00:00:05"));
 
-        // アサート:有効期限前のため、CloudFront上のファイルにアクセスできないこと
-        homePage.getAppResult().shouldNotHave(empty);
-        homePage.getCloudFrontResult().shouldHave(empty);
+                // 再取得クリック後、判定用のコンテンツ値表示
+                homePage.reload().loadVerificationContent();
 
-        // 証跡取得
-        screenshot("PRCD0101_002");
+                // アサート:有効期限前のため、CloudFront上のファイルにアクセスできないこと
+                homePage.getAppResult().shouldNotHave(empty);
+                homePage.getCloudFrontResult().shouldHave(empty);
 
-        // サスペンド:課金コンテンツが有効になる1分後まで待機
-        homePage.getTimer().shouldHave(value("00:01:00"));
+                // 証跡取得
+                screenshot("PRCD0101_002");
 
-        // 再取得クリック後、判定用のコンテンツ値表示
-        homePage.reload().loadVerificationContent();
+                // サスペンド:課金コンテンツが有効になる1分後まで待機
+                homePage.getTimer().shouldHave(value("00:01:00"));
 
-        // アサート:CloudFront上のファイルにアクセスできること
-        homePage.getAppResult().shouldNotHave(empty);
-        homePage.getCloudFrontResult().shouldHave(exactText(homePage
-                .getAppResult().getText()));
-        homePage.getReject().shouldHave(exactText("access denied"));
+                // 再取得クリック後、判定用のコンテンツ値表示
+                homePage.reload().loadVerificationContent();
 
-        // 証跡取得
-        screenshot("PRCD0101_003and005");
+                // アサート:CloudFront上のファイルにアクセスできること
+                homePage.getAppResult().shouldNotHave(empty);
+                homePage.getCloudFrontResult().shouldHave(exactText(homePage
+                        .getAppResult().getText()));
+                homePage.getReject().shouldHave(exactText("access denied"));
 
-        // サスペンド:課金コンテンツが無効になる2分後まで待機
-        homePage.getTimer().shouldHave(value("00:02:00"));
+                // 証跡取得
+                screenshot("PRCD0101_003and005");
 
-        // 再取得クリック後、判定用のコンテンツ値表示
-        homePage.reload().loadVerificationContent();
+                // サスペンド:課金コンテンツが無効になる2分後まで待機
+                homePage.getTimer().shouldHave(value("00:02:00"));
 
-        // アサート:有効期限ぎれのため、CloudFront上のファイルにアクセスできないこと
-        homePage.getAppResult().shouldNotHave(empty);
-        homePage.getCloudFrontResult().shouldHave(empty);
+                // 再取得クリック後、判定用のコンテンツ値表示
+                homePage.reload().loadVerificationContent();
 
-        // 証跡取得
-        screenshot("PRCD0101_004");
+                // アサート:有効期限ぎれのため、CloudFront上のファイルにアクセスできないこと
+                homePage.getAppResult().shouldNotHave(empty);
+                homePage.getCloudFrontResult().shouldHave(empty);
 
+                // 証跡取得
+                screenshot("PRCD0101_004");
+
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 
     /**
-     * PRCD0101 006 署名付Cookieがログアウトして正常に削除されたことを確認するために署名付Cookie発行可能ユーザでログインして、
+     * PRCD0101 003 署名付Cookieがログアウトして正常に削除されたことを確認するために署名付Cookie発行可能ユーザでログインして、<br>
      * ログアウト後に著名付Cookieが発行できないユーザで再度ログインして、ファイルにアクセスできないことを確認する。
      */
     @Test
     public void testPRCD0101LogoutAndLogin() {
 
-        // テスト実行:有償会員でログインする。
-        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
-                "0000000002", "aaaaa11111");
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
 
-        // サスペンド:課金コンテンツが有効になる1分後まで待機
-        homePage.getTimer().shouldHave(value("00:01:00"));
+                // テスト実行:有償会員でログインする。
+                HomePage homePage = open(applicationContextUrl, LoginPage.class)
+                        .login("0000000002", "aaaaa11111");
 
-        // 再取得クリック後、判定用のコンテンツ値表示
-        homePage.reload().loadVerificationContent();
+                // サスペンド:課金コンテンツが有効になる1分後まで待機
+                homePage.getTimer().shouldHave(value("00:01:00"));
 
-        // サスペンド:CloudFront上のファイルにアクセスできること
-        homePage.getAppResult().shouldNotHave(empty);
-        homePage.getCloudFrontResult().shouldHave(exactText(homePage
-                .getAppResult().getText()));
+                // 再取得クリック後、判定用のコンテンツ値表示
+                homePage.reload().loadVerificationContent();
 
-        screenshot("PRCD0101_006_1");
+                // サスペンド:CloudFront上のファイルにアクセスできること
+                homePage.getAppResult().shouldNotHave(empty);
+                homePage.getCloudFrontResult().shouldHave(exactText(homePage
+                        .getAppResult().getText()));
 
-        // ログアウト
-        homePage.logout();
+                screenshot("PRCD0101_006_1");
 
-        screenshot("PRCD0101_006_2");
+                // ログアウト
+                homePage.logout();
 
-        // テスト実行:無償会員でログインする。
-        homePage = open(applicationContextUrl + "login.jsp", LoginPage.class)
-                .login("0000000001", "aaaaa11111");
+                screenshot("PRCD0101_006_2");
 
-        // サスペンド:課金コンテンツが有効になる1分後まで待機
-        homePage.getTimer().shouldHave(value("00:01:00"));
+                // テスト実行:無償会員でログインする。
+                homePage = open(applicationContextUrl + "login.jsp",
+                        LoginPage.class).login("0000000001", "aaaaa11111");
 
-        // 再取得クリック後、判定用のコンテンツ値表示
-        homePage.reload().loadVerificationContent();
+                // サスペンド:課金コンテンツが有効になる1分後まで待機
+                homePage.getTimer().shouldHave(value("00:01:00"));
 
-        // アサート:署名付Cookieがログアウトで消されたことに因って、署名付Cookieを発行できないユーザで再度ログインした際に、
-        // CloudFront上のファイルにアクセスできないことを確認する。
-        homePage.getAppResult().shouldNotHave(empty);
-        homePage.getCloudFrontResult().shouldHave(empty);
+                // 再取得クリック後、判定用のコンテンツ値表示
+                homePage.reload().loadVerificationContent();
 
-        // 証跡取得
-        screenshot("PRCD0101_006_3");
+                // アサート:署名付Cookieがログアウトで消されたことに因って、署名付Cookieを発行できないユーザで再度ログインした際に、
+                // CloudFront上のファイルにアクセスできないことを確認する。
+                homePage.getAppResult().shouldNotHave(empty);
+                homePage.getCloudFrontResult().shouldHave(empty);
 
+                // 証跡取得
+                screenshot("PRCD0101_006_3");
+
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 
     /**
-     * PRCD0101 007 署名付Cookie削除がログアウトしないで再ログインした場合でも正常に削除されたことを確認するために
+     * PRCD0101 004 署名付Cookie削除がログアウトしないで再ログインした場合でも正常に削除されたことを確認するために<br>
      * 署名付Cookie発行可能ユーザでログインして、ログアウトしないまま、著名付Cookieが発行できないユーザで再度ログインして、ファイルにアクセスできないことを確認する。
      */
     @Test
     public void testPRCD0101NotLogoutAndLogin() {
 
-        // テスト実行:有償会員でログインする。
-        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
-                "0000000002", "aaaaa11111");
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
 
-        // サスペンド:課金コンテンツが有効になる1分後まで待機
-        homePage.getTimer().shouldHave(value("00:01:00"));
+                // テスト実行:有償会員でログインする。
+                HomePage homePage = open(applicationContextUrl, LoginPage.class)
+                        .login("0000000002", "aaaaa11111");
 
-        // 再取得クリック後、判定用のコンテンツ値表示
-        homePage.reload().loadVerificationContent();
+                // サスペンド:課金コンテンツが有効になる1分後まで待機
+                homePage.getTimer().shouldHave(value("00:01:00"));
 
-        // サスペンド:CloudFront上のファイルにアクセスできること
-        homePage.getAppResult().shouldNotHave(empty);
-        homePage.getCloudFrontResult().shouldHave(exactText(homePage
-                .getAppResult().getText()));
+                // 再取得クリック後、判定用のコンテンツ値表示
+                homePage.reload().loadVerificationContent();
 
-        screenshot("PRCD0101_007_1");
+                // サスペンド:CloudFront上のファイルにアクセスできること
+                homePage.getAppResult().shouldNotHave(empty);
+                homePage.getCloudFrontResult().shouldHave(exactText(homePage
+                        .getAppResult().getText()));
 
-        // テスト実行:無償会員でログインする。
-        homePage = open(applicationContextUrl + "login", LoginPage.class).login(
-                "0000000001", "aaaaa11111");
+                screenshot("PRCD0101_007_1");
 
-        // サスペンド:課金コンテンツが有効になる1分後まで待機
-        homePage.getTimer().shouldHave(value("00:01:00"));
+                // テスト実行:無償会員でログインする。
+                homePage = open(applicationContextUrl + "login",
+                        LoginPage.class).login("0000000001", "aaaaa11111");
 
-        // 再取得クリック後、判定用のコンテンツ値表示
-        homePage.reload().loadVerificationContent();
+                // サスペンド:課金コンテンツが有効になる1分後まで待機
+                homePage.getTimer().shouldHave(value("00:01:00"));
 
-        // アサート:署名付Cookieがログアウトで消されたことに因って、署名付Cookieを発行できないユーザで再度ログインした際に、
-        // CloudFront上のファイルにアクセスできないことを確認する。
-        homePage.getAppResult().shouldNotHave(empty);
+                // 再取得クリック後、判定用のコンテンツ値表示
+                homePage.reload().loadVerificationContent();
 
-        // CloudFront画像用のコンテンツ値が空であること。
-        homePage.getCloudFrontResult().shouldHave(empty);
+                // アサート:署名付Cookieがログアウトで消されたことに因って、署名付Cookieを発行できないユーザで再度ログインした際に、
+                // CloudFront上のファイルにアクセスできないことを確認する。
+                homePage.getAppResult().shouldNotHave(empty);
 
-        // 証跡取得
-        screenshot("PRCD0101_007_2");
+                // CloudFront画像用のコンテンツ値が空であること。
+                homePage.getCloudFrontResult().shouldHave(empty);
 
+                // 証跡取得
+                screenshot("PRCD0101_007_2");
+
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 
     /**
-     * PRCD0101 008 有償会員でも署名付きCookieが発行されないページにアクセスした際にCloudFront上のファイルにアクセスできるないことを確認する
+     * PRCD0101 005 有償会員でも署名付きCookieが発行されないページにアクセスした際にCloudFront上のファイルにアクセスできるないことを確認する
      */
     @Test
     public void testPRCD0101_008() {
 
-        // テスト実行:有償会員でログインする。
-        HomePage homePage = open(applicationContextUrl, LoginPage.class).login(
-                "0000000002", "aaaaa11111");
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
 
-        // サスペンド:課金コンテンツが無効になる2分後まで待機
-        homePage.getTimer().shouldHave(value("00:02:00"));
+                // テスト実行:有償会員でログインする。
+                HomePage homePage = open(applicationContextUrl, LoginPage.class)
+                        .login("0000000002", "aaaaa11111");
 
-        // disableCookieクリック
-        homePage.disableCookie();
+                // サスペンド:課金コンテンツが無効になる2分後まで待機
+                homePage.getTimer().shouldHave(value("00:02:00"));
 
-        // サスペンド:課金コンテンツが有効になる1分後まで待機
-        homePage.getTimer().shouldHave(value("00:01:00"));
+                // disableCookieクリック
+                homePage.disableCookie();
 
-        // 再取得クリック後、判定用のコンテンツ値表示
-        homePage.reload().loadVerificationContent();
+                // サスペンド:課金コンテンツが有効になる1分後まで待機
+                homePage.getTimer().shouldHave(value("00:01:00"));
 
-        // アサート:CloudFront上のファイルにアクセスできないこと
-        homePage.getAppResult().shouldNotHave(empty);
-        homePage.getCloudFrontResult().shouldHave(empty);
-        homePage.getReject().shouldHave(exactText("access denied"));
+                // 再取得クリック後、判定用のコンテンツ値表示
+                homePage.reload().loadVerificationContent();
 
-        // 証跡取得
-        screenshot("PRCD0101_008");
+                // アサート:CloudFront上のファイルにアクセスできないこと
+                homePage.getAppResult().shouldNotHave(empty);
+                homePage.getCloudFrontResult().shouldHave(empty);
+                homePage.getReject().shouldHave(exactText("access denied"));
 
+                // 証跡取得
+                screenshot("PRCD0101_008");
+
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 
 }

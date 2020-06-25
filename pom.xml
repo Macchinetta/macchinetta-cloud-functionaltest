@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>jp.co.ntt.cloud.functionaltest</groupId>
     <artifactId>macchinetta-cloud-functionaltest</artifactId>
-    <version>1.1.1.RELEASE</version>
+    <version>1.2.0.RELEASE</version>
     <packaging>pom</packaging>
     <parent>
         <groupId>org.terasoluna.gfw</groupId>
         <artifactId>terasoluna-gfw-parent</artifactId>
-        <version>5.5.1.RELEASE</version>
+        <version>5.6.0.RC4</version>
     </parent>
 
     <name>Functional test for Macchinetta cloud guideline Parent</name>
@@ -191,16 +191,6 @@
                 <version>${selenium.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.rest-assured</groupId>
-                <artifactId>rest-assured</artifactId>
-                <version>${rest.assured.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.rest-assured</groupId>
-                <artifactId>json-path</artifactId>
-                <version>${rest.assured.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>amazon-sqs-java-messaging-lib</artifactId>
                 <version>${amazon-sqs-java-messaging-lib.version}</version>
@@ -223,11 +213,6 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-jms</artifactId>
                 <version>${spring-jms.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.derjust</groupId>
-                <artifactId>spring-data-dynamodb</artifactId>
-                <version>${spring-data-dynamodb.version}</version>
             </dependency>
 
             <!-- == Begin Database == -->
@@ -345,11 +330,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-library</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
@@ -392,34 +372,34 @@
         <!-- == Maven Plugin Versions == -->
         <maven-war-plugin.version>2.5</maven-war-plugin.version>
         <org.codehaus.mojo.build-helper-maven-plugin.version>1.9.1</org.codehaus.mojo.build-helper-maven-plugin.version>
-        <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <formatter-maven-plugin.version>0.5.2</formatter-maven-plugin.version>
         <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
         <!-- == Dependency Versions == -->
-        <postgresql.version>42.2.4</postgresql.version>
+        <postgresql.version>42.2.9</postgresql.version>
         <selenide.version>4.14.0</selenide.version>
         <selenium.version>3.14.0</selenium.version>
         <webdrivermanager.version>3.1.1</webdrivermanager.version>
-        <amazon-sqs-java-messaging-lib.version>1.0.4</amazon-sqs-java-messaging-lib.version>
+        <amazon-sqs-java-messaging-lib.version>1.0.8</amazon-sqs-java-messaging-lib.version>
         <!-- == Project Properties == -->
         <encoding>UTF-8</encoding>
-        <java-version>1.8</java-version>
-        <rest.assured.version>3.0.3</rest.assured.version>
-        <spring.cloud.version>Greenwich.RELEASE</spring.cloud.version>
-        <spring-jms.version>4.3.21.RELEASE</spring-jms.version>
-        <spring-data-dynamodb.version>5.0.4</spring-data-dynamodb.version>
+        <java-version>11</java-version>
+        <spring.cloud.version>Hoxton.SR3</spring.cloud.version>
+        <spring-jms.version>4.3.25.RELEASE</spring-jms.version>
         <project.root.basedir>${project.basedir}</project.root.basedir>
         <dbunit.version>2.5.4</dbunit.version>
-        <com.google.code.maven-license-plugin.version>1.4.0</com.google.code.maven-license-plugin.version>
     </properties>
     <modules>
         <module>smpl</module>
+        <module>prcd</module>
+        <module>prcd2</module>
+        <module>aspr</module>
         <module>hlch-dynamo-up</module>
         <module>hlch-dynamo-down</module>
         <module>hlch-rdb-up</module>
         <module>hlch-rdb-down</module>
         <module>hlch-disable</module>
-        <module>stcn</module>
+        <module>ssmn</module>
         <module>evem-config-enabled-false</module>
         <module>evem-failfast-false</module>
         <module>evem-config-log-overall</module>
@@ -427,25 +407,23 @@
         <module>evem-config</module>
         <module>evem-git</module>
         <module>evem-s3</module>
-        <module>prcd</module>
-        <module>prcd2</module>
-        <module>caab</module>
-        <module>caab2</module>
-        <module>ccab</module>
-        <module>ssmn</module>
-        <module>prqu</module>
-        <module>prdi</module>
-        <module>cwap</module>
-        <module>aspr</module>
-        <module>mlsn</module>
+        <module>evem-dir-traversal</module>
+        <module>isue</module>
         <module>atsc</module>
-        <module>caap</module>
+        <module>prdi</module>
+        <module>prqu</module>
         <module>rdrp</module>
         <module>rdrp2</module>
+        <module>caab</module>
+        <module>caab2</module>
+        <module>mlsn</module>
         <module>drup</module>
-        <module>isue</module>
-        <module>upfm</module>
         <module>dtsh</module>
+        <module>cwap</module>
+        <module>upfm</module>
+        <module>stcn</module>
+        <module>ccab</module>
+        <module>caap</module>
     </modules>
 
 </project>

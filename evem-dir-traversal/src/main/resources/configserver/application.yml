@@ -1,0 +1,12 @@
+# 環境依存しないフレームワークの設定値
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: smpl
+
+cloud:
+  aws:
+    stack:
+      auto: false

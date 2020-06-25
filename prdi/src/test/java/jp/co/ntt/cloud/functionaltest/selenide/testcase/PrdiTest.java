@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.codeborne.selenide.Configuration;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import jp.co.ntt.cloud.functionaltest.selenide.page.HomePage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.IndexPage;
 import jp.co.ntt.cloud.functionaltest.selenide.page.LoginPage;
-import jp.co.ntt.cloud.functionaltest.selenide.page.HomePage;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -48,6 +48,9 @@ public class PrdiTest {
 
     @Value("${selenide.geckodriverVersion}")
     private String geckodriverVersion;
+
+    @Value("${s3.prefix}")
+    private String prefix;
 
     @Before
     public void setUp() {
@@ -66,13 +69,31 @@ public class PrdiTest {
 
         // ログイン
         // サスペンド:画面遷移確認
-        open(applicationContextUrl, LoginPage.class).login("0000000001",
-                "aaaaa11111").getH().shouldHave(exactText("Hello world!"));
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+
+                open(applicationContextUrl, LoginPage.class).login("0000000001",
+                        "aaaaa11111").getH().shouldHave(exactText(
+                                "Hello world!"));
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
+
     }
 
     @After
     public void tearDown() {
-        open(applicationContextUrl, HomePage.class).logout();
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
+
+                open(applicationContextUrl, HomePage.class).logout();
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 
     /**
@@ -81,19 +102,29 @@ public class PrdiTest {
     @Test
     public void testNormalDownload() {
 
-        // テスト実行:ファイルをダウンロードする。
-        IndexPage indexPage = open(applicationContextUrl, HomePage.class)
-                .clickDownload().download("landscape/logo.jpg");
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
 
-        // アサート:S3バケットから署名付きURLにてダウンロードできること、APサーバ上のローカルファイルとBASE64データが一致することをもってダウンロード正常確認とする。
-        indexPage.getStatus().shouldHave(exactText("load complete."));
-        indexPage.getSelectedKey().shouldHave(exactText("landscape/logo.jpg"));
-        indexPage.getLocalBase64().shouldHave(exactText(indexPage.getS3Base64()
-                .getText()));
+                // テスト実行:ファイルをダウンロードする。
+                IndexPage indexPage = open(applicationContextUrl,
+                        HomePage.class).clickDownload().download(prefix
+                                + "landscape/logo.jpg");
 
-        // 証跡取得
-        screenshot("testNormalDownload");
+                // アサート:S3バケットから署名付きURLにてダウンロードできること、APサーバ上のローカルファイルとBASE64データが一致することをもってダウンロード正常確認とする。
+                indexPage.getStatus().shouldHave(exactText("load complete."));
+                indexPage.getSelectedKey().shouldHave(exactText(prefix
+                        + "landscape/logo.jpg"));
+                indexPage.getLocalBase64().shouldHave(exactText(indexPage
+                        .getS3Base64().getText()));
 
+                // 証跡取得
+                screenshot("testNormalDownload");
+
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 
     /**
@@ -102,16 +133,26 @@ public class PrdiTest {
     @Test
     public void testExpiredFileDownload() {
 
-        // テスト実行:ファイルをダウンロードする。
-        IndexPage indexPage = open(applicationContextUrl, HomePage.class)
-                .clickDownload().download("expire/logo.jpg");
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
 
-        // アサート:ブラウザのダウンロードに失敗すること、<img>タグのerror()イベントを捕捉することでダウンロード失敗とする。
-        indexPage.getStatus().shouldHave(exactText("load failure."));
-        indexPage.getSelectedKey().shouldHave(exactText("expire/logo.jpg"));
+                // テスト実行:ファイルをダウンロードする。
+                IndexPage indexPage = open(applicationContextUrl,
+                        HomePage.class).clickDownload().download(prefix
+                                + "expire/logo.jpg");
 
-        // 証跡取得
-        screenshot("testExpiredFileDownload");
+                // アサート:ブラウザのダウンロードに失敗すること、<img>タグのerror()イベントを捕捉することでダウンロード失敗とする。
+                indexPage.getStatus().shouldHave(exactText("load failure."));
+                indexPage.getSelectedKey().shouldHave(exactText(prefix
+                        + "expire/logo.jpg"));
+
+                // 証跡取得
+                screenshot("testExpiredFileDownload");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 
     /**
@@ -120,16 +161,25 @@ public class PrdiTest {
     @Test
     public void testNotExistObjectKeyDownload() {
 
-        // テスト実行:ファイルをダウンロードする。
-        IndexPage indexPage = open(applicationContextUrl, HomePage.class)
-                .clickDownload().download("invalid-object-key.jpg");
+        for (int retryCount = 0; retryCount < 100; retryCount++) {
+            try {
 
-        // アサート:ブラウザのダウンロードに失敗すること、<img>タグのerror()イベントを捕捉することでダウンロード失敗とする。
-        indexPage.getStatus().shouldHave(exactText("load failure."));
-        indexPage.getSelectedKey().shouldHave(exactText(
-                "invalid-object-key.jpg"));
+                // テスト実行:ファイルをダウンロードする。
+                IndexPage indexPage = open(applicationContextUrl,
+                        HomePage.class).clickDownload().download(
+                                "invalid-object-key.jpg");
 
-        // 証跡取得
-        screenshot("testNotExistObjectKeyDownload");
+                // アサート:ブラウザのダウンロードに失敗すること、<img>タグのerror()イベントを捕捉することでダウンロード失敗とする。
+                indexPage.getStatus().shouldHave(exactText("load failure."));
+                indexPage.getSelectedKey().shouldHave(exactText(
+                        "invalid-object-key.jpg"));
+
+                // 証跡取得
+                screenshot("testNotExistObjectKeyDownload");
+                break;
+            } catch (Exception e) {
+                // エラー時はリトライ
+            }
+        }
     }
 }

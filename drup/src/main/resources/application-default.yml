@@ -34,3 +34,8 @@ cp:
 logging:
   path: /var/log/applogs
 
+# S3バケット設定
+functionaltest:
+    upload:
+      bucketName: func-temp
+      prefix: 12x/dev/DRUP/

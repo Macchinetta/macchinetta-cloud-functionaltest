@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jp.co.ntt.cloud.functionaltest.app.common.constants.CcabConstants;
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
 import jp.co.ntt.cloud.functionaltest.domain.model.Member;
 import jp.co.ntt.cloud.functionaltest.domain.service.member.MemberUpdateService;
 
@@ -38,7 +39,6 @@ import jp.co.ntt.cloud.functionaltest.domain.service.member.MemberUpdateService;
  * @author NTT 電電太郎
  */
 @Controller
-@RequestMapping(value = "/")
 public class HelloController {
 
     /**
@@ -56,8 +56,7 @@ public class HelloController {
      * @param model 出力情報を保持するクラス
      * @return View論理名
      */
-    @RequestMapping(value = "heap", method = { RequestMethod.GET,
-            RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.HEAP)
     public String homeCacheFromHeap(Locale locale, Model model) {
         logger.info("Welcome home! The client locale is {}.", locale);
 
@@ -67,10 +66,10 @@ public class HelloController {
         model.addAttribute("serverTime", df.format(date));
 
         Member member = memberUpdateService.findMemberWithHeapCache(
-                "9999999991");
+                CcabConstants.CUSTOMER_NO);
         model.addAttribute("member", member);
 
-        return "welcome/home";
+        return WebPagePathConstants.WELCOME_HOME;
     }
 
     /**
@@ -79,8 +78,7 @@ public class HelloController {
      * @param model 出力情報を保持するクラス
      * @return View論理名
      */
-    @RequestMapping(value = "redis", method = { RequestMethod.GET,
-            RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.REDIS)
     public String homeCacheFromRedis(Locale locale, Model model) {
         logger.info("Welcome home! The client locale is {}.", locale);
 
@@ -90,10 +88,10 @@ public class HelloController {
         model.addAttribute("serverTime", df.format(date));
 
         Member member = memberUpdateService.findMemberWithRedisCache(
-                "9999999991");
+                CcabConstants.CUSTOMER_NO);
         model.addAttribute("member", member);
 
-        return "welcome/home";
+        return WebPagePathConstants.WELCOME_HOME;
     }
 
     /**
@@ -102,18 +100,17 @@ public class HelloController {
      * @param model 出力情報を保持するクラス
      * @return View論理名
      */
-    @RequestMapping(value = "heap/deleteCache", params = "update", method = {
-            RequestMethod.GET, RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.HEAP_DELETECACHE, params = "update")
     public String deleteHeapChacheUpdate(Locale locale, Model model,
             RedirectAttributes redirectAttribute) {
 
         Member member = new Member();
-        member.setCustomerNo("9999999991");
+        member.setCustomerNo(CcabConstants.CUSTOMER_NO);
         member.setName("NTT太郎");
         member.setFuriName("えぬてぃてぃたろう");
         memberUpdateService.updateMemberWithHeapCache(member);
 
-        return "redirect:/heap";
+        return WebPagePathConstants.REDIRECT_HEAP;
     }
 
     /**
@@ -122,18 +119,17 @@ public class HelloController {
      * @param model 出力情報を保持するクラス
      * @return View論理名
      */
-    @RequestMapping(value = "heap/deleteCache", params = "redo", method = {
-            RequestMethod.GET, RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.HEAP_DELETECACHE, params = "redo")
     public String deleteHeapChacheRedo(Locale locale, Model model,
             RedirectAttributes redirectAttribute) {
 
         Member member = new Member();
-        member.setCustomerNo("9999999991");
+        member.setCustomerNo(CcabConstants.CUSTOMER_NO);
         member.setName("電電花子");
         member.setFuriName("Hanako Denden");
         memberUpdateService.updateMemberWithHeapCache(member);
 
-        return "redirect:/heap";
+        return WebPagePathConstants.REDIRECT_HEAP;
     }
 
     /**
@@ -142,17 +138,17 @@ public class HelloController {
      * @param model 出力情報を保持するクラス
      * @return View論理名
      */
-    @RequestMapping(value = "redis/deleteCache", params = "update", method = {
-            RequestMethod.GET, RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.REDIS_DELETECACHE, params = "update")
     public String deleteRedisChacheUpdate(Locale locale, Model model,
             RedirectAttributes redirectAttribute) {
 
         Member member = new Member();
-        member.setCustomerNo("9999999991");
+        member.setCustomerNo(CcabConstants.CUSTOMER_NO);
         member.setName("NTT太郎");
         member.setFuriName("えぬてぃてぃたろう");
         memberUpdateService.updateMemberWithRedisCache(member);
-        return "redirect:/redis";
+
+        return WebPagePathConstants.REDIRECT_REDIS;
     }
 
     /**
@@ -161,17 +157,17 @@ public class HelloController {
      * @param model 出力情報を保持するクラス
      * @return View論理名
      */
-    @RequestMapping(value = "redis/deleteCache", params = "redo", method = {
-            RequestMethod.GET, RequestMethod.POST })
+    @GetMapping(value = WebPagePathConstants.REDIS_DELETECACHE, params = "redo")
     public String deleteRedisChacheRedo(Locale locale, Model model,
             RedirectAttributes redirectAttribute) {
 
         Member member = new Member();
-        member.setCustomerNo("9999999991");
+        member.setCustomerNo(CcabConstants.CUSTOMER_NO);
         member.setName("電電花子");
         member.setFuriName("Hanako Denden");
         memberUpdateService.updateMemberWithRedisCache(member);
-        return "redirect:/redis";
+
+        return WebPagePathConstants.REDIRECT_REDIS;
     }
 
 }

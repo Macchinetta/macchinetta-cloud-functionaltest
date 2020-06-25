@@ -34,4 +34,10 @@ cp:
 logging:
   path: /var/log/applogs
 
+# CloudFront Signature
+functionaltest:
+  cf:
+    signature:
+      cookiePath: /12x/dev/PRCD/prcd
+      resourcePath: 12x/dev/PRCD/prcd/paid/*
 

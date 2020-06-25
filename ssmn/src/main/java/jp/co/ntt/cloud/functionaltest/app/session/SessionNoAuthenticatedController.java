@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,42 +17,43 @@
 package jp.co.ntt.cloud.functionaltest.app.session;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import jp.co.ntt.cloud.functionaltest.app.common.constants.WebPagePathConstants;
 
 /**
  * セッション試験用(認証なし場合)コントローラ
  * @author NTT 電電太郎
  */
 @Controller
-@RequestMapping("session/noAuthenticated")
 public class SessionNoAuthenticatedController {
 
     /**
      * POST 実行
      * @return
      */
-    @RequestMapping(method = RequestMethod.POST, params = "postTest")
+    @PostMapping(value = WebPagePathConstants.SESSION_NOAUTHENTICATED, params = "postTest")
     public String post() {
-        return "sessionNoAuthenticated/successPost";
+        return WebPagePathConstants.SESSIONNOAUTHENTICATED_SUCCESSPOST;
     }
 
     /**
      * GET 実行
      * @return
      */
-    @RequestMapping(method = RequestMethod.GET, params = "getTest")
+    @GetMapping(value = WebPagePathConstants.SESSION_NOAUTHENTICATED, params = "getTest")
     public String get() {
-        return "sessionNoAuthenticated/successGet";
+        return WebPagePathConstants.SESSIONNOAUTHENTICATED_SUCCESSGET;
     }
 
     /**
      * セッション試験のWelcomeページ表示
      * @return
      */
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping(value = WebPagePathConstants.SESSION_NOAUTHENTICATED)
     public String index() {
-        return "sessionNoAuthenticated/index";
+        return WebPagePathConstants.SESSIONNOAUTHENTICATED_INDEX;
     }
 
 }

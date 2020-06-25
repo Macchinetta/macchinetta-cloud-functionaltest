@@ -1,5 +1,5 @@
 $(function() {
-    $img = $('#imgFromCloudFront');
+    const $img = $('#imgFromCloudFront');
     var originSrc = $img.attr('src');
     $img.attr('src', '')
 

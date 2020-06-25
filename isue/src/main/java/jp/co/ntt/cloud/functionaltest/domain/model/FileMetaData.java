@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBVersionAttribute;
  * ファイルメタデータ。
  * @author NTT 電電太郎
  */
-@DynamoDBTable(tableName = "FileMetaData")
+@DynamoDBTable(tableName = "FuncFileMetaData")
 public class FileMetaData implements Serializable {
 
     /** シリアルバージョンUID */

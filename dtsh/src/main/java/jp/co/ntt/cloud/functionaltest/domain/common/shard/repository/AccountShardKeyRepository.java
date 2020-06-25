@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,6 @@ package jp.co.ntt.cloud.functionaltest.domain.common.shard.repository;
 
 import java.util.Optional;
 
-import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.repository.CrudRepository;
 
 import jp.co.ntt.cloud.functionaltest.domain.common.shard.model.ShardingAccount;
@@ -29,17 +26,13 @@ import jp.co.ntt.cloud.functionaltest.domain.common.shard.model.ShardingAccount;
  * シャードアカウントのリポジトリー。
  * @author NTT 電電太郎
  */
-@CacheConfig(cacheNames = "shardids")
-@EnableScan
-public interface AccountShardKeyRepository extends
-                                           CrudRepository<ShardingAccount, String> {
+public interface AccountShardKeyRepository {
 
     /*
      * (非 Javadoc)
      * @see org.springframework.data.repository.CrudRepository#findById(java.io.Serializable)
      */
-    @Override
-    @Cacheable(key = "'shardid/' + #a0")
     Optional<ShardingAccount> findById(String id);
 
+    void save(ShardingAccount entity);
 }

@@ -85,7 +85,7 @@ cloud:
 
 # RDB(RDSを使用)
 database:
-  url: jdbc:postgresql://ci-functionaltest-1-1-x.xxxxxxxxxxxx.ap-northeast-1.rds.amazonaws.com:5432/functionaltest
+  url: jdbc:postgresql://func-master-12x.xxxxxxxxxxxx.ap-northeast-1.rds.amazonaws.com:5432/functionaltest
   username: postgres
   password: postgres
   driverClassName: org.postgresql.Driver
@@ -117,7 +117,7 @@ logging:
 
 ### Gitのリモートリポジトリの`smpl/src/main/resources`に配置した、`applocation.yml`、`applocation-default.yml`、`applocation-ci.yml`ファイルの内容
 
-- macchinetta-cloud-functionaltest\smpl プロジェクトの`applocation.yml`、`applocation-default.yml`、`applocation-ci.yml`ファイルと同じ内容なので割愛
+- `macchinetta-cloud-functionaltest\smpl` プロジェクトの`applocation.yml`、`applocation-default.yml`、`applocation-ci.yml`ファイルと同じ内容なので割愛
 
 ### evem-configプロジェクト内の`application.yml`
 

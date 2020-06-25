@@ -90,7 +90,7 @@ cloud:
 
 # RDB(RDSを使用)
 database:
-  url: jdbc:postgresql://ci-functionaltest-1-1-x.xxxxxxxxxxxx.ap-northeast-1.rds.amazonaws.com:5432/functionaltest
+  url: jdbc:postgresql://func-master-12x.xxxxxxxxxxxx.ap-northeast-1.rds.amazonaws.com:5432/functionaltest
   username: postgres
   password: postgres
   driverClassName: org.postgresql.Driver

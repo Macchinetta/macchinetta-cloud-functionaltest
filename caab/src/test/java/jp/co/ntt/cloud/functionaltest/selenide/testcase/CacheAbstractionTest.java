@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 NTT Corporation.
+ * Copyright 2014-2020 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package jp.co.ntt.cloud.functionaltest.selenide.testcase;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -35,12 +36,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.co.ntt.cloud.functionaltest.domain.model.Member;
 import jp.co.ntt.cloud.functionaltest.rest.api.member.MemberResource;
-import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:META-INF/spring/selenideContext.xml" })
-public class CacheAbstractionTest extends TestCase {
+public class CacheAbstractionTest {
+
+    /**
+     * URLパスパラメータ：会員番号
+     */
+    private static final String CUSTOMER_NO = "/0000000001";
+
+    /**
+     * View論理名：メンバリソース更新画面
+     */
+    public static final String API_VER_MEMBER_UPDATE = "api/v1/member/update";
 
     @Value("${target.applicationContextUrl}")
     private String applicationContextUrl;
@@ -63,19 +73,21 @@ public class CacheAbstractionTest extends TestCase {
     }
 
     /**
-     * CAAB0101 001 キャッシュマネージャーとしてRedisCacheManagerを使用出来ること。 <br>
-     * CAAB0201 001 「@Cacheable」アノテーションを使用したキャッシュするデータの選択が行えること<br>
-     * CAAB0301 001 「@CacheEvict」アノテーションを使用したキャッシュするデータの選択が行えること
+     * CAAB0101 ガイドラインに記載のキャッシュマネージャーの設定でRedisを使用したキャッシュが行えることの確認、<br>
+     * キャッシュするデータを選択できることの確認、キャッシュしたデータを削除できることの確認 <br>
+     * <br>
+     * キャッシュマネージャーとしてRedisCacheManagerを使用出来ること。 <br>
+     * 「@Cacheable」を使用してデータをキャッシュできること。 <br>
+     * 「@CacheEvict」を使用してキャッシュしたデータを削除できること。
      * @throws JsonProcessingException
      */
     @Test
     public void testCAAB01to03() throws JsonProcessingException {
 
-        // 対象試験項目:CAAB0101 001、CAAB0201 001
         // テスト実行:@Cacheableを付与したサービスクラスのメソッドを実行する。
         // サスペンド:指定したcustomerNoに対するデータが取得できること。
         given().contentType("application/json; charset=UTF-8").when().get(
-                applicationContextUrl + "api/v1/Member/update/0000000001")
+                applicationContextUrl + API_VER_MEMBER_UPDATE + CUSTOMER_NO)
                 .then().statusCode(200).body("kanjiFamilyName", equalTo("電電"))
                 .body("kanjiGivenName", equalTo("花子"));
 
@@ -85,7 +97,6 @@ public class CacheAbstractionTest extends TestCase {
         assertThat(member.getKanjiFamilyName(), equalTo("電電"));
         assertThat(member.getKanjiGivenName(), equalTo("花子"));
 
-        // 対象試験項目:CAAB0301 001
         // 事前準備:更新用データの作成
         MemberResource requestMember = new MemberResource();
         requestMember.setKanjiFamilyName("日電");
@@ -106,10 +117,11 @@ public class CacheAbstractionTest extends TestCase {
         // サスペンド:指定したcustomerNoに対するデータが取得できること。
         given().contentType("application/json; charset=UTF-8").body(objectMapper
                 .writeValueAsString(requestMember)).when().put(
-                        applicationContextUrl
-                                + "api/v1/Member/update/0000000001").then()
-                .statusCode(200).body("kanjiFamilyName", equalTo("日電")).body(
-                        "kanjiGivenName", equalTo("花子"));
+                        applicationContextUrl + API_VER_MEMBER_UPDATE
+                                + CUSTOMER_NO).then().statusCode(200).body(
+                                        "kanjiFamilyName", equalTo("日電")).body(
+                                                "kanjiGivenName", equalTo(
+                                                        "花子"));
 
         // アサート:実行したメソッドの引数に対応するRedis上のキャッシュが削除されること。
         assertNull(redisTemplate.opsForValue().get(
