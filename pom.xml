@@ -379,7 +379,7 @@
         <postgresql.version>42.2.9</postgresql.version>
         <selenide.version>4.14.0</selenide.version>
         <selenium.version>3.14.0</selenium.version>
-        <webdrivermanager.version>3.1.1</webdrivermanager.version>
+        <webdrivermanager.version>6.1.0</webdrivermanager.version>
         <amazon-sqs-java-messaging-lib.version>1.0.8</amazon-sqs-java-messaging-lib.version>
         <!-- == Project Properties == -->
         <encoding>UTF-8</encoding>
